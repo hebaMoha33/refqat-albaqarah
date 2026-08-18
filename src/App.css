@@ -1908,3 +1908,794 @@ button {
     padding: 28px 18px;
   }
 }
+/* =========================================
+   HERO GEOMETRIC ART
+========================================= */
+
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+
+
+/* نترك مساحة للشكل على الشاشات الكبيرة */
+
+@media (min-width: 850px) {
+
+  .hero-content {
+    position: relative;
+    z-index: 5;
+
+    width: 58%;
+    margin-right: 0;
+    margin-left: auto;
+  }
+
+}
+
+
+/* =========================================
+   MAIN GEOMETRY CONTAINER
+========================================= */
+
+.hero-geometry {
+  position: absolute;
+
+  left: 7%;
+  top: 50%;
+
+  width: 300px;
+  height: 300px;
+
+  transform:
+    translateY(-50%);
+
+  display: grid;
+  place-items: center;
+
+  pointer-events: none;
+
+  z-index: 2;
+
+  opacity: .9;
+}
+
+
+/* =========================================
+   SOFT LIGHT BEHIND GEOMETRY
+========================================= */
+
+.geometry-aura {
+  position: absolute;
+
+  width: 250px;
+  height: 250px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(111, 213, 174, .18),
+      rgba(114, 201, 237, .08) 45%,
+      transparent 72%
+    );
+
+  filter:
+    blur(10px);
+
+  animation:
+    geometryAura
+    8s ease-in-out
+    infinite;
+}
+
+
+.app.evening
+.geometry-aura {
+  background:
+    radial-gradient(
+      circle,
+      rgba(255, 173, 104, .22),
+      rgba(198, 140, 241, .12) 47%,
+      transparent 72%
+    );
+}
+
+
+@keyframes geometryAura {
+
+  0%,
+  100% {
+    transform:
+      scale(.92);
+
+    opacity: .65;
+  }
+
+  50% {
+    transform:
+      scale(1.12);
+
+    opacity: 1;
+  }
+
+}
+
+
+/* =========================================
+   OUTER OCTAGON
+========================================= */
+
+.geometry-outer {
+  position: absolute;
+
+  width: 220px;
+  height: 220px;
+
+  border:
+    1px solid
+    color-mix(
+      in srgb,
+      var(--one) 60%,
+      transparent
+    );
+
+  transform:
+    rotate(22.5deg);
+
+  animation:
+    geometryRotate
+    35s linear
+    infinite;
+}
+
+
+.geometry-outer::before,
+.geometry-outer::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 15px;
+
+  border:
+    1px solid
+    color-mix(
+      in srgb,
+      var(--two) 50%,
+      transparent
+    );
+}
+
+
+.geometry-outer::before {
+  transform:
+    rotate(45deg);
+}
+
+
+.geometry-outer::after {
+  inset: 35px;
+
+  transform:
+    rotate(22.5deg);
+}
+
+
+@keyframes geometryRotate {
+
+  from {
+    transform:
+      rotate(22.5deg);
+  }
+
+  to {
+    transform:
+      rotate(382.5deg);
+  }
+
+}
+
+
+/* =========================================
+   POINTS
+========================================= */
+
+.geo-point {
+  position: absolute;
+
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background:
+    var(--three);
+
+  box-shadow:
+    0 0 15px
+    color-mix(
+      in srgb,
+      var(--three) 60%,
+      transparent
+    );
+}
+
+
+.p1 {
+  top: -4px;
+  left: 50%;
+}
+
+.p2 {
+  top: 15%;
+  right: 15%;
+}
+
+.p3 {
+  top: 50%;
+  right: -4px;
+}
+
+.p4 {
+  bottom: 15%;
+  right: 15%;
+}
+
+.p5 {
+  bottom: -4px;
+  left: 50%;
+}
+
+.p6 {
+  bottom: 15%;
+  left: 15%;
+}
+
+.p7 {
+  top: 50%;
+  left: -4px;
+}
+
+.p8 {
+  top: 15%;
+  left: 15%;
+}
+
+
+/* =========================================
+   DIAMONDS
+========================================= */
+
+.geometry-diamond {
+  position: absolute;
+
+  border:
+    1px solid
+    var(--one);
+
+  opacity: .42;
+}
+
+
+.diamond-one {
+  width: 150px;
+  height: 150px;
+
+  transform:
+    rotate(45deg);
+
+  animation:
+    diamondOne
+    24s linear
+    infinite;
+}
+
+
+.diamond-two {
+  width: 118px;
+  height: 118px;
+
+  border-color:
+    var(--two);
+
+  transform:
+    rotate(22.5deg);
+
+  animation:
+    diamondTwo
+    19s linear
+    infinite reverse;
+}
+
+
+@keyframes diamondOne {
+
+  from {
+    transform:
+      rotate(45deg);
+  }
+
+  to {
+    transform:
+      rotate(405deg);
+  }
+
+}
+
+
+@keyframes diamondTwo {
+
+  from {
+    transform:
+      rotate(22.5deg);
+  }
+
+  to {
+    transform:
+      rotate(382.5deg);
+  }
+
+}
+
+
+/* =========================================
+   CIRCLES
+========================================= */
+
+.geometry-circle {
+  position: absolute;
+
+  border-radius: 50%;
+}
+
+
+.circle-one {
+  width: 184px;
+  height: 184px;
+
+  border:
+    1px dashed
+    var(--two);
+
+  opacity: .38;
+
+  animation:
+    circleRotation
+    29s linear
+    infinite;
+}
+
+
+.circle-two {
+  width: 105px;
+  height: 105px;
+
+  border:
+    1px solid
+    var(--rose);
+
+  opacity: .27;
+
+  animation:
+    circlePulse
+    7s ease-in-out
+    infinite;
+}
+
+
+@keyframes circleRotation {
+
+  to {
+    transform:
+      rotate(-360deg);
+  }
+
+}
+
+
+@keyframes circlePulse {
+
+  0%,
+  100% {
+    transform:
+      scale(.92);
+
+    opacity: .2;
+  }
+
+  50% {
+    transform:
+      scale(1.08);
+
+    opacity: .55;
+  }
+
+}
+
+
+/* =========================================
+   CENTRAL STAR
+========================================= */
+
+.geometry-star {
+  position: absolute;
+
+  width: 82px;
+  height: 82px;
+
+  display: grid;
+  place-items: center;
+
+  border:
+    1px solid
+    var(--border);
+
+  transform:
+    rotate(45deg);
+
+  background:
+    var(--glass-light);
+
+  backdrop-filter:
+    blur(12px);
+
+  box-shadow:
+    0 12px 40px
+    rgba(0, 0, 0, .07);
+
+  animation:
+    centralStar
+    11s ease-in-out
+    infinite;
+}
+
+
+.geometry-star span {
+  transform:
+    rotate(-45deg);
+
+  color:
+    var(--three);
+
+  font-size: 22px;
+}
+
+
+@keyframes centralStar {
+
+  0%,
+  100% {
+    transform:
+      rotate(45deg)
+      scale(.95);
+  }
+
+  50% {
+    transform:
+      rotate(90deg)
+      scale(1.06);
+  }
+
+}
+
+
+/* =========================================
+   CORE
+========================================= */
+
+.geometry-core {
+  position: absolute;
+
+  width: 48px;
+  height: 48px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  color:
+    var(--one);
+
+  background:
+    var(--glass);
+
+  border:
+    1px solid
+    var(--border);
+
+  backdrop-filter:
+    blur(12px);
+
+  font-size: 25px;
+
+  animation:
+    coreBreath
+    5s ease-in-out
+    infinite;
+}
+
+
+@keyframes coreBreath {
+
+  0%,
+  100% {
+    transform:
+      scale(.9);
+
+    box-shadow:
+      0 0 0
+      rgba(0, 0, 0, 0);
+  }
+
+  50% {
+    transform:
+      scale(1.08);
+
+    box-shadow:
+      0 0 35px
+      color-mix(
+        in srgb,
+        var(--one) 25%,
+        transparent
+      );
+  }
+
+}
+
+
+/* =========================================
+   FLOATING STARS
+========================================= */
+
+.floating-star {
+  position: absolute;
+
+  color:
+    var(--three);
+
+  opacity: .55;
+}
+
+
+.star-one {
+  left: 17px;
+  top: 38px;
+
+  animation:
+    floatingOne
+    7s ease-in-out
+    infinite;
+}
+
+
+.star-two {
+  right: 15px;
+  bottom: 45px;
+
+  color:
+    var(--two);
+
+  animation:
+    floatingTwo
+    9s ease-in-out
+    infinite;
+}
+
+
+.star-three {
+  right: 40px;
+  top: 28px;
+
+  color:
+    var(--rose);
+
+  font-size: 8px;
+
+  animation:
+    floatingThree
+    6s ease-in-out
+    infinite;
+}
+
+
+@keyframes floatingOne {
+
+  50% {
+    transform:
+      translate(
+        8px,
+        -13px
+      )
+      rotate(45deg);
+
+    opacity: 1;
+  }
+
+}
+
+
+@keyframes floatingTwo {
+
+  50% {
+    transform:
+      translate(
+        -11px,
+        12px
+      )
+      rotate(-35deg);
+
+    opacity: .95;
+  }
+
+}
+
+
+@keyframes floatingThree {
+
+  50% {
+    transform:
+      translateY(-15px)
+      scale(1.5);
+
+    opacity: 1;
+  }
+
+}
+
+
+/* =========================================
+   WHOLE OBJECT SLOW MOTION
+========================================= */
+
+.hero-geometry {
+  animation:
+    geometryFloat
+    12s ease-in-out
+    infinite;
+}
+
+
+@keyframes geometryFloat {
+
+  0%,
+  100% {
+    margin-top: 0;
+  }
+
+  50% {
+    margin-top: -12px;
+  }
+
+}
+
+
+/* =========================================
+   EVENING GLOW
+========================================= */
+
+.app.evening
+.geometry-outer {
+  border-color:
+    rgba(
+      255,
+      188,
+      119,
+      .45
+    );
+}
+
+
+.app.evening
+.geometry-core {
+  color:
+    #ffd089;
+}
+
+
+.app.evening
+.geometry-star {
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      .06
+    );
+
+  box-shadow:
+    0 0 50px
+    rgba(
+      198,
+      140,
+      241,
+      .13
+    );
+}
+
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 950px) {
+
+  .hero-geometry {
+    left: 1%;
+
+    width: 230px;
+    height: 230px;
+
+    transform:
+      translateY(-50%)
+      scale(.8);
+  }
+
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 700px) {
+
+  .hero {
+    min-height: 500px;
+  }
+
+
+  .hero-content {
+    position: relative;
+
+    z-index: 5;
+
+    width: 100%;
+  }
+
+
+  .hero-geometry {
+    width: 180px;
+    height: 180px;
+
+    left: -55px;
+    top: 27%;
+
+    transform:
+      scale(.62);
+
+    opacity: .35;
+  }
+
+
+  .geometry-aura {
+    width: 190px;
+    height: 190px;
+  }
+
+}
+
+
+/* =========================================
+   REDUCED MOTION
+========================================= */
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+
+  .hero-geometry,
+  .geometry-outer,
+  .geometry-diamond,
+  .geometry-circle,
+  .geometry-star,
+  .geometry-core,
+  .geometry-aura,
+  .floating-star {
+    animation: none !important;
+  }
+
+}

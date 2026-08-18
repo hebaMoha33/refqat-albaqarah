@@ -1,6 +1,6 @@
 import {
-  getAdmin,
   getCurrentUser,
+  deleteSession,
   clearSessionCookie
 } from '../server/auth.js'
 
@@ -10,6 +10,12 @@ export default async function handler(
   res
 ) {
 
+  res.setHeader(
+    'Cache-Control',
+    'no-store'
+  )
+
+
   if (
     req.method !== 'POST'
   ) {
@@ -18,9 +24,8 @@ export default async function handler(
       .status(405)
       .json({
         message:
-          'Method not allowed'
+          'طريقة الطلب غير مسموحة.'
       })
-
   }
 
 
@@ -33,25 +38,18 @@ export default async function handler(
 
 
     if (
-      current?.sessionId
+      current?.session?.id
     ) {
 
-      const supabase =
-        getAdmin()
-
-
-      await supabase
-        .from('app_sessions')
-        .delete()
-        .eq(
-          'id',
-          current.sessionId
-        )
-
+      await deleteSession(
+        current.session.id
+      )
     }
 
 
-    clearSessionCookie(res)
+    clearSessionCookie(
+      res
+    )
 
 
     return res
@@ -61,9 +59,17 @@ export default async function handler(
       })
 
 
-  } catch {
+  } catch (error) {
 
-    clearSessionCookie(res)
+    console.error(
+      'LOGOUT ERROR:',
+      error
+    )
+
+
+    clearSessionCookie(
+      res
+    )
 
 
     return res
@@ -71,7 +77,5 @@ export default async function handler(
       .json({
         ok: true
       })
-
   }
-
 }

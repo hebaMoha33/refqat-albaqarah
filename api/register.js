@@ -1,10 +1,11 @@
 import {
   getAdmin,
   normalizeUsername,
-  validUsername,
+  isValidUsername,
   createPasswordHash,
   createSession,
-  readBody
+  readBody,
+  safeUser
 } from '../server/auth.js'
 
 
@@ -13,9 +14,11 @@ export default async function handler(
   res
 ) {
 
-  /* =====================================
-     METHOD
-  ===================================== */
+  res.setHeader(
+    'Cache-Control',
+    'no-store'
+  )
+
 
   if (
     req.method !== 'POST'
@@ -27,33 +30,24 @@ export default async function handler(
         message:
           'طريقة الطلب غير مسموحة.'
       })
-
   }
-
-
-  let createdUserId = null
 
 
   try {
 
-    /* =====================================
-       BODY
-    ===================================== */
-
     const body =
-      readBody(req)
+      await readBody(req)
 
 
-    const rawUsername =
+    const displayName =
       String(
         body?.username || ''
-      )
-        .trim()
+      ).trim()
 
 
     const username =
       normalizeUsername(
-        rawUsername
+        displayName
       )
 
 
@@ -63,12 +57,8 @@ export default async function handler(
       )
 
 
-    /* =====================================
-       VALIDATION
-    ===================================== */
-
     if (
-      !validUsername(
+      !isValidUsername(
         username
       )
     ) {
@@ -79,7 +69,6 @@ export default async function handler(
           message:
             'اسم المستخدم يجب أن يكون من 3 إلى 24 حرفًا بدون مسافات.'
         })
-
     }
 
 
@@ -93,47 +82,16 @@ export default async function handler(
           message:
             'كلمة المرور يجب أن تكون 6 أحرف على الأقل.'
         })
-
     }
 
 
-    /* =====================================
-       SUPABASE SERVER
-    ===================================== */
+    const supabase =
+      getAdmin()
 
-    let supabase
-
-
-    try {
-
-      supabase =
-        getAdmin()
-
-    } catch (error) {
-
-      console.error(
-        'GET ADMIN ERROR:',
-        error
-      )
-
-
-      return res
-        .status(500)
-        .json({
-          message:
-            `مشكلة في اتصال الخادم بـ Supabase: ${error.message}`
-        })
-
-    }
-
-
-    /* =====================================
-       CHECK USERNAME
-    ===================================== */
 
     const {
-      data: existingUser,
-      error: lookupError
+      data: existing,
+      error: existingError
     } =
       await supabase
         .from('app_users')
@@ -145,94 +103,59 @@ export default async function handler(
         .maybeSingle()
 
 
-    if (lookupError) {
+    if (existingError) {
 
       console.error(
-        'LOOKUP ERROR:',
-        lookupError
+        'REGISTER CHECK:',
+        existingError
       )
 
-
-      return res
-        .status(500)
-        .json({
-          message:
-            `تعذر الوصول إلى جدول المستخدمين: ${lookupError.message}`
-        })
-
+      throw existingError
     }
 
 
-    if (existingUser) {
+    if (existing) {
 
       return res
         .status(409)
         .json({
           message:
-            'اسم المستخدم مستخدم بالفعل. اختاري اسمًا آخر أو سجلي الدخول.'
+            'اسم المستخدم مستخدم بالفعل.'
         })
-
     }
 
 
-    /* =====================================
-       PASSWORD
-    ===================================== */
-
-    let passwordData
-
-
-    try {
-
-      passwordData =
-        createPasswordHash(
-          password
-        )
-
-    } catch (error) {
-
-      console.error(
-        'PASSWORD HASH ERROR:',
-        error
+    const {
+      salt,
+      hash
+    } =
+      createPasswordHash(
+        password
       )
 
 
-      return res
-        .status(500)
-        .json({
-          message:
-            `تعذر تجهيز كلمة المرور: ${error.message}`
-        })
-
-    }
-
-
-    /* =====================================
-       CREATE USER
-    ===================================== */
-
     const {
-      data: user,
-      error: createUserError
+      data: newUser,
+      error: insertError
     } =
       await supabase
         .from('app_users')
         .insert({
 
           username:
-            rawUsername,
+            displayName,
 
           username_normalized:
             username,
 
           display_name:
-            rawUsername,
+            displayName,
 
           password_salt:
-            passwordData.salt,
+            salt,
 
           password_hash:
-            passwordData.hash
+            hash
 
         })
         .select(`
@@ -244,66 +167,44 @@ export default async function handler(
         .single()
 
 
-    if (createUserError) {
+    if (insertError) {
 
       console.error(
-        'CREATE USER ERROR:',
-        createUserError
+        'REGISTER INSERT:',
+        insertError
       )
 
+      if (
+        insertError.code ===
+        '23505'
+      ) {
 
-      return res
-        .status(500)
-        .json({
-          message:
-            `تعذر إنشاء المستخدم في قاعدة البيانات: ${createUserError.message}`
-        })
+        return res
+          .status(409)
+          .json({
+            message:
+              'اسم المستخدم مستخدم بالفعل.'
+          })
+      }
 
+
+      throw insertError
     }
 
-
-    if (
-      !user?.id
-    ) {
-
-      return res
-        .status(500)
-        .json({
-          message:
-            'تم تنفيذ الطلب لكن لم يتم إرجاع معرف المستخدم.'
-        })
-
-    }
-
-
-    createdUserId =
-      user.id
-
-
-    /* =====================================
-       CREATE SESSION
-    ===================================== */
 
     try {
 
       await createSession(
-        res,
-        user.id
+        newUser.id,
+        res
       )
 
     } catch (sessionError) {
 
-      console.error(
-        'CREATE SESSION ERROR:',
-        sessionError
-      )
-
-
       /*
-        إذا فشلت الجلسة،
-        نحذف المستخدم الذي
-        أنشئ للتو حتى لا يبقى
-        حساب ناقص.
+       إذا فشل إنشاء الجلسة
+       نحذف الحساب الجديد
+       حتى لا يبقى حساب ناقص.
       */
 
       await supabase
@@ -311,26 +212,13 @@ export default async function handler(
         .delete()
         .eq(
           'id',
-          user.id
+          newUser.id
         )
 
 
-      createdUserId = null
-
-
-      return res
-        .status(500)
-        .json({
-          message:
-            `تم الاتصال بقاعدة البيانات لكن تعذر إنشاء جلسة الدخول: ${sessionError.message}`
-        })
-
+      throw sessionError
     }
 
-
-    /* =====================================
-       SUCCESS
-    ===================================== */
 
     return res
       .status(201)
@@ -338,21 +226,8 @@ export default async function handler(
 
         ok: true,
 
-        user: {
-
-          id:
-            user.id,
-
-          username:
-            user.username,
-
-          display_name:
-            user.display_name,
-
-          created_at:
-            user.created_at
-
-        }
+        user:
+          safeUser(newUser)
 
       })
 
@@ -360,49 +235,17 @@ export default async function handler(
   } catch (error) {
 
     console.error(
-      'REGISTER UNEXPECTED ERROR:',
+      'REGISTER ERROR:',
       error
     )
-
-
-    /*
-      تنظيف احتياطي
-    */
-
-    if (
-      createdUserId
-    ) {
-
-      try {
-
-        const supabase =
-          getAdmin()
-
-
-        await supabase
-          .from('app_users')
-          .delete()
-          .eq(
-            'id',
-            createdUserId
-          )
-
-      } catch {
-
-        // لا شيء
-
-      }
-
-    }
 
 
     return res
       .status(500)
       .json({
         message:
-          `خطأ غير متوقع أثناء إنشاء الحساب: ${error?.message || 'Unknown error'}`
+          error?.message ||
+          'تعذر إنشاء الحساب.'
       })
-
   }
-
 }

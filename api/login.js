@@ -3,7 +3,8 @@ import {
   normalizeUsername,
   verifyPassword,
   createSession,
-  readBody
+  readBody,
+  safeUser
 } from '../server/auth.js'
 
 
@@ -11,6 +12,12 @@ export default async function handler(
   req,
   res
 ) {
+
+  res.setHeader(
+    'Cache-Control',
+    'no-store'
+  )
+
 
   if (
     req.method !== 'POST'
@@ -20,26 +27,41 @@ export default async function handler(
       .status(405)
       .json({
         message:
-          'Method not allowed'
+          'طريقة الطلب غير مسموحة.'
       })
-
   }
 
 
   try {
 
     const body =
-      readBody(req)
+      await readBody(req)
 
 
     const username =
       normalizeUsername(
-        body.username || ''
+        body?.username
       )
 
 
     const password =
-      body.password || ''
+      String(
+        body?.password || ''
+      )
+
+
+    if (
+      !username ||
+      !password
+    ) {
+
+      return res
+        .status(400)
+        .json({
+          message:
+            'أدخلي اسم المستخدم وكلمة المرور.'
+        })
+    }
 
 
     const supabase =
@@ -47,22 +69,36 @@ export default async function handler(
 
 
     const {
-      data: user
+      data: user,
+      error
     } =
       await supabase
         .from('app_users')
         .select(`
           id,
           username,
+          username_normalized,
           display_name,
           password_salt,
-          password_hash
+          password_hash,
+          created_at
         `)
         .eq(
           'username_normalized',
           username
         )
         .maybeSingle()
+
+
+    if (error) {
+
+      console.error(
+        'LOGIN USER ERROR:',
+        error
+      )
+
+      throw error
+    }
 
 
     if (!user) {
@@ -73,11 +109,10 @@ export default async function handler(
           message:
             'اسم المستخدم أو كلمة المرور غير صحيحة.'
         })
-
     }
 
 
-    const correct =
+    const valid =
       verifyPassword(
         password,
         user.password_salt,
@@ -85,7 +120,7 @@ export default async function handler(
       )
 
 
-    if (!correct) {
+    if (!valid) {
 
       return res
         .status(401)
@@ -93,13 +128,12 @@ export default async function handler(
           message:
             'اسم المستخدم أو كلمة المرور غير صحيحة.'
         })
-
     }
 
 
     await createSession(
-      res,
-      user.id
+      user.id,
+      res
     )
 
 
@@ -109,16 +143,8 @@ export default async function handler(
 
         ok: true,
 
-        user: {
-          id:
-            user.id,
-
-          username:
-            user.username,
-
-          display_name:
-            user.display_name
-        }
+        user:
+          safeUser(user)
 
       })
 
@@ -126,7 +152,7 @@ export default async function handler(
   } catch (error) {
 
     console.error(
-      'LOGIN:',
+      'LOGIN ERROR:',
       error
     )
 
@@ -135,9 +161,8 @@ export default async function handler(
       .status(500)
       .json({
         message:
+          error?.message ||
           'تعذر تسجيل الدخول.'
       })
-
   }
-
 }

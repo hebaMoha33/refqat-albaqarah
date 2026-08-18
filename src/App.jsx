@@ -5,6 +5,7 @@ import {
 } from 'react'
 
 import './App.css'
+import './CommunityTabs.css'
 
 import {
   morningAdhkar,
@@ -925,6 +926,16 @@ function App() {
 
   function openMainTab(tab) {
 
+    // اليوم متاح للجميع، أما بقية الأقسام فتحتاج حسابًا
+    if (
+      tab !== 'today' &&
+      !currentUser
+    ) {
+      openAuth('login')
+      return
+    }
+
+
     setMainTab(tab)
 
 
@@ -1340,218 +1351,278 @@ function App() {
       </header>
 
 
-      {/* HERO */}
+   {/* =========================================
+    HERO
+========================================= */}
 
-      <section className="hero">
+<section className="hero">
 
-        <div className="hero-content">
+  <div className="hero-content">
 
-          <span className="hero-label">
+    <span className="hero-label">
 
-            {period === 'morning'
-              ? '✦ وردك الصباحي'
-              : '✦ وردك المسائي'}
+      {period === 'morning'
+        ? '✦ وردك الصباحي'
+        : '✦ وردك المسائي'}
 
+    </span>
+
+
+    <h2>
+
+      {period === 'morning'
+        ? 'صباحٌ يبدأ'
+        : 'مساءٌ يهدأ'}
+
+      <br />
+
+      <em>
+        بذكر الله
+      </em>
+
+    </h2>
+
+
+    <p>
+
+      {period === 'morning'
+        ? 'ابدأ يومك بقلب مطمئن وذكرٍ يملأ صباحك حياة وسكينة.'
+        : 'اختم يومك بسكينة الذكر ودع ضجيج اليوم يهدأ.'}
+
+    </p>
+
+
+    {/* =====================================
+        DAILY SUMMARY
+    ===================================== */}
+
+    <div className="daily-summary">
+
+      <div className="daily-main">
+
+        <span>
+          إنجاز اليوم
+        </span>
+
+        <strong>
+          {dailyPercentage}%
+        </strong>
+
+      </div>
+
+
+      <div className="daily-summary-bar">
+
+        <span
+          style={{
+            width:
+              `${dailyPercentage}%`
+          }}
+        />
+
+      </div>
+
+
+      <div className="period-percentages">
+
+        <div>
+
+          <span>
+            ☀ الصباح
           </span>
 
-
-          <h2>
-
-            {period === 'morning'
-              ? 'صباحٌ يبدأ'
-              : 'مساءٌ يهدأ'}
-
-            <br />
-
-            <em>
-              بذكر الله
-            </em>
-
-          </h2>
-
-
-          <p>
-
-            {period === 'morning'
-              ? 'ابدأ يومك بقلب مطمئن وذكرٍ يملأ صباحك حياة وسكينة.'
-              : 'اختم يومك بسكينة الذكر ودع ضجيج اليوم يهدأ.'}
-
-          </p>
-
-
-          <div className="daily-summary">
-
-            <div className="daily-main">
-
-              <span>
-                إنجاز اليوم
-              </span>
-
-              <strong>
-                {dailyPercentage}%
-              </strong>
-
-            </div>
-
-
-            <div className="daily-summary-bar">
-
-              <span
-                style={{
-                  width:
-                    `${dailyPercentage}%`
-                }}
-              />
-
-            </div>
-
-
-            <div className="period-percentages">
-
-              <div>
-                <span>
-                  ☀ الصباح
-                </span>
-
-                <strong>
-                  {morningPercentage}%
-                </strong>
-              </div>
-
-
-              <div>
-                <span>
-                  ☾ المساء
-                </span>
-
-                <strong>
-                  {eveningPercentage}%
-                </strong>
-              </div>
-
-            </div>
-
-          </div>
-
-
-          {currentUser && (
-
-            <div className="streak-bar">
-
-              <div>
-
-                <span className="streak-fire">
-                  🔥
-                </span>
-
-                <div>
-
-                  <strong>
-                    {streak}
-                  </strong>
-
-                  <small>
-                    أيام استمرار
-                  </small>
-
-                </div>
-
-              </div>
-
-
-              <span
-                className={
-                  `sync-status ${syncStatus}`
-                }
-              >
-
-                {syncStatus === 'saving' &&
-                  'جاري الحفظ...'}
-
-                {syncStatus === 'saved' &&
-                  'محفوظ ✓'}
-
-                {syncStatus === 'loading' &&
-                  'جاري المزامنة...'}
-
-                {syncStatus === 'error' &&
-                  'تعذر الحفظ'}
-
-              </span>
-
-            </div>
-
-          )}
+          <strong>
+            {morningPercentage}%
+          </strong>
 
         </div>
 
-      </section>
+
+        <div>
+
+          <span>
+            ☾ المساء
+          </span>
+
+          <strong>
+            {eveningPercentage}%
+          </strong>
+
+        </div>
+
+      </div>
+
+    </div>
 
 
-      {/* MAIN NAV */}
+    {/* =====================================
+        STREAK
+    ===================================== */}
 
-      {currentUser && (
+    {currentUser && (
 
-        <nav className="main-tabs">
+      <div className="streak-bar">
 
-          <button
-            className={
-              mainTab === 'today'
-                ? 'active'
-                : ''
-            }
-            onClick={() =>
-              openMainTab('today')
-            }
-          >
-            اليوم
-          </button>
+        <div>
+
+          <span className="streak-fire">
+            🔥
+          </span>
 
 
-          <button
-            className={
-              mainTab === 'progress'
-                ? 'active'
-                : ''
-            }
-            onClick={() =>
-              openMainTab('progress')
-            }
-          >
-            تقدمي
-          </button>
+          <div>
+
+            <strong>
+              {streak}
+            </strong>
+
+            <small>
+              أيام استمرار
+            </small>
+
+          </div>
+
+        </div>
 
 
-          <button
-            className={
-              mainTab === 'community'
-                ? 'active'
-                : ''
-            }
-            onClick={() =>
-              openMainTab('community')
-            }
-          >
-            الرفقة
-          </button>
+        <span
+          className={
+            `sync-status ${syncStatus}`
+          }
+        >
+
+          {syncStatus === 'saving' &&
+            'جاري الحفظ...'}
+
+          {syncStatus === 'saved' &&
+            'محفوظ ✓'}
+
+          {syncStatus === 'loading' &&
+            'جاري المزامنة...'}
+
+          {syncStatus === 'error' &&
+            'تعذر الحفظ'}
+
+        </span>
+
+      </div>
+
+    )}
+
+  </div>
 
 
-          <button
-            className={
-              mainTab === 'ranking'
-                ? 'active'
-                : ''
-            }
-            onClick={() =>
-              openMainTab('ranking')
-            }
-          >
-            الترتيب
-          </button>
+  {/* =====================================
+      ANIMATED ISLAMIC GEOMETRY
+  ===================================== */}
 
-        </nav>
+  <div
+    className="hero-geometry"
+    aria-hidden="true"
+  >
 
-      )}
+    <div className="geometry-aura" />
+
+
+    <div className="geometry-outer">
+
+      <span className="geo-point p1" />
+      <span className="geo-point p2" />
+      <span className="geo-point p3" />
+      <span className="geo-point p4" />
+      <span className="geo-point p5" />
+      <span className="geo-point p6" />
+      <span className="geo-point p7" />
+      <span className="geo-point p8" />
+
+    </div>
+
+
+    <div className="geometry-diamond diamond-one" />
+
+    <div className="geometry-diamond diamond-two" />
+
+
+    <div className="geometry-circle circle-one" />
+
+    <div className="geometry-circle circle-two" />
+
+
+    <div className="geometry-star">
+
+      <span>✦</span>
+
+    </div>
+
+
+    <div className="geometry-core">
+      ۞
+    </div>
+
+
+    <span className="floating-star star-one">
+      ✦
+    </span>
+
+    <span className="floating-star star-two">
+      ✧
+    </span>
+
+    <span className="floating-star star-three">
+      ✦
+    </span>
+
+  </div>
+
+</section>
+
+
+      {/* =====================================
+          MAIN NAVIGATION
+      ===================================== */}
+
+      <nav className="main-tabs" aria-label="التنقل الرئيسي">
+
+        <button
+          type="button"
+          className={mainTab === 'today' ? 'active' : ''}
+          onClick={() => openMainTab('today')}
+        >
+          <span className="main-tab-icon">☀</span>
+          <span>اليوم</span>
+        </button>
+
+
+        <button
+          type="button"
+          className={mainTab === 'progress' ? 'active' : ''}
+          onClick={() => openMainTab('progress')}
+        >
+          <span className="main-tab-icon">◔</span>
+          <span>تقدمي</span>
+        </button>
+
+
+        <button
+          type="button"
+          className={mainTab === 'community' ? 'active' : ''}
+          onClick={() => openMainTab('community')}
+        >
+          <span className="main-tab-icon">♧</span>
+          <span>الرفقة</span>
+        </button>
+
+
+        <button
+          type="button"
+          className={mainTab === 'ranking' ? 'active' : ''}
+          onClick={() => openMainTab('ranking')}
+        >
+          <span className="main-tab-icon">♕</span>
+          <span>الترتيب</span>
+        </button>
+
+      </nav>
 
 
       {/* =====================================
@@ -2211,27 +2282,14 @@ function App() {
                 </div>
 
 
-                <div className="summary-progress">
+                <div className="summary-incomplete">
 
                   <span>
-                    قيد الإنجاز
+                    لم يكملوا بعد
                   </span>
 
                   <strong>
-                    {community.inProgressToday}
-                  </strong>
-
-                </div>
-
-
-                <div className="summary-missed">
-
-                  <span>
-                    لم يبدأوا
-                  </span>
-
-                  <strong>
-                    {community.notStartedToday}
+                    {community.incompleteToday ?? ((community.inProgressToday || 0) + (community.notStartedToday || 0))}
                   </strong>
 
                 </div>
@@ -2314,7 +2372,7 @@ function App() {
                           'in_progress' && (
 
                           <span className="working-tag">
-                            قيد الإنجاز
+                            لم يكتمل بعد
                           </span>
 
                         )}

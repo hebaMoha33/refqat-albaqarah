@@ -1,5 +1,4 @@
 import { createClient } from '@supabase/supabase-js'
-
 import {
   randomBytes,
   scryptSync,
@@ -11,21 +10,19 @@ import process from 'node:process'
 import { Buffer } from 'node:buffer'
 
 
-/* =========================================
-   SETTINGS
-========================================= */
+const COOKIE_NAME = 'refqat_session'
 
-const COOKIE_NAME =
-  'refqat_session'
+const SESSION_DAYS = 365
 
-const SESSION_DAYS =
-  365
+const SESSION_MAX_AGE =
+  60 * 60 * 24 * SESSION_DAYS
+
 
 let adminClient = null
 
 
 /* =========================================
-   SUPABASE SERVER CLIENT
+   SUPABASE ADMIN
 ========================================= */
 
 export function getAdmin() {
@@ -35,28 +32,33 @@ export function getAdmin() {
   }
 
 
-  const url =
+  const supabaseUrl =
     process.env.SUPABASE_URL
 
 
-  const key =
+  const supabaseSecret =
     process.env.SUPABASE_SECRET_KEY ||
     process.env.SUPABASE_SERVICE_ROLE_KEY
 
 
-  if (!url || !key) {
-
+  if (!supabaseUrl) {
     throw new Error(
-      'Supabase server environment variables are missing.'
+      'SUPABASE_URL is missing.'
     )
+  }
 
+
+  if (!supabaseSecret) {
+    throw new Error(
+      'SUPABASE_SECRET_KEY is missing.'
+    )
   }
 
 
   adminClient =
     createClient(
-      url,
-      key,
+      supabaseUrl,
+      supabaseSecret,
       {
         auth: {
           persistSession: false,
@@ -79,34 +81,24 @@ export function normalizeUsername(
   value = ''
 ) {
 
-  return value
+  return String(value)
     .normalize('NFKC')
     .trim()
     .toLowerCase()
-
 }
 
 
-/* =========================================
-   VALIDATE USERNAME
-========================================= */
-
-export function validUsername(
-  value
+export function isValidUsername(
+  username
 ) {
-
-  const username =
-    normalizeUsername(value)
-
 
   return /^[\p{L}\p{N}_-]{3,24}$/u
     .test(username)
-
 }
 
 
 /* =========================================
-   PASSWORD HASH
+   PASSWORD
 ========================================= */
 
 export function createPasswordHash(
@@ -120,24 +112,18 @@ export function createPasswordHash(
 
   const hash =
     scryptSync(
-      password,
+      String(password),
       salt,
       64
-    )
-      .toString('hex')
+    ).toString('hex')
 
 
   return {
     salt,
     hash
   }
-
 }
 
-
-/* =========================================
-   VERIFY PASSWORD
-========================================= */
 
 export function verifyPassword(
   password,
@@ -147,166 +133,118 @@ export function verifyPassword(
 
   try {
 
-    const supplied =
+    const calculatedHash =
       scryptSync(
-        password,
-        salt,
+        String(password),
+        String(salt),
         64
       )
 
 
-    const stored =
+    const savedHash =
       Buffer.from(
-        storedHash,
+        String(storedHash),
         'hex'
       )
 
 
     if (
-      supplied.length !==
-      stored.length
+      calculatedHash.length !==
+      savedHash.length
     ) {
-
       return false
-
     }
 
 
     return timingSafeEqual(
-      supplied,
-      stored
+      calculatedHash,
+      savedHash
     )
 
-  } catch (error) {
-
-    console.error(
-      'Password verification error:',
-      error
-    )
-
+  } catch {
 
     return false
-
   }
-
 }
 
 
 /* =========================================
-   HASH SESSION TOKEN
+   TOKEN
 ========================================= */
 
-function hashToken(
-  token
-) {
+function hashToken(token) {
 
-  return createHash(
-    'sha256'
-  )
-    .update(token)
+  return createHash('sha256')
+    .update(String(token))
     .digest('hex')
-
 }
 
 
 /* =========================================
-   CREATE RANDOM SESSION TOKEN
+   COOKIE
 ========================================= */
 
-function createRawToken() {
+function parseCookies(req) {
 
-  return randomBytes(32)
-    .toString('base64url')
+  const cookieHeader =
+    req?.headers?.cookie || ''
 
+
+  const cookies = {}
+
+
+  cookieHeader
+    .split(';')
+    .forEach(part => {
+
+      const separator =
+        part.indexOf('=')
+
+
+      if (separator === -1) {
+        return
+      }
+
+
+      const key =
+        part
+          .slice(0, separator)
+          .trim()
+
+
+      const value =
+        part
+          .slice(separator + 1)
+          .trim()
+
+
+      if (!key) {
+        return
+      }
+
+
+      try {
+
+        cookies[key] =
+          decodeURIComponent(value)
+
+      } catch {
+
+        cookies[key] =
+          value
+      }
+
+    })
+
+
+  return cookies
 }
 
 
-/* =========================================
-   SESSION EXPIRY
-========================================= */
-
-function sessionExpiry() {
-
-  const milliseconds =
-    SESSION_DAYS *
-    24 *
-    60 *
-    60 *
-    1000
-
-
-  return new Date(
-    Date.now() +
-    milliseconds
-  )
-
-}
-
-
-/* =========================================
-   READ SESSION TOKEN FROM COOKIE
-========================================= */
-
-export function getSessionToken(
-  req
-) {
-
-  const rawCookies =
-    req.headers?.cookie ||
-    ''
-
-
-  const cookies =
-    rawCookies.split(';')
-
-
-  for (
-    const cookie of cookies
-  ) {
-
-    const [
-      key,
-      ...rest
-    ] =
-      cookie
-        .trim()
-        .split('=')
-
-
-    if (
-      key ===
-      COOKIE_NAME
-    ) {
-
-      return decodeURIComponent(
-        rest.join('=')
-      )
-
-    }
-
-  }
-
-
-  return null
-
-}
-
-
-/* =========================================
-   SET SESSION COOKIE
-========================================= */
-
-export function setSessionCookie(
+function setSessionCookie(
   res,
   token
 ) {
-
-  const maxAge =
-    SESSION_DAYS *
-    24 *
-    60 *
-    60
-
 
   const secure =
     process.env.VERCEL
@@ -314,21 +252,26 @@ export function setSessionCookie(
       : ''
 
 
-  const cookie =
-    `${COOKIE_NAME}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${secure}`
+  const cookie = [
+    `${COOKIE_NAME}=${encodeURIComponent(token)}`,
+    'Path=/',
+    'HttpOnly',
+    'SameSite=Lax',
+    `Max-Age=${SESSION_MAX_AGE}`,
+    secure
+      ? 'Secure'
+      : ''
+  ]
+    .filter(Boolean)
+    .join('; ')
 
 
   res.setHeader(
     'Set-Cookie',
     cookie
   )
-
 }
 
-
-/* =========================================
-   CLEAR SESSION COOKIE
-========================================= */
 
 export function clearSessionCookie(
   res
@@ -340,15 +283,82 @@ export function clearSessionCookie(
       : ''
 
 
-  const cookie =
-    `${COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secure}`
+  const cookie = [
+    `${COOKIE_NAME}=`,
+    'Path=/',
+    'HttpOnly',
+    'SameSite=Lax',
+    'Max-Age=0',
+    secure
+      ? 'Secure'
+      : ''
+  ]
+    .filter(Boolean)
+    .join('; ')
 
 
   res.setHeader(
     'Set-Cookie',
     cookie
   )
+}
 
+
+/* =========================================
+   SAFE USER
+========================================= */
+
+export function safeUser(user) {
+
+  if (!user) {
+    return null
+  }
+
+
+  return {
+
+    id:
+      user.id,
+
+    username:
+      user.username,
+
+    display_name:
+      user.display_name,
+
+    created_at:
+      user.created_at
+  }
+}
+
+
+/* =========================================
+   DELETE EXPIRED SESSIONS
+========================================= */
+
+export async function deleteExpiredSessions() {
+
+  try {
+
+    const supabase =
+      getAdmin()
+
+
+    await supabase
+      .from('app_sessions')
+      .delete()
+      .lt(
+        'expires_at',
+        new Date().toISOString()
+      )
+
+  } catch (error) {
+
+    console.error(
+      'DELETE EXPIRED SESSIONS:',
+      error
+    )
+  }
 }
 
 
@@ -357,29 +367,32 @@ export function clearSessionCookie(
 ========================================= */
 
 export async function createSession(
-  res,
-  userId
+  userId,
+  res
 ) {
 
   const supabase =
     getAdmin()
 
 
-  const rawToken =
-    createRawToken()
+  const token =
+    randomBytes(32)
+      .toString('base64url')
 
 
   const tokenHash =
-    hashToken(
-      rawToken
-    )
+    hashToken(token)
 
 
   const expiresAt =
-    sessionExpiry()
+    new Date(
+      Date.now() +
+      SESSION_MAX_AGE * 1000
+    ).toISOString()
 
 
   const {
+    data,
     error
   } =
     await supabase
@@ -394,32 +407,36 @@ export async function createSession(
 
         expires_at:
           expiresAt
-            .toISOString()
 
       })
+      .select(`
+        id,
+        user_id,
+        expires_at
+      `)
+      .single()
 
 
   if (error) {
 
     console.error(
-      'Create session error:',
+      'CREATE SESSION DB ERROR:',
       error
     )
 
-
-    throw error
-
+    throw new Error(
+      `تعذر إنشاء الجلسة: ${error.message}`
+    )
   }
 
 
   setSessionCookie(
     res,
-    rawToken
+    token
   )
 
 
-  return rawToken
-
+  return data
 }
 
 
@@ -431,14 +448,17 @@ export async function getCurrentUser(
   req
 ) {
 
+  const cookies =
+    parseCookies(req)
+
+
   const token =
-    getSessionToken(req)
+    cookies[COOKIE_NAME]
 
 
   if (!token) {
 
     return null
-
   }
 
 
@@ -450,6 +470,8 @@ export async function getCurrentUser(
     getAdmin()
 
 
+  /* ابحث عن الجلسة */
+
   const {
     data: session,
     error: sessionError
@@ -459,6 +481,7 @@ export async function getCurrentUser(
       .select(`
         id,
         user_id,
+        token_hash,
         expires_at
       `)
       .eq(
@@ -468,32 +491,38 @@ export async function getCurrentUser(
       .maybeSingle()
 
 
-  if (
-    sessionError ||
-    !session
-  ) {
+  if (sessionError) {
 
-    return null
+    console.error(
+      'GET SESSION ERROR:',
+      sessionError
+    )
 
+    throw sessionError
   }
 
 
-  /* =====================================
-     CHECK EXPIRATION
-  ===================================== */
+  if (!session) {
 
-  const expiresAt =
-    new Date(
-      session.expires_at
+    console.log(
+      'SESSION NOT FOUND'
     )
 
+    return null
+  }
 
-  const now =
-    new Date()
+
+  /* تأكد أن الجلسة لم تنتهِ */
+
+  const expires =
+    new Date(
+      session.expires_at
+    ).getTime()
 
 
   if (
-    expiresAt <= now
+    !Number.isFinite(expires) ||
+    expires <= Date.now()
   ) {
 
     await supabase
@@ -506,13 +535,10 @@ export async function getCurrentUser(
 
 
     return null
-
   }
 
 
-  /* =====================================
-     LOAD USER
-  ===================================== */
+  /* اجلب المستخدم */
 
   const {
     data: user,
@@ -533,25 +559,44 @@ export async function getCurrentUser(
       .maybeSingle()
 
 
-  if (
-    userError ||
-    !user
-  ) {
+  if (userError) {
+
+    console.error(
+      'GET USER ERROR:',
+      userError
+    )
+
+    throw userError
+  }
+
+
+  if (!user) {
+
+    console.log(
+      'USER FOR SESSION NOT FOUND'
+    )
 
     return null
-
   }
 
 
   return {
 
-    user,
+    session: {
+      id:
+        session.id,
 
-    sessionId:
-      session.id
+      user_id:
+        session.user_id,
+
+      expires_at:
+        session.expires_at
+    },
+
+    user:
+      safeUser(user)
 
   }
-
 }
 
 
@@ -564,9 +609,7 @@ export async function deleteSession(
 ) {
 
   if (!sessionId) {
-
     return
-
   }
 
 
@@ -589,47 +632,10 @@ export async function deleteSession(
   if (error) {
 
     console.error(
-      'Delete session error:',
+      'DELETE SESSION ERROR:',
       error
     )
-
   }
-
-}
-
-
-/* =========================================
-   DELETE EXPIRED SESSIONS
-========================================= */
-
-export async function deleteExpiredSessions() {
-
-  const supabase =
-    getAdmin()
-
-
-  const {
-    error
-  } =
-    await supabase
-      .from('app_sessions')
-      .delete()
-      .lt(
-        'expires_at',
-        new Date()
-          .toISOString()
-      )
-
-
-  if (error) {
-
-    console.error(
-      'Delete expired sessions error:',
-      error
-    )
-
-  }
-
 }
 
 
@@ -637,75 +643,51 @@ export async function deleteExpiredSessions() {
    READ REQUEST BODY
 ========================================= */
 
-export function readBody(
-  req
-) {
+export async function readBody(req) {
 
   if (
     req.body &&
-    typeof req.body ===
-    'object'
+    typeof req.body === 'object'
   ) {
 
     return req.body
-
   }
 
 
   if (
-    typeof req.body ===
-    'string'
+    typeof req.body === 'string'
   ) {
 
     try {
-
-      return JSON.parse(
-        req.body
-      )
-
+      return JSON.parse(req.body)
     } catch {
-
       return {}
-
     }
-
   }
 
 
-  return {}
-
-}
+  let raw = ''
 
 
-/* =========================================
-   SAFE USER OBJECT
-========================================= */
+  for await (
+    const chunk of req
+  ) {
 
-export function safeUser(
-  user
-) {
-
-  if (!user) {
-
-    return null
-
+    raw += chunk
   }
 
 
-  return {
-
-    id:
-      user.id,
-
-    username:
-      user.username,
-
-    display_name:
-      user.display_name,
-
-    created_at:
-      user.created_at
-
+  if (!raw) {
+    return {}
   }
 
+
+  try {
+
+    return JSON.parse(raw)
+
+  } catch {
+
+    return {}
+  }
 }

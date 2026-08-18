@@ -38,7 +38,10 @@ export default async function handler(req, res) {
     const today = getToday()
 
 
-    /* جميع المشتركين */
+    /* =====================================
+       كل المشتركين
+       أي شخص يسجل جديد يظهر هنا
+    ===================================== */
 
     const {
       data: users,
@@ -58,7 +61,9 @@ export default async function handler(req, res) {
     }
 
 
-    /* تقدم اليوم */
+    /* =====================================
+       تقدم اليوم
+    ===================================== */
 
     const {
       data: todayRows,
@@ -81,7 +86,10 @@ export default async function handler(req, res) {
     }
 
 
-    /* كل التقدم للنقاط المتراكمة */
+    /* =====================================
+       كل التقدم
+       لحساب النقاط المتراكمة
+    ===================================== */
 
     const {
       data: allProgress,
@@ -101,12 +109,23 @@ export default async function handler(req, res) {
     }
 
 
+    /* =====================================
+       خريطة تقدم اليوم
+    ===================================== */
+
     const todayMap = new Map()
 
     ;(todayRows || []).forEach(row => {
-      todayMap.set(row.user_id, row)
+      todayMap.set(
+        row.user_id,
+        row
+      )
     })
 
+
+    /* =====================================
+       النقاط المتراكمة
+    ===================================== */
 
     const totals = new Map()
 
@@ -132,6 +151,11 @@ export default async function handler(req, res) {
       )
     })
 
+
+    /* =====================================
+       دمج كل المشتركين
+       حتى الذي لم يبدأ يظهر
+    ===================================== */
 
     const members =
       (users || []).map(user => {
@@ -160,16 +184,26 @@ export default async function handler(req, res) {
             completedDays: 0
           }
 
-        let status = 'not_started'
 
-        if (percentage === 100) {
-          status = 'completed'
-        } else if (percentage > 0) {
-          status = 'in_progress'
-        }
+        /*
+          completed:
+          أكمل الصباح والمساء 100%
+
+          incomplete:
+          أي شخص أقل من 100%
+          حتى لو كان 0%
+        */
+
+        const status =
+          percentage === 100
+            ? 'completed'
+            : 'incomplete'
+
 
         return {
-          id: user.id,
+
+          id:
+            user.id,
 
           username:
             user.username,
@@ -194,7 +228,13 @@ export default async function handler(req, res) {
       })
 
 
-    /* الترتيب اليومي */
+    /* =====================================
+       الترتيب
+
+       1- أعلى نسبة اليوم
+       2- أعلى نقاط متراكمة
+       3- أكثر أيام مكتملة
+    ===================================== */
 
     members.sort((a, b) => {
 
@@ -225,7 +265,7 @@ export default async function handler(req, res) {
     })
 
 
-    const ranked =
+    const rankedMembers =
       members.map(
         (member, index) => ({
           ...member,
@@ -234,32 +274,37 @@ export default async function handler(req, res) {
       )
 
 
+    /* =====================================
+       الرد النهائي
+    ===================================== */
+
     return res.status(200).json({
 
       today,
 
       totalMembers:
-        ranked.length,
+        rankedMembers.length,
 
       completedToday:
-        ranked.filter(
+        rankedMembers.filter(
           member =>
             member.status === 'completed'
         ).length,
 
-      inProgressToday:
-        ranked.filter(
+      incompleteToday:
+        rankedMembers.filter(
           member =>
-            member.status === 'in_progress'
+            member.status === 'incomplete'
         ).length,
 
       notStartedToday:
-        ranked.filter(
+        rankedMembers.filter(
           member =>
-            member.status === 'not_started'
+            member.percentage === 0
         ).length,
 
-      members: ranked
+      members:
+        rankedMembers
     })
 
 

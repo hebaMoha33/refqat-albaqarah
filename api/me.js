@@ -8,6 +8,12 @@ export default async function handler(
   res
 ) {
 
+  res.setHeader(
+    'Cache-Control',
+    'no-store, no-cache, must-revalidate'
+  )
+
+
   if (
     req.method !== 'GET'
   ) {
@@ -16,43 +22,43 @@ export default async function handler(
       .status(405)
       .json({
         message:
-          'Method not allowed'
+          'طريقة الطلب غير مسموحة.'
       })
-
   }
 
 
   try {
 
-    const result =
+    const current =
       await getCurrentUser(
         req
       )
 
 
-    if (!result) {
+    if (!current) {
 
       return res
-        .status(401)
+        .status(200)
         .json({
           user: null
         })
-
     }
 
 
     return res
       .status(200)
       .json({
+
         user:
-          result.user
+          current.user
+
       })
 
 
   } catch (error) {
 
     console.error(
-      'ME:',
+      'ME ERROR:',
       error
     )
 
@@ -60,9 +66,9 @@ export default async function handler(
     return res
       .status(500)
       .json({
-        user: null
+        user: null,
+        message:
+          'تعذر قراءة جلسة المستخدم.'
       })
-
   }
-
 }
