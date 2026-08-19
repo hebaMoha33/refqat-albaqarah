@@ -1,0 +1,1165 @@
+/* =========================================
+   BAQARAH PAGE
+========================================= */
+
+.baqarah-page {
+  min-height: 100vh;
+
+  --baqarah-gold:
+    #d7a843;
+
+  --baqarah-gold-soft:
+    #f5dfaa;
+
+  --baqarah-green:
+    #3f8c73;
+
+  --baqarah-green-dark:
+    #245f53;
+
+  --baqarah-ink:
+    #203e42;
+
+  --baqarah-soft:
+    #6c8584;
+
+  --baqarah-paper:
+    rgba(
+      255,
+      252,
+      240,
+      .73
+    );
+}
+
+
+.baqarah-shell {
+  position: relative;
+  z-index: 5;
+
+  width:
+    min(
+      1120px,
+      calc(100% - 20px)
+    );
+
+  margin: 0 auto;
+
+  padding:
+    12px 0 70px;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.baqarah-topbar {
+  min-height: 78px;
+
+  padding:
+    9px 12px;
+
+  display: grid;
+
+  grid-template-columns:
+    1fr auto 1fr;
+
+  align-items: center;
+
+  gap: 12px;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      .74
+    );
+
+  border-radius: 26px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      .48
+    );
+
+  box-shadow:
+    0 18px 60px
+    rgba(
+      52,
+      91,
+      79,
+      .09
+    );
+
+  backdrop-filter:
+    blur(22px);
+}
+
+
+.baqarah-back-button,
+.baqarah-login-button {
+  width: fit-content;
+
+  padding:
+    10px 13px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      .8
+    );
+
+  border-radius:
+    999px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      .66
+    );
+
+  color:
+    var(--baqarah-ink);
+
+  font-weight: 800;
+}
+
+
+.baqarah-brand {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+}
+
+
+.baqarah-brand-copy {
+  text-align: left;
+}
+
+
+.baqarah-brand-copy span {
+  display: block;
+
+  color:
+    var(--baqarah-gold);
+
+  font-size: 9px;
+
+  font-weight: 900;
+}
+
+
+.baqarah-brand-copy strong {
+  display: block;
+
+  margin-top: 2px;
+
+  color:
+    var(--baqarah-ink);
+
+  font-size: 15px;
+}
+
+
+.baqarah-brand-logo {
+  width: 56px;
+  height: 56px;
+
+  padding: 2px;
+
+  overflow: hidden;
+
+  border-radius: 50%;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      .8
+    );
+}
+
+
+.baqarah-brand-logo img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  border-radius: 50%;
+}
+
+
+.baqarah-user-area {
+  display: flex;
+
+  justify-content:
+    flex-start;
+}
+
+
+.baqarah-user-chip,
+.baqarah-user-loading {
+  padding:
+    9px 12px;
+
+  border-radius:
+    999px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      .62
+    );
+
+  color:
+    var(--baqarah-green-dark);
+
+  font-size: 10px;
+
+  font-weight: 900;
+}
+
+
+/* =========================================
+   HERO
+========================================= */
+
+.baqarah-hero {
+  position: relative;
+
+  margin-top: 16px;
+
+  min-height: 410px;
+
+  padding:
+    45px;
+
+  display: grid;
+
+  grid-template-columns:
+    1.15fr .85fr;
+
+  align-items: center;
+
+  gap: 30px;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      .78
+    );
+
+  border-radius: 36px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(
+        255,
+        249,
+        220,
+        .88
+      ),
+      rgba(
+        234,
+        253,
+        240,
+        .72
+      ),
+      rgba(
+        255,
+        226,
+        167,
+        .58
+      )
+    );
+
+  box-shadow:
+    0 26px 80px
+    rgba(
+      82,
+      99,
+      61,
+      .13
+    );
+
+  backdrop-filter:
+    blur(24px);
+}
+
+
+.baqarah-hero::after {
+  content: "۞";
+
+  position: absolute;
+
+  left: 7%;
+  top: 50%;
+
+  transform:
+    translateY(-50%)
+    rotate(12deg);
+
+  color:
+    rgba(
+      215,
+      168,
+      67,
+      .13
+    );
+
+  font-size:
+    clamp(
+      190px,
+      28vw,
+      340px
+    );
+
+  line-height: 1;
+
+  pointer-events: none;
+}
+
+
+.baqarah-hero-glow {
+  position: absolute;
+
+  width: 320px;
+  height: 320px;
+
+  border-radius: 50%;
+
+  filter:
+    blur(70px);
+
+  pointer-events: none;
+}
+
+
+.baqarah-hero-glow-one {
+  right: -90px;
+  top: -110px;
+
+  background:
+    rgba(
+      255,
+      183,
+      77,
+      .27
+    );
+}
+
+
+.baqarah-hero-glow-two {
+  left: 12%;
+  bottom: -160px;
+
+  background:
+    rgba(
+      68,
+      164,
+      130,
+      .2
+    );
+}
+
+
+.baqarah-hero-copy,
+.baqarah-progress-panel {
+  position: relative;
+  z-index: 2;
+}
+
+
+.baqarah-eyebrow {
+  display: inline-flex;
+
+  padding:
+    6px 10px;
+
+  border-radius:
+    999px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      .62
+    );
+
+  color:
+    var(--baqarah-gold);
+
+  font-size: 9px;
+
+  font-weight: 900;
+}
+
+
+.baqarah-hero h1 {
+  margin:
+    14px 0 10px;
+
+  color:
+    var(--baqarah-ink);
+
+  font-family:
+    Georgia,
+    "Traditional Arabic",
+    serif;
+
+  font-size:
+    clamp(
+      52px,
+      8vw,
+      88px
+    );
+
+  font-weight: 500;
+
+  line-height: .95;
+}
+
+
+.baqarah-hero h1 em {
+  color:
+    var(--baqarah-green);
+
+  font-style: normal;
+}
+
+
+.baqarah-hero p {
+  max-width: 510px;
+
+  color:
+    var(--baqarah-soft);
+
+  line-height: 2;
+}
+
+
+.baqarah-completed-badge {
+  width: fit-content;
+
+  margin-top: 14px;
+
+  padding:
+    9px 13px;
+
+  border:
+    1px solid
+    rgba(
+      63,
+      140,
+      115,
+      .28
+    );
+
+  border-radius:
+    999px;
+
+  background:
+    rgba(
+      82,
+      180,
+      137,
+      .12
+    );
+
+  color:
+    var(--baqarah-green-dark);
+
+  font-size: 10px;
+
+  font-weight: 900;
+}
+
+
+.baqarah-progress-panel {
+  padding: 22px;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      .82
+    );
+
+  border-radius: 26px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      .56
+    );
+
+  box-shadow:
+    0 16px 45px
+    rgba(
+      52,
+      85,
+      74,
+      .08
+    );
+}
+
+
+.baqarah-progress-main {
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content:
+    space-between;
+}
+
+
+.baqarah-progress-main span {
+  color:
+    var(--baqarah-soft);
+
+  font-size: 10px;
+}
+
+
+.baqarah-progress-main strong {
+  color:
+    var(--baqarah-green-dark);
+
+  font-size: 38px;
+}
+
+
+.baqarah-progress-track {
+  height: 10px;
+
+  margin:
+    12px 0 18px;
+
+  overflow: hidden;
+
+  border-radius:
+    999px;
+
+  background:
+    rgba(
+      75,
+      115,
+      100,
+      .09
+    );
+}
+
+
+.baqarah-progress-track span {
+  display: block;
+
+  height: 100%;
+
+  border-radius:
+    inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      #e8bd58,
+      #f0a84a,
+      #65b38e
+    );
+
+  transition:
+    width .5s ease;
+}
+
+
+/* =========================================
+   STARS
+========================================= */
+
+.baqarah-stars {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  gap: 8px;
+}
+
+
+.baqarah-star-step {
+  min-height: 78px;
+
+  padding: 8px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 3px;
+
+  border:
+    1px solid
+    rgba(
+      205,
+      171,
+      91,
+      .18
+    );
+
+  border-radius: 18px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      .42
+    );
+
+  color:
+    #a9a28c;
+}
+
+
+button.baqarah-star-step {
+  cursor: pointer;
+
+  transition:
+    transform .2s ease,
+    border-color .2s ease,
+    background .2s ease;
+}
+
+
+button.baqarah-star-step:hover:not(:disabled) {
+  transform:
+    translateY(-3px);
+}
+
+
+.baqarah-star-step.active,
+.baqarah-star-step.chosen {
+  border-color:
+    rgba(
+      215,
+      168,
+      67,
+      .48
+    );
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(
+        255,
+        238,
+        184,
+        .72
+      ),
+      rgba(
+        255,
+        255,
+        255,
+        .7
+      )
+    );
+
+  color:
+    #c68f20;
+}
+
+
+.baqarah-star-step.chosen {
+  box-shadow:
+    0 0 0 2px
+    rgba(
+      215,
+      168,
+      67,
+      .18
+    );
+}
+
+
+.baqarah-star-symbol {
+  font-size: 27px;
+
+  line-height: 1;
+}
+
+
+.baqarah-star-step strong {
+  font-size: 9px;
+}
+
+
+.baqarah-source-summary {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 7px;
+
+  margin-top: 15px;
+}
+
+
+.baqarah-source-summary div {
+  padding: 9px;
+
+  border-radius: 13px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      .45
+    );
+}
+
+
+.baqarah-source-summary span {
+  display: block;
+
+  color:
+    var(--baqarah-soft);
+
+  font-size: 7px;
+}
+
+
+.baqarah-source-summary strong {
+  display: block;
+
+  margin-top: 2px;
+
+  color:
+    var(--baqarah-ink);
+
+  font-size: 12px;
+}
+
+
+/* =========================================
+   PAPER
+========================================= */
+
+.baqarah-paper-card,
+.baqarah-next-card {
+  margin-top: 16px;
+
+  padding: 22px;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      .76
+    );
+
+  border-radius: 28px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      .49
+    );
+
+  box-shadow:
+    0 18px 55px
+    rgba(
+      50,
+      83,
+      70,
+      .08
+    );
+
+  backdrop-filter:
+    blur(22px);
+}
+
+
+.baqarah-paper-card {
+  display: grid;
+
+  grid-template-columns:
+    auto 1fr auto;
+
+  align-items: center;
+
+  gap: 15px;
+}
+
+
+.baqarah-paper-icon {
+  width: 58px;
+  height: 58px;
+
+  display: grid;
+
+  place-items: center;
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(
+        255,
+        230,
+        168,
+        .78
+      ),
+      rgba(
+        255,
+        255,
+        255,
+        .65
+      )
+    );
+
+  font-size: 28px;
+}
+
+
+.baqarah-paper-copy span,
+.baqarah-next-card span {
+  color:
+    var(--baqarah-gold);
+
+  font-size: 9px;
+
+  font-weight: 900;
+}
+
+
+.baqarah-paper-copy h2,
+.baqarah-next-card h2 {
+  margin:
+    4px 0;
+
+  color:
+    var(--baqarah-ink);
+
+  font-size: 22px;
+}
+
+
+.baqarah-paper-copy p,
+.baqarah-next-card p {
+  margin:
+    5px 0 0;
+
+  color:
+    var(--baqarah-soft);
+
+  line-height: 1.8;
+
+  font-size: 10px;
+}
+
+
+.baqarah-paper-open {
+  padding:
+    11px 15px;
+
+  border: 0;
+
+  border-radius:
+    15px;
+
+  color: white;
+
+  background:
+    linear-gradient(
+      135deg,
+      #d9a640,
+      #e7b854,
+      #4f9b7d
+    );
+
+  font-weight: 900;
+}
+
+
+.baqarah-paper-options {
+  grid-column:
+    1 / -1;
+
+  margin-top: 5px;
+
+  padding: 16px;
+
+  border-radius: 20px;
+
+  background:
+    rgba(
+      255,
+      250,
+      232,
+      .58
+    );
+}
+
+
+.baqarah-paper-options-heading {
+  margin-bottom: 12px;
+
+  display: flex;
+
+  justify-content:
+    space-between;
+
+  align-items:
+    flex-end;
+
+  gap: 10px;
+}
+
+
+.baqarah-paper-options-heading span {
+  display: block;
+
+  color:
+    var(--baqarah-soft);
+
+  font-size: 8px;
+}
+
+
+.baqarah-paper-options-heading strong {
+  display: block;
+
+  margin-top: 2px;
+
+  color:
+    var(--baqarah-ink);
+}
+
+
+.baqarah-paper-options-heading small {
+  color:
+    var(--baqarah-green-dark);
+
+  font-size: 8px;
+
+  font-weight: 800;
+}
+
+
+.baqarah-save-message {
+  margin-top: 12px;
+
+  padding: 9px 11px;
+
+  border-radius: 12px;
+
+  color:
+    var(--baqarah-soft);
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      .55
+    );
+
+  text-align: center;
+
+  font-size: 9px;
+}
+
+
+.baqarah-save-message.success {
+  color:
+    #2f735e;
+
+  background:
+    rgba(
+      80,
+      178,
+      137,
+      .12
+    );
+}
+
+
+.baqarah-save-message.error {
+  color:
+    #c54e4e;
+
+  background:
+    rgba(
+      220,
+      79,
+      79,
+      .1
+    );
+}
+
+
+/* =========================================
+   NEXT STEP
+========================================= */
+
+.baqarah-next-card {
+  text-align: center;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (
+  max-width: 760px
+) {
+
+  .baqarah-shell {
+    width:
+      calc(
+        100% - 12px
+      );
+  }
+
+
+  .baqarah-topbar {
+    grid-template-columns:
+      auto 1fr;
+
+    border-radius: 22px;
+  }
+
+
+  .baqarah-brand {
+    justify-content:
+      flex-end;
+  }
+
+
+  .baqarah-user-area {
+    grid-column:
+      1 / -1;
+
+    justify-content:
+      center;
+  }
+
+
+  .baqarah-back-button span:last-child {
+    display: none;
+  }
+
+
+  .baqarah-hero {
+    min-height: auto;
+
+    padding:
+      30px 18px;
+
+    grid-template-columns:
+      1fr;
+
+    gap: 22px;
+
+    border-radius: 28px;
+  }
+
+
+  .baqarah-hero h1 {
+    font-size: 55px;
+  }
+
+
+  .baqarah-stars {
+    gap: 5px;
+  }
+
+
+  .baqarah-star-step {
+    min-height: 70px;
+
+    padding: 5px;
+  }
+
+
+  .baqarah-star-symbol {
+    font-size: 23px;
+  }
+
+
+  .baqarah-source-summary {
+    grid-template-columns:
+      repeat(3, 1fr);
+  }
+
+
+  .baqarah-paper-card {
+    grid-template-columns:
+      auto 1fr;
+
+    padding: 16px 13px;
+  }
+
+
+  .baqarah-paper-open {
+    grid-column:
+      1 / -1;
+
+    width: 100%;
+  }
+
+
+  .baqarah-paper-options-heading {
+    align-items:
+      flex-start;
+
+    flex-direction: column;
+  }
+
+}

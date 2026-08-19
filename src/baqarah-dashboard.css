@@ -1,0 +1,918 @@
+/* =========================================
+   BAQARAH INTERNAL TABS
+========================================= */
+
+.baqarah-tabs {
+  margin-top: 14px;
+
+  padding: 7px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  gap: 7px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, .72);
+
+  border-radius: 24px;
+
+  background:
+    rgba(255, 255, 255, .47);
+
+  box-shadow:
+    0 16px 48px
+    rgba(53, 86, 74, .08);
+
+  backdrop-filter:
+    blur(20px);
+}
+
+
+.baqarah-tab {
+  min-height: 52px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 7px;
+
+  border: 0;
+
+  border-radius: 18px;
+
+  background:
+    transparent;
+
+  color:
+    var(--baqarah-soft);
+
+  cursor: pointer;
+
+  transition:
+    transform .2s ease,
+    background .2s ease,
+    color .2s ease;
+}
+
+
+.baqarah-tab:hover {
+  transform:
+    translateY(-1px);
+}
+
+
+.baqarah-tab.active {
+  color:
+    var(--baqarah-green-dark);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 239, 192, .8),
+      rgba(231, 250, 238, .78)
+    );
+
+  box-shadow:
+    inset 0 0 0 1px
+    rgba(215, 168, 67, .18);
+}
+
+
+.baqarah-tab-icon {
+  font-size: 17px;
+}
+
+
+.baqarah-tab strong {
+  font-size: 10px;
+}
+
+
+/* =========================================
+   COMMON DASHBOARD CARD
+========================================= */
+
+.baqarah-dashboard-card {
+  margin-top: 16px;
+
+  padding: 22px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, .76);
+
+  border-radius: 30px;
+
+  background:
+    rgba(255, 255, 255, .5);
+
+  box-shadow:
+    0 20px 60px
+    rgba(50, 83, 70, .08);
+
+  backdrop-filter:
+    blur(22px);
+}
+
+
+.baqarah-section-heading {
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content:
+    space-between;
+
+  gap: 14px;
+
+  margin-bottom: 18px;
+}
+
+
+.baqarah-section-heading span {
+  color:
+    var(--baqarah-gold);
+
+  font-size: 9px;
+
+  font-weight: 900;
+}
+
+
+.baqarah-section-heading h2 {
+  margin: 4px 0 0;
+
+  color:
+    var(--baqarah-ink);
+
+  font-size: 25px;
+}
+
+
+.baqarah-state-message {
+  padding: 26px 14px;
+
+  text-align: center;
+
+  color:
+    var(--baqarah-soft);
+
+  font-size: 11px;
+}
+
+
+.baqarah-state-message.error {
+  color: #ba4c4c;
+}
+
+
+/* =========================================
+   CALENDAR
+========================================= */
+
+.baqarah-view-switch,
+.baqarah-ranking-periods {
+  display: flex;
+
+  gap: 5px;
+
+  padding: 4px;
+
+  border-radius: 14px;
+
+  background:
+    rgba(255, 255, 255, .48);
+}
+
+
+.baqarah-view-switch button,
+.baqarah-ranking-periods button {
+  padding:
+    8px 11px;
+
+  border: 0;
+
+  border-radius: 10px;
+
+  background:
+    transparent;
+
+  color:
+    var(--baqarah-soft);
+
+  cursor: pointer;
+
+  font-size: 9px;
+
+  font-weight: 800;
+}
+
+
+.baqarah-view-switch button.active,
+.baqarah-ranking-periods button.active {
+  background:
+    rgba(255, 241, 200, .9);
+
+  color:
+    var(--baqarah-green-dark);
+}
+
+
+.baqarah-calendar-toolbar {
+  margin-bottom: 14px;
+
+  display: grid;
+
+  grid-template-columns:
+    42px 1fr 42px;
+
+  align-items: center;
+
+  gap: 8px;
+}
+
+
+.baqarah-calendar-toolbar button {
+  width: 42px;
+  height: 42px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, .8);
+
+  border-radius: 14px;
+
+  background:
+    rgba(255, 255, 255, .55);
+
+  color:
+    var(--baqarah-green-dark);
+
+  cursor: pointer;
+
+  font-size: 24px;
+}
+
+
+.baqarah-calendar-toolbar strong {
+  text-align: center;
+
+  color:
+    var(--baqarah-ink);
+
+  font-size: 16px;
+}
+
+
+.baqarah-calendar-summary {
+  margin-bottom: 16px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  gap: 8px;
+}
+
+
+.baqarah-calendar-summary div {
+  padding: 13px;
+
+  border-radius: 17px;
+
+  background:
+    rgba(255, 255, 255, .46);
+}
+
+
+.baqarah-calendar-summary span {
+  display: block;
+
+  color:
+    var(--baqarah-soft);
+
+  font-size: 8px;
+}
+
+
+.baqarah-calendar-summary strong {
+  display: block;
+
+  margin-top: 4px;
+
+  color:
+    var(--baqarah-ink);
+
+  font-size: 19px;
+}
+
+
+.baqarah-weekdays,
+.baqarah-month-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(7, 1fr);
+
+  gap: 7px;
+}
+
+
+.baqarah-weekdays {
+  margin-bottom: 7px;
+}
+
+
+.baqarah-weekdays span {
+  padding: 5px 2px;
+
+  text-align: center;
+
+  color:
+    var(--baqarah-soft);
+
+  font-size: 8px;
+
+  font-weight: 800;
+}
+
+
+.baqarah-day-cell {
+  position: relative;
+
+  min-height: 112px;
+
+  padding: 9px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 5px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, .68);
+
+  border-radius: 18px;
+}
+
+
+.baqarah-day-cell.empty {
+  border-color: transparent;
+
+  background: transparent;
+}
+
+
+.baqarah-day-cell.future {
+  background:
+    rgba(255, 255, 255, .3);
+
+  color:
+    #a7afaa;
+}
+
+
+.baqarah-day-cell.missed {
+  background:
+    rgba(215, 89, 89, .1);
+
+  color:
+    #bd5858;
+}
+
+
+.baqarah-day-cell.partial {
+  background:
+    rgba(229, 170, 70, .14);
+
+  color:
+    #b57a21;
+}
+
+
+.baqarah-day-cell.complete {
+  background:
+    rgba(66, 159, 117, .13);
+
+  color:
+    #2f7b5d;
+}
+
+
+.baqarah-day-number {
+  position: absolute;
+
+  top: 8px;
+  right: 9px;
+
+  font-size: 9px;
+
+  font-weight: 900;
+}
+
+
+.baqarah-day-cell strong {
+  margin-top: 10px;
+
+  font-size: 15px;
+}
+
+
+.baqarah-day-cell small {
+  direction: ltr;
+
+  letter-spacing: 1px;
+
+  font-size: 8px;
+}
+
+
+.baqarah-day-cell em {
+  position: absolute;
+
+  left: 7px;
+  top: 6px;
+
+  font-style: normal;
+
+  font-size: 13px;
+}
+
+
+.baqarah-year-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  gap: 10px;
+}
+
+
+.baqarah-year-month {
+  min-height: 125px;
+
+  padding: 14px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, .72);
+
+  border-radius: 19px;
+
+  background:
+    rgba(255, 255, 255, .43);
+
+  color:
+    var(--baqarah-ink);
+
+  cursor: pointer;
+}
+
+
+.baqarah-year-month span,
+.baqarah-year-month strong,
+.baqarah-year-month small {
+  display: block;
+}
+
+
+.baqarah-year-month span {
+  color:
+    var(--baqarah-soft);
+
+  font-size: 9px;
+}
+
+
+.baqarah-year-month strong {
+  margin: 8px 0;
+
+  font-size: 25px;
+}
+
+
+.baqarah-year-month small {
+  color:
+    var(--baqarah-green-dark);
+
+  font-size: 8px;
+}
+
+
+/* =========================================
+   COMMUNITY
+========================================= */
+
+.baqarah-community-total {
+  min-width: 80px;
+
+  padding: 8px 11px;
+
+  text-align: center;
+
+  border-radius: 15px;
+
+  background:
+    rgba(255, 245, 209, .62);
+}
+
+
+.baqarah-community-total strong,
+.baqarah-community-total span {
+  display: block;
+}
+
+
+.baqarah-community-total strong {
+  color:
+    var(--baqarah-green-dark);
+
+  font-size: 20px;
+}
+
+
+.baqarah-community-total span {
+  margin-top: 2px;
+
+  color:
+    var(--baqarah-soft);
+
+  font-size: 7px;
+}
+
+
+.baqarah-members-list,
+.baqarah-ranking-list {
+  display: grid;
+
+  gap: 8px;
+}
+
+
+.baqarah-member-row,
+.baqarah-ranking-row {
+  min-height: 72px;
+
+  padding: 10px 12px;
+
+  display: grid;
+
+  align-items: center;
+
+  gap: 10px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, .68);
+
+  border-radius: 18px;
+
+  background:
+    rgba(255, 255, 255, .4);
+}
+
+
+.baqarah-member-row {
+  grid-template-columns:
+    45px 1fr 160px 60px;
+}
+
+
+.baqarah-member-row.complete {
+  background:
+    rgba(69, 164, 119, .1);
+
+  border-color:
+    rgba(69, 164, 119, .18);
+}
+
+
+.baqarah-member-row.incomplete {
+  background:
+    rgba(214, 91, 91, .07);
+
+  border-color:
+    rgba(214, 91, 91, .12);
+}
+
+
+.baqarah-member-row.me,
+.baqarah-ranking-row.me {
+  box-shadow:
+    inset 0 0 0 1px
+    rgba(215, 168, 67, .35);
+}
+
+
+.baqarah-member-rank,
+.baqarah-ranking-position {
+  width: 38px;
+  height: 38px;
+
+  display: grid;
+
+  place-items: center;
+
+  border-radius: 12px;
+
+  background:
+    rgba(255, 255, 255, .58);
+
+  color:
+    var(--baqarah-ink);
+
+  font-size: 12px;
+
+  font-weight: 900;
+}
+
+
+.baqarah-member-name strong,
+.baqarah-ranking-name strong {
+  display: block;
+
+  color:
+    var(--baqarah-ink);
+
+  font-size: 11px;
+}
+
+
+.baqarah-member-name small,
+.baqarah-ranking-name small {
+  display: block;
+
+  margin-top: 3px;
+
+  color:
+    var(--baqarah-gold);
+
+  font-size: 8px;
+}
+
+
+.baqarah-member-progress strong {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color:
+    var(--baqarah-ink);
+
+  font-size: 11px;
+}
+
+
+.baqarah-member-progress div {
+  height: 7px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background:
+    rgba(91, 119, 106, .1);
+}
+
+
+.baqarah-member-progress div span {
+  display: block;
+
+  height: 100%;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      #e2b34b,
+      #4d9c7b
+    );
+}
+
+
+.baqarah-member-history {
+  text-align: center;
+}
+
+
+.baqarah-member-history span,
+.baqarah-member-history small {
+  display: block;
+}
+
+
+.baqarah-member-history span {
+  color:
+    var(--baqarah-green-dark);
+
+  font-size: 16px;
+
+  font-weight: 900;
+}
+
+
+.baqarah-member-history small {
+  color:
+    var(--baqarah-soft);
+
+  font-size: 7px;
+}
+
+
+/* =========================================
+   RANKING
+========================================= */
+
+.baqarah-ranking-periods {
+  margin-bottom: 14px;
+
+  width: fit-content;
+
+  max-width: 100%;
+
+  overflow-x: auto;
+}
+
+
+.baqarah-ranking-row {
+  grid-template-columns:
+    45px 1fr
+    repeat(3, 85px);
+}
+
+
+.baqarah-ranking-stat {
+  text-align: center;
+}
+
+
+.baqarah-ranking-stat strong,
+.baqarah-ranking-stat span {
+  display: block;
+}
+
+
+.baqarah-ranking-stat strong {
+  color:
+    var(--baqarah-green-dark);
+
+  font-size: 15px;
+}
+
+
+.baqarah-ranking-stat span {
+  margin-top: 2px;
+
+  color:
+    var(--baqarah-soft);
+
+  font-size: 7px;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (
+  max-width: 760px
+) {
+
+  .baqarah-tabs {
+    position: sticky;
+
+    top: 6px;
+
+    z-index: 20;
+
+    border-radius: 19px;
+  }
+
+
+  .baqarah-tab {
+    min-height: 48px;
+
+    flex-direction: column;
+
+    gap: 1px;
+  }
+
+
+  .baqarah-tab-icon {
+    font-size: 15px;
+  }
+
+
+  .baqarah-dashboard-card {
+    padding: 15px 10px;
+
+    border-radius: 24px;
+  }
+
+
+  .baqarah-calendar-summary {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+
+  .baqarah-weekdays,
+  .baqarah-month-grid {
+    gap: 3px;
+  }
+
+
+  .baqarah-weekdays span {
+    font-size: 6px;
+  }
+
+
+  .baqarah-day-cell {
+    min-height: 83px;
+
+    padding: 5px;
+
+    border-radius: 12px;
+  }
+
+
+  .baqarah-day-number {
+    top: 5px;
+    right: 6px;
+
+    font-size: 7px;
+  }
+
+
+  .baqarah-day-cell strong {
+    font-size: 11px;
+  }
+
+
+  .baqarah-day-cell small {
+    letter-spacing: 0;
+
+    font-size: 6px;
+  }
+
+
+  .baqarah-day-cell em {
+    display: none;
+  }
+
+
+  .baqarah-year-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+
+  .baqarah-member-row {
+    grid-template-columns:
+      35px 1fr 72px;
+  }
+
+
+  .baqarah-member-progress {
+    grid-column:
+      2 / -1;
+  }
+
+
+  .baqarah-member-history {
+    grid-column: 3;
+
+    grid-row: 1;
+  }
+
+
+  .baqarah-ranking-row {
+    grid-template-columns:
+      35px 1fr 65px;
+
+    gap: 7px;
+  }
+
+
+  .baqarah-ranking-stat:nth-of-type(2),
+  .baqarah-ranking-stat:nth-of-type(3) {
+    display: none;
+  }
+
+}

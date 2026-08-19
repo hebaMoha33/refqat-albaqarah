@@ -1,0 +1,890 @@
+.baqarah-reader-page {
+  min-height: 100vh;
+
+  direction: rtl;
+
+  padding:
+    14px 14px 80px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #fffaf0 0%,
+      #f7fbf5 50%,
+      #fff8e8 100%
+    );
+
+  color: #234742;
+}
+
+
+.baqarah-reader-header,
+.baqarah-reader-progress-card,
+.baqarah-mushaf {
+  width:
+    min(
+      920px,
+      100%
+    );
+
+  margin:
+    0 auto;
+}
+
+
+.baqarah-reader-header {
+  position: sticky;
+
+  top: 8px;
+
+  z-index: 30;
+
+  min-height: 72px;
+
+  padding:
+    10px 12px;
+
+  display: grid;
+
+  grid-template-columns:
+    1fr auto 1fr;
+
+  align-items: center;
+
+  gap: 10px;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      .85
+    );
+
+  border-radius: 22px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      .78
+    );
+
+  box-shadow:
+    0 14px 45px
+    rgba(
+      53,
+      87,
+      76,
+      .08
+    );
+
+  backdrop-filter:
+    blur(18px);
+}
+
+
+.baqarah-reader-back {
+  width: fit-content;
+
+  padding:
+    9px 12px;
+
+  border:
+    1px solid
+    rgba(
+      65,
+      128,
+      103,
+      .14
+    );
+
+  border-radius: 999px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      .66
+    );
+
+  color: #2c695a;
+
+  cursor: pointer;
+
+  font-weight: 800;
+}
+
+
+.baqarah-reader-title {
+  text-align: center;
+}
+
+
+.baqarah-reader-title span {
+  display: block;
+
+  color: #c89c38;
+
+  font-size: 9px;
+
+  font-weight: 900;
+}
+
+
+.baqarah-reader-title h1 {
+  margin:
+    2px 0;
+
+  font-family:
+    Georgia,
+    "Traditional Arabic",
+    serif;
+
+  font-size: 23px;
+}
+
+
+.baqarah-reader-title small {
+  color: #81918d;
+
+  font-size: 7px;
+}
+
+
+.baqarah-reader-save-status {
+  justify-self: start;
+
+  padding:
+    8px 10px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(
+      78,
+      156,
+      122,
+      .1
+    );
+
+  color: #34745f;
+
+  font-size: 8px;
+
+  font-weight: 900;
+}
+
+
+.baqarah-reader-progress-card {
+  margin-top: 14px;
+
+  padding: 18px;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      .85
+    );
+
+  border-radius: 27px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      .62
+    );
+
+  box-shadow:
+    0 18px 55px
+    rgba(
+      54,
+      85,
+      70,
+      .07
+    );
+}
+
+
+.baqarah-reader-main-progress {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      1fr
+    );
+
+  gap: 9px;
+}
+
+
+.baqarah-reader-main-progress > div {
+  padding: 13px;
+
+  border-radius: 17px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(
+        255,
+        242,
+        202,
+        .65
+      ),
+      rgba(
+        234,
+        249,
+        239,
+        .67
+      )
+    );
+}
+
+
+.baqarah-reader-main-progress span,
+.baqarah-reader-main-progress small {
+  display: block;
+}
+
+
+.baqarah-reader-main-progress span {
+  color: #738780;
+
+  font-size: 8px;
+}
+
+
+.baqarah-reader-main-progress strong {
+  display: block;
+
+  margin:
+    4px 0;
+
+  color: #2f755e;
+
+  font-size: 28px;
+}
+
+
+.baqarah-reader-main-progress small {
+  color: #8b9893;
+
+  font-size: 7px;
+}
+
+
+.baqarah-reader-stars {
+  margin-top: 12px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      4,
+      1fr
+    );
+
+  gap: 7px;
+}
+
+
+.baqarah-reader-star {
+  min-height: 78px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 2px;
+
+  border:
+    1px solid
+    rgba(
+      204,
+      169,
+      84,
+      .15
+    );
+
+  border-radius: 16px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      .5
+    );
+
+  color: #aaa28d;
+}
+
+
+.baqarah-reader-star.active {
+  color: #c59025;
+
+  border-color:
+    rgba(
+      211,
+      168,
+      61,
+      .35
+    );
+
+  background:
+    rgba(
+      255,
+      239,
+      191,
+      .64
+    );
+}
+
+
+.baqarah-reader-star span {
+  font-size: 26px;
+}
+
+
+.baqarah-reader-star strong {
+  font-size: 9px;
+}
+
+
+.baqarah-reader-star small {
+  font-size: 6px;
+}
+
+
+.baqarah-reader-completion-stats {
+  margin-top: 10px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      3,
+      1fr
+    );
+
+  gap: 7px;
+}
+
+
+.baqarah-reader-completion-stats div {
+  padding: 10px;
+
+  text-align: center;
+
+  border-radius: 14px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      .45
+    );
+}
+
+
+.baqarah-reader-completion-stats span,
+.baqarah-reader-completion-stats strong {
+  display: block;
+}
+
+
+.baqarah-reader-completion-stats span {
+  color: #7e8e88;
+
+  font-size: 7px;
+}
+
+
+.baqarah-reader-completion-stats strong {
+  margin-top: 3px;
+
+  color: #2e735d;
+
+  font-size: 17px;
+}
+
+
+.baqarah-reader-completed {
+  margin-top: 12px;
+
+  padding: 13px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content:
+    space-between;
+
+  gap: 12px;
+
+  border-radius: 17px;
+
+  background:
+    rgba(
+      66,
+      161,
+      117,
+      .12
+    );
+}
+
+
+.baqarah-reader-completed div span,
+.baqarah-reader-completed div strong,
+.baqarah-reader-completed div small {
+  display: block;
+}
+
+
+.baqarah-reader-completed div strong {
+  margin: 3px 0;
+
+  color: #2f755e;
+}
+
+
+.baqarah-reader-completed div small {
+  color: #72877e;
+
+  font-size: 7px;
+}
+
+
+.baqarah-reader-completed button {
+  padding:
+    10px 13px;
+
+  border: 0;
+
+  border-radius: 13px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #d8a743,
+      #4f987a
+    );
+
+  color: white;
+
+  cursor: pointer;
+
+  font-weight: 900;
+}
+
+
+/* =========================================
+   MUSHAF
+========================================= */
+
+.baqarah-mushaf {
+  margin-top: 14px;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(
+      226,
+      197,
+      129,
+      .27
+    );
+
+  border-radius: 30px;
+
+  background:
+    #fffdf6;
+
+  box-shadow:
+    0 20px 70px
+    rgba(
+      71,
+      82,
+      60,
+      .08
+    );
+}
+
+
+.baqarah-mushaf-heading {
+  padding:
+    26px 16px 22px;
+
+  text-align: center;
+
+  border-bottom:
+    1px solid
+    rgba(
+      218,
+      188,
+      115,
+      .18
+    );
+
+  background:
+    radial-gradient(
+      circle at 50% 30%,
+      rgba(
+        245,
+        220,
+        158,
+        .22
+      ),
+      transparent 60%
+    );
+}
+
+
+.baqarah-mushaf-heading span,
+.baqarah-mushaf-heading strong,
+.baqarah-mushaf-heading small {
+  display: block;
+}
+
+
+.baqarah-mushaf-heading span {
+  color: #8f6b22;
+
+  font-size: 12px;
+
+  font-weight: 900;
+}
+
+
+.baqarah-mushaf-heading strong {
+  margin-top: 10px;
+
+  color: #274f47;
+
+  font-family:
+    "Traditional Arabic",
+    "Amiri",
+    serif;
+
+  font-size:
+    clamp(
+      24px,
+      4vw,
+      34px
+    );
+
+  font-weight: 500;
+}
+
+
+.baqarah-mushaf-heading small {
+  margin-top: 8px;
+
+  color: #9a9b8f;
+
+  font-size: 7px;
+}
+
+
+/*
+  هذا هو التغيير الأساسي:
+  كل الآيات داخل كتلة نصية واحدة متصلة،
+  مثل صفحة المصحف، وليست Cards أو أسطر منفصلة.
+*/
+.baqarah-mushaf-text {
+  padding:
+    28px 34px 42px;
+
+  color: #172f2b;
+
+  font-family:
+    "Traditional Arabic",
+    "Amiri Quran",
+    "Amiri",
+    serif;
+
+  font-size:
+    clamp(
+      27px,
+      3.7vw,
+      38px
+    );
+
+  font-weight: 400;
+
+  line-height: 2.15;
+
+  text-align: justify;
+
+  text-align-last: right;
+
+  word-spacing: .06em;
+}
+
+
+.baqarah-verse {
+  display: inline;
+
+  scroll-margin-top: 150px;
+
+  transition:
+    background .2s ease,
+    color .2s ease;
+}
+
+
+.baqarah-verse.current {
+  border-radius: 6px;
+
+  background:
+    rgba(
+      240,
+      221,
+      166,
+      .22
+    );
+}
+
+
+.baqarah-verse-text {
+  display: inline;
+}
+
+
+/*
+  رقم الآية يبقى داخل السطر نفسه
+  بدل أن يكون دائرة مستقلة على الهامش.
+*/
+.baqarah-ayah-number {
+  display: inline-grid;
+
+  width: 1.85em;
+  height: 1.85em;
+
+  margin:
+    0 .18em;
+
+  vertical-align:
+    .08em;
+
+  place-items: center;
+
+  border:
+    1px solid
+    rgba(
+      195,
+      151,
+      54,
+      .38
+    );
+
+  border-radius: 50%;
+
+  color: #a8771d;
+
+  background:
+    rgba(
+      255,
+      250,
+      236,
+      .92
+    );
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: .42em;
+
+  font-weight: 800;
+
+  line-height: 1;
+}
+
+
+/*
+  علامة النجمة لا تكسر النص.
+  تظهر كعلامة صغيرة بين الآيات.
+*/
+.baqarah-inline-milestone {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 3px;
+
+  margin:
+    0 .28em;
+
+  padding:
+    .18em .5em;
+
+  vertical-align:
+    .12em;
+
+  border-radius: 999px;
+
+  background:
+    rgba(
+      242,
+      222,
+      164,
+      .32
+    );
+
+  color: #a87819;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: .34em;
+
+  font-weight: 800;
+
+  white-space: nowrap;
+}
+
+
+.baqarah-reader-loading,
+.baqarah-reader-error {
+  width:
+    min(
+      700px,
+      calc(
+        100% - 20px
+      )
+    );
+
+  margin:
+    100px auto;
+
+  padding: 28px;
+
+  text-align: center;
+
+  border-radius: 22px;
+
+  background: white;
+
+  color: #587069;
+}
+
+
+@media (
+  max-width: 700px
+) {
+
+  .baqarah-reader-page {
+    padding:
+      7px 6px 60px;
+  }
+
+
+  .baqarah-reader-header {
+    grid-template-columns:
+      auto 1fr;
+
+    top: 4px;
+
+    border-radius: 18px;
+  }
+
+
+  .baqarah-reader-title {
+    text-align: left;
+  }
+
+
+  .baqarah-reader-save-status {
+    grid-column:
+      1 / -1;
+
+    justify-self: center;
+  }
+
+
+  .baqarah-reader-main-progress {
+    grid-template-columns:
+      1fr 1fr;
+  }
+
+
+  .baqarah-reader-stars {
+    gap: 4px;
+  }
+
+
+  .baqarah-reader-star {
+    min-height: 70px;
+  }
+
+
+  .baqarah-reader-star span {
+    font-size: 21px;
+  }
+
+
+  .baqarah-reader-completion-stats {
+    grid-template-columns:
+      repeat(
+        3,
+        1fr
+      );
+  }
+
+
+  .baqarah-reader-completed {
+    align-items: stretch;
+
+    flex-direction: column;
+  }
+
+
+  .baqarah-reader-completed button {
+    width: 100%;
+  }
+
+
+  .baqarah-mushaf {
+    border-radius: 22px;
+  }
+
+
+  .baqarah-mushaf-text {
+    padding:
+      22px 16px 34px;
+
+    font-size: 28px;
+
+    line-height: 2.05;
+
+    text-align: right;
+  }
+
+
+  .baqarah-ayah-number {
+    width: 1.78em;
+    height: 1.78em;
+
+    font-size: .4em;
+  }
+
+}

@@ -3,14 +3,17 @@ import {
   useState
 } from 'react'
 
-import CompanionPage
-  from './CompanionPage'
-
 import HomePage
   from './HomePage'
 
+import CompanionPage
+  from './CompanionPage'
 
-function getCurrentRoute() {
+import BaqarahReaderPage
+  from './BaqarahReaderPage'
+
+
+function getRoute() {
   return (
     window.location.hash ||
     '#/'
@@ -19,43 +22,64 @@ function getCurrentRoute() {
 
 
 export default function AppRouter() {
-  const [route, setRoute] =
-    useState(getCurrentRoute)
+  const [
+    route,
+    setRoute
+  ] =
+    useState(
+      getRoute
+    )
 
 
   useEffect(() => {
-    function syncRoute() {
+    function handleHashChange() {
       setRoute(
-        getCurrentRoute()
+        getRoute()
       )
     }
 
     window.addEventListener(
       'hashchange',
-      syncRoute
+      handleHashChange
     )
 
     return () => {
       window.removeEventListener(
         'hashchange',
-        syncRoute
+        handleHashChange
       )
     }
   }, [])
 
 
   if (
-    route === '#/companion'
+    route.startsWith(
+      '#/companion/read'
+    )
+  ) {
+    return (
+      <BaqarahReaderPage />
+    )
+  }
+
+
+  if (
+    route.startsWith(
+      '#/companion'
+    )
   ) {
     return (
       <CompanionPage
         onBack={() => {
-          window.location.hash = '#/'
+          window.location.hash =
+            '#/'
         }}
       />
     )
   }
 
 
-  return <HomePage />
+  return (
+    <HomePage />
+  )
 }
