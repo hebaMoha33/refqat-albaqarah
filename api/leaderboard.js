@@ -3,694 +3,303 @@ import {
   getCurrentUser
 } from '../server/auth.js'
 
-
-function dateKey(
-  date
-) {
-
-  return [
-    date.getFullYear(),
-    String(
-      date.getMonth() + 1
-    ).padStart(2, '0'),
-    String(
-      date.getDate()
-    ).padStart(2, '0')
-  ].join('-')
-
+function pad(value) {
+  return String(value).padStart(2, '0')
 }
 
+function dateKey(date) {
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+}
 
-function addDays(
-  date,
-  number
-) {
+function todayRiyadh() {
+  const parts = new Intl.DateTimeFormat(
+    'en-US',
+    {
+      timeZone: 'Asia/Riyadh',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }
+  ).formatToParts(new Date())
 
-  const result =
-    new Date(date)
-
-  result.setDate(
-    result.getDate() +
-    number
+  const values = Object.fromEntries(
+    parts.map(part => [part.type, part.value])
   )
 
-  return result
+  return `${values.year}-${values.month}-${values.day}`
 }
 
+function addDays(dateString, amount) {
+  const [y, m, d] = dateString
+    .split('-')
+    .map(Number)
 
-function rangeFor(
-  period
-) {
+  const date = new Date(y, m - 1, d)
+  date.setDate(date.getDate() + amount)
 
-  const now =
-    new Date()
+  return dateKey(date)
+}
 
+function rangeFor(period) {
+  const today = todayRiyadh()
+  const [year, month, day] = today
+    .split('-')
+    .map(Number)
 
-  if (
-    period === 'week'
-  ) {
-
-    const day =
-      now.getDay()
-
-
-    const diff =
-      day === 6
-        ? 0
-        : day + 1
-
-
-    const from =
-      addDays(
-        now,
-        -diff
-      )
-
-
-    const to =
-      addDays(
-        from,
-        6
-      )
-
+  if (period === 'week') {
+    const date = new Date(year, month - 1, day)
+    const fromSaturday = (date.getDay() + 1) % 7
+    const from = addDays(today, -fromSaturday)
 
     return {
-
-      from:
-        dateKey(from),
-
-      to:
-        dateKey(to)
-
+      from,
+      to: addDays(from, 6)
     }
-
   }
 
-
-  if (
-    period === 'year'
-  ) {
-
-    const year =
-      now.getFullYear()
-
+  if (period === 'month') {
+    const last = new Date(year, month, 0).getDate()
 
     return {
-
-      from:
-        `${year}-01-01`,
-
-      to:
-        `${year}-12-31`
-
+      from: `${year}-${pad(month)}-01`,
+      to: `${year}-${pad(month)}-${pad(last)}`
     }
-
   }
 
-
-  if (
-    period === 'all'
-  ) {
-
+  if (period === 'year') {
     return {
-      from: null,
-      to: null
+      from: `${year}-01-01`,
+      to: `${year}-12-31`
     }
-
   }
-
-
-  const year =
-    now.getFullYear()
-
-
-  const month =
-    now.getMonth()
-
 
   return {
-
-    from:
-      dateKey(
-        new Date(
-          year,
-          month,
-          1
-        )
-      ),
-
-    to:
-      dateKey(
-        new Date(
-          year,
-          month + 1,
-          0
-        )
-      )
-
+    from: '2000-01-01',
+    to: '2999-12-31'
   }
-
 }
 
-
-function currentStreak(
-  completedDates
-) {
-
-  const set =
-    new Set(
-      completedDates
-    )
-
-
-  const today =
-    new Date()
-
-
-  let cursor =
-    set.has(
-      dateKey(today)
-    )
-      ? today
-      : addDays(
-          today,
-          -1
-        )
-
-
-  let result = 0
-
-
-  while (
-    set.has(
-      dateKey(cursor)
-    )
-  ) {
-
-    result += 1
-
-    cursor =
-      addDays(
-        cursor,
-        -1
+function streakForUser(rows, userId) {
+  const today = todayRiyadh()
+  const completed = new Set(
+    rows
+      .filter(row =>
+        row.user_id === userId &&
+        row.day_completed
       )
+      .map(row => row.progress_date)
+  )
 
+  let cursor = completed.has(today)
+    ? today
+    : addDays(today, -1)
+
+  let streak = 0
+
+  while (completed.has(cursor)) {
+    streak += 1
+    cursor = addDays(cursor, -1)
   }
 
-
-  return result
-
+  return streak
 }
 
-
-async function getFriendIds(
-  supabase,
-  userId
-) {
-
-  const {
-    data,
-    error
-  } =
-    await supabase
-      .from(
-        'app_friendships'
-      )
-      .select(`
-        requester_id,
-        addressee_id,
-        status
-      `)
-      .eq(
-        'status',
-        'accepted'
-      )
-      .or(
-        `requester_id.eq.${userId},addressee_id.eq.${userId}`
-      )
-
-
-  if (error) {
-    throw error
+export default async function handler(req, res) {
+  if (req.method !== 'GET') {
+    return res.status(405).json({
+      message: 'طريقة الطلب غير مسموحة.'
+    })
   }
-
-
-  return (data || [])
-    .map(
-      row =>
-        row.requester_id ===
-          userId
-          ? row.addressee_id
-          : row.requester_id
-    )
-
-}
-
-
-export default async function handler(
-  req,
-  res
-) {
-
-  if (
-    req.method !== 'GET'
-  ) {
-
-    return res
-      .status(405)
-      .json({
-        message:
-          'طريقة الطلب غير مسموحة.'
-      })
-
-  }
-
 
   try {
+    const current = await getCurrentUser(req)
 
-    const current =
-      await getCurrentUser(
-        req
-      )
-
-
-    if (!current) {
-
-      return res
-        .status(401)
-        .json({
-          message:
-            'يجب تسجيل الدخول.'
-        })
-
+    if (!current?.user?.id) {
+      return res.status(401).json({
+        message: 'يجب تسجيل الدخول.'
+      })
     }
 
+    const period = String(
+      req.query?.period || 'month'
+    )
 
-    const supabase =
-      getAdmin()
-
-
-    const period =
-      String(
-        req.query.period ||
-        'month'
-      )
-
-
-    const scope =
-      String(
-        req.query.scope ||
-        'friends'
-      )
-
-
-    const range =
-      rangeFor(period)
-
-
-    let allowedIds = null
-
-
-    if (
-      scope === 'friends'
-    ) {
-
-      const friendIds =
-        await getFriendIds(
-          supabase,
-          current.user.id
-        )
-
-
-      allowedIds = [
-        current.user.id,
-        ...friendIds
-      ]
-
-    }
-
-
-    /* =====================================
-       USERS
-    ===================================== */
-
-    let usersQuery =
-      supabase
-        .from('app_users')
-        .select(`
-          id,
-          username,
-          display_name
-        `)
-
-
-    if (
-      allowedIds
-    ) {
-
-      usersQuery =
-        usersQuery.in(
-          'id',
-          allowedIds
-        )
-
-    }
-
+    const range = rangeFor(period)
+    const today = todayRiyadh()
+    const supabase = getAdmin()
 
     const {
       data: users,
       error: usersError
-    } =
-      await usersQuery
-
+    } = await supabase
+      .from('app_users')
+      .select('id,username,display_name')
 
     if (usersError) {
       throw usersError
     }
 
+    const {
+      data: selectedRows,
+      error: selectedError
+    } = await supabase
+      .from('adhkar_daily_progress')
+      .select(`
+        user_id,
+        progress_date,
+        morning_percentage,
+        evening_percentage,
+        day_completed
+      `)
+      .gte('progress_date', range.from)
+      .lte('progress_date', range.to)
 
-    const userIds =
-      (users || [])
-        .map(
-          user =>
-            user.id
-        )
-
-
-    if (
-      userIds.length === 0
-    ) {
-
-      return res
-        .status(200)
-        .json({
-          period,
-          scope,
-          ranking: [],
-          myRank: null
-        })
-
+    if (selectedError) {
+      throw selectedError
     }
-
-
-    /* =====================================
-       SELECTED PERIOD
-    ===================================== */
-
-    let progressQuery =
-      supabase
-        .from(
-          'adhkar_daily_progress'
-        )
-        .select(`
-          user_id,
-          progress_date,
-          morning_percentage,
-          evening_percentage,
-          day_completed
-        `)
-        .in(
-          'user_id',
-          userIds
-        )
-
-
-    if (
-      range.from
-    ) {
-
-      progressQuery =
-        progressQuery
-          .gte(
-            'progress_date',
-            range.from
-          )
-          .lte(
-            'progress_date',
-            range.to
-          )
-
-    }
-
 
     const {
-      data: periodRows,
-      error: progressError
-    } =
-      await progressQuery
+      data: todayRows,
+      error: todayError
+    } = await supabase
+      .from('adhkar_daily_progress')
+      .select(`
+        user_id,
+        morning_percentage,
+        evening_percentage,
+        day_completed
+      `)
+      .eq('progress_date', today)
 
-
-    if (progressError) {
-      throw progressError
+    if (todayError) {
+      throw todayError
     }
-
-
-    /*
-      نحتاج السجل الكامل
-      فقط لحساب الاستمرار الحالي.
-    */
 
     const {
-      data: allRows,
-      error: allError
-    } =
-      await supabase
-        .from(
-          'adhkar_daily_progress'
-        )
-        .select(`
-          user_id,
-          progress_date,
-          day_completed
-        `)
-        .in(
-          'user_id',
-          userIds
-        )
+      data: allCompletedRows,
+      error: completedError
+    } = await supabase
+      .from('adhkar_daily_progress')
+      .select('user_id,progress_date,day_completed')
+      .eq('day_completed', true)
 
-
-    if (allError) {
-      throw allError
+    if (completedError) {
+      throw completedError
     }
 
+    const todayMap = new Map(
+      (todayRows || []).map(row => [
+        row.user_id,
+        row
+      ])
+    )
 
-    const stats =
-      new Map()
+    const totals = new Map()
 
-
-    ;(users || [])
-      .forEach(
-        user => {
-
-          stats.set(
-            user.id,
-            {
-
-              id:
-                user.id,
-
-              username:
-                user.username,
-
-              display_name:
-                user.display_name,
-
-              points: 0,
-
-              completedDays: 0,
-
-              activeDays: 0,
-
-              currentStreak: 0
-
-            }
-          )
-
+    ;(selectedRows || []).forEach(row => {
+      const previous =
+        totals.get(row.user_id) || {
+          points: 0,
+          completedDays: 0,
+          activeDays: 0
         }
+
+      const morning = Number(
+        row.morning_percentage || 0
+      )
+      const evening = Number(
+        row.evening_percentage || 0
       )
 
+      previous.points += morning + evening
 
-    ;(periodRows || [])
-      .forEach(
-        row => {
-
-          const item =
-            stats.get(
-              row.user_id
-            )
-
-
-          if (!item) {
-            return
-          }
-
-
-          const points =
-            Number(
-              row.morning_percentage ||
-              0
-            ) +
-            Number(
-              row.evening_percentage ||
-              0
-            )
-
-
-          item.points +=
-            points
-
-
-          if (
-            points > 0
-          ) {
-
-            item.activeDays += 1
-
-          }
-
-
-          if (
-            row.day_completed
-          ) {
-
-            item.completedDays += 1
-
-          }
-
-        }
-      )
-
-
-    stats.forEach(
-      item => {
-
-        const completedDates =
-          (allRows || [])
-            .filter(
-              row =>
-                row.user_id ===
-                  item.id &&
-                row.day_completed
-            )
-            .map(
-              row =>
-                row.progress_date
-            )
-
-
-        item.currentStreak =
-          currentStreak(
-            completedDates
-          )
-
+      if (row.day_completed) {
+        previous.completedDays += 1
       }
+
+      if (morning > 0 || evening > 0) {
+        previous.activeDays += 1
+      }
+
+      totals.set(row.user_id, previous)
+    })
+
+    const ranking = (users || []).map(user => {
+      const total =
+        totals.get(user.id) || {
+          points: 0,
+          completedDays: 0,
+          activeDays: 0
+        }
+
+      const todayRow = todayMap.get(user.id)
+      const todayMorning = Number(
+        todayRow?.morning_percentage || 0
+      )
+      const todayEvening = Number(
+        todayRow?.evening_percentage || 0
+      )
+      const todayPercentage = Math.round(
+        (todayMorning + todayEvening) / 2
+      )
+
+      return {
+        id: user.id,
+        username: user.username,
+        display_name: user.display_name,
+        points: total.points,
+        completedDays: total.completedDays,
+        activeDays: total.activeDays,
+        currentStreak: streakForUser(
+          allCompletedRows || [],
+          user.id
+        ),
+        todayMorning,
+        todayEvening,
+        todayPercentage,
+        isMe: user.id === current.user.id
+      }
+    })
+
+    ranking.sort((a, b) => {
+      if (b.points !== a.points) {
+        return b.points - a.points
+      }
+
+      if (b.completedDays !== a.completedDays) {
+        return b.completedDays - a.completedDays
+      }
+
+      if (b.currentStreak !== a.currentStreak) {
+        return b.currentStreak - a.currentStreak
+      }
+
+      return b.todayPercentage - a.todayPercentage
+    })
+
+    const ranked = ranking.map(
+      (member, index) => ({
+        ...member,
+        rank: index + 1
+      })
     )
 
-
-    const ranking =
-      Array.from(
-        stats.values()
-      )
-        .sort(
-          (
-            a,
-            b
-          ) => {
-
-            if (
-              b.points !==
-              a.points
-            ) {
-
-              return (
-                b.points -
-                a.points
-              )
-
-            }
-
-
-            if (
-              b.completedDays !==
-              a.completedDays
-            ) {
-
-              return (
-                b.completedDays -
-                a.completedDays
-              )
-
-            }
-
-
-            return (
-              b.currentStreak -
-              a.currentStreak
-            )
-
-          }
-        )
-        .map(
-          (
-            item,
-            index
-          ) => ({
-
-            ...item,
-
-            rank:
-              index + 1,
-
-            isMe:
-              item.id ===
-              current.user.id
-
-          })
-        )
-
-
-    const myEntry =
-      ranking.find(
-        item =>
-          item.isMe
-      )
-
-
-    return res
-      .status(200)
-      .json({
-
-        period,
-
-        scope,
-
-        range,
-
-        ranking,
-
-        myRank:
-          myEntry
-            ? myEntry.rank
-            : null
-
-      })
-
-
+    return res.status(200).json({
+      period,
+      range,
+      ranking: ranked,
+      myRank:
+        ranked.find(
+          member => member.isMe
+        )?.rank || null
+    })
   } catch (error) {
+    console.error('LEADERBOARD:', error)
 
-    console.error(
-      'LEADERBOARD ERROR:',
-      error
-    )
-
-
-    return res
-      .status(500)
-      .json({
-        message:
-          'تعذر تحميل الترتيب.'
-      })
-
+    return res.status(500).json({
+      message:
+        error?.message ||
+        'تعذر تحميل الترتيب.'
+    })
   }
-
 }

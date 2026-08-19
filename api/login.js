@@ -7,162 +7,77 @@ import {
   safeUser
 } from '../server/auth.js'
 
+export default async function handler(req, res) {
+  res.setHeader('Cache-Control', 'no-store')
 
-export default async function handler(
-  req,
-  res
-) {
-
-  res.setHeader(
-    'Cache-Control',
-    'no-store'
-  )
-
-
-  if (
-    req.method !== 'POST'
-  ) {
-
-    return res
-      .status(405)
-      .json({
-        message:
-          'طريقة الطلب غير مسموحة.'
-      })
+  if (req.method !== 'POST') {
+    return res.status(405).json({
+      message: 'طريقة الطلب غير مسموحة.'
+    })
   }
 
-
   try {
+    const body = await readBody(req)
+    const username = normalizeUsername(body?.username)
+    const password = String(body?.password || '')
 
-    const body =
-      await readBody(req)
-
-
-    const username =
-      normalizeUsername(
-        body?.username
-      )
-
-
-    const password =
-      String(
-        body?.password || ''
-      )
-
-
-    if (
-      !username ||
-      !password
-    ) {
-
-      return res
-        .status(400)
-        .json({
-          message:
-            'أدخلي اسم المستخدم وكلمة المرور.'
-        })
+    if (!username || !password) {
+      return res.status(400).json({
+        message: 'أدخلي اسم المستخدم وكلمة المرور.'
+      })
     }
 
+    const supabase = getAdmin()
 
-    const supabase =
-      getAdmin()
-
-
-    const {
-      data: user,
-      error
-    } =
-      await supabase
-        .from('app_users')
-        .select(`
-          id,
-          username,
-          username_normalized,
-          display_name,
-          password_salt,
-          password_hash,
-          created_at
-        `)
-        .eq(
-          'username_normalized',
-          username
-        )
-        .maybeSingle()
-
+    const { data: user, error } = await supabase
+      .from('app_users')
+      .select(`
+        id,
+        username,
+        username_normalized,
+        display_name,
+        password_salt,
+        password_hash,
+        created_at
+      `)
+      .eq('username_normalized', username)
+      .maybeSingle()
 
     if (error) {
-
-      console.error(
-        'LOGIN USER ERROR:',
-        error
-      )
-
       throw error
     }
 
-
     if (!user) {
-
-      return res
-        .status(401)
-        .json({
-          message:
-            'اسم المستخدم أو كلمة المرور غير صحيحة.'
-        })
+      return res.status(401).json({
+        message: 'اسم المستخدم أو كلمة المرور غير صحيحة.'
+      })
     }
 
-
-    const valid =
-      verifyPassword(
-        password,
-        user.password_salt,
-        user.password_hash
-      )
-
+    const valid = verifyPassword(
+      password,
+      user.password_salt,
+      user.password_hash
+    )
 
     if (!valid) {
-
-      return res
-        .status(401)
-        .json({
-          message:
-            'اسم المستخدم أو كلمة المرور غير صحيحة.'
-        })
+      return res.status(401).json({
+        message: 'اسم المستخدم أو كلمة المرور غير صحيحة.'
+      })
     }
 
+    await createSession(user.id, res)
 
-    await createSession(
-      user.id,
-      res
-    )
-
-
-    return res
-      .status(200)
-      .json({
-
-        ok: true,
-
-        user:
-          safeUser(user)
-
-      })
-
-
+    return res.status(200).json({
+      ok: true,
+      user: safeUser(user)
+    })
   } catch (error) {
+    console.error('LOGIN:', error)
 
-    console.error(
-      'LOGIN ERROR:',
-      error
-    )
-
-
-    return res
-      .status(500)
-      .json({
-        message:
-          error?.message ||
-          'تعذر تسجيل الدخول.'
-      })
+    return res.status(500).json({
+      message:
+        error?.message ||
+        'تعذر تسجيل الدخول.'
+    })
   }
 }

@@ -1,43 +1,40 @@
 import {
-  morningAdhkar,
-  eveningAdhkar
-} from '../data/adhkar'
+  morningAdhkarList,
+  eveningAdhkarList
+} from '../data/adhkarLists'
 
+
+/* =========================================
+   DATE
+========================================= */
 
 export function getDateKey(
   date = new Date()
 ) {
-
   return [
     date.getFullYear(),
-
     String(
       date.getMonth() + 1
     ).padStart(2, '0'),
-
     String(
       date.getDate()
     ).padStart(2, '0')
-
   ].join('-')
-
 }
 
 
 export function addDays(
-  dateString,
+  dateKey,
   amount
 ) {
-
   const [
     year,
     month,
     day
   ] =
-    dateString
+    String(dateKey)
       .split('-')
       .map(Number)
-
 
   const date =
     new Date(
@@ -46,173 +43,224 @@ export function addDays(
       day
     )
 
-
   date.setDate(
     date.getDate() +
     amount
   )
 
-
   return getDateKey(date)
-
 }
 
+
+/* =========================================
+   USERNAME
+========================================= */
 
 export function normalizeUsername(
   value = ''
 ) {
-
-  return value
+  return String(value)
     .normalize('NFKC')
     .trim()
     .toLowerCase()
-
 }
 
 
 export function isValidUsername(
-  value
+  username
 ) {
-
   return /^[\p{L}\p{N}_-]{3,24}$/u
-    .test(
-      normalizeUsername(value)
-    )
-
+    .test(username)
 }
 
 
-export function createEmptyProgress() {
+/* =========================================
+   PROGRESS SHAPE
+========================================= */
 
+export function createEmptyProgress() {
   return {
     morning: {},
     evening: {}
   }
-
-}
-
-
-export function loadLocalProgress(
-  today
-) {
-
-  try {
-
-    const key =
-      `refqat-progress-v4-${today}`
-
-
-    const value =
-      localStorage.getItem(key)
-
-
-    if (value) {
-
-      const parsed =
-        JSON.parse(value)
-
-
-      return {
-
-        morning:
-          parsed?.morning ||
-          {},
-
-        evening:
-          parsed?.evening ||
-          {}
-
-      }
-
-    }
-
-  } catch {
-
-    // ignore
-
-  }
-
-
-  return createEmptyProgress()
-
-}
-
-
-export function saveLocalProgress(
-  today,
-  progress
-) {
-
-  localStorage.setItem(
-
-    `refqat-progress-v4-${today}`,
-
-    JSON.stringify(
-      progress
-    )
-
-  )
-
 }
 
 
 export function getList(
   period
 ) {
-
-  return period === 'morning'
-    ? morningAdhkar
-    : eveningAdhkar
-
+  return period === 'evening'
+    ? eveningAdhkarList
+    : morningAdhkarList
 }
 
+
+/* =========================================
+   ACCOUNT-SCOPED LOCAL STORAGE
+
+   مهم:
+   كل حساب له مفتاح مستقل.
+   لا نستخدم نفس localStorage لكل المستخدمين.
+========================================= */
+
+function safeOwnerKey(
+  ownerKey = 'guest'
+) {
+  return String(
+    ownerKey || 'guest'
+  )
+    .replace(
+      /[^a-zA-Z0-9:_-]/g,
+      '_'
+    )
+}
+
+
+function getProgressStorageKey(
+  dateKey,
+  ownerKey = 'guest'
+) {
+  return (
+    `refqat-progress-v6-${safeOwnerKey(
+      ownerKey
+    )}-${dateKey}`
+  )
+}
+
+
+export function loadLocalProgress(
+  dateKey,
+  ownerKey = 'guest'
+) {
+  try {
+    const raw =
+      localStorage.getItem(
+        getProgressStorageKey(
+          dateKey,
+          ownerKey
+        )
+      )
+
+    if (!raw) {
+      return createEmptyProgress()
+    }
+
+    const parsed =
+      JSON.parse(raw)
+
+    return {
+      morning:
+        parsed?.morning &&
+        typeof parsed.morning ===
+          'object'
+          ? parsed.morning
+          : {},
+
+      evening:
+        parsed?.evening &&
+        typeof parsed.evening ===
+          'object'
+          ? parsed.evening
+          : {}
+    }
+  } catch (error) {
+    console.error(
+      'LOAD LOCAL PROGRESS:',
+      error
+    )
+
+    return createEmptyProgress()
+  }
+}
+
+
+export function saveLocalProgress(
+  dateKey,
+  progress,
+  ownerKey = 'guest'
+) {
+  try {
+    localStorage.setItem(
+      getProgressStorageKey(
+        dateKey,
+        ownerKey
+      ),
+      JSON.stringify({
+        morning:
+          progress?.morning || {},
+
+        evening:
+          progress?.evening || {}
+      })
+    )
+  } catch (error) {
+    console.error(
+      'SAVE LOCAL PROGRESS:',
+      error
+    )
+  }
+}
+
+
+/* =========================================
+   COUNTERS
+========================================= */
 
 export function getRemainingFrom(
   progress,
   period,
   item
 ) {
+  const originalCount =
+    Math.max(
+      1,
+      Number(item?.count || 1)
+    )
 
-  const value =
+  const stored =
     progress?.[period]?.[
       item.id
     ]
 
-
   if (
-    typeof value !==
-    'number'
+    stored === undefined ||
+    stored === null ||
+    stored === ''
   ) {
-
-    return item.count
-
+    return originalCount
   }
 
+  const number =
+    Number(stored)
 
-  return Math.max(
-    0,
-    Math.min(
-      item.count,
-      value
+  if (!Number.isFinite(number)) {
+    return originalCount
+  }
+
+  return Math.min(
+    originalCount,
+    Math.max(
+      0,
+      Math.round(number)
     )
   )
-
 }
 
+
+/* =========================================
+   PERCENTAGES
+========================================= */
 
 export function calculatePeriodPercentage(
   progress,
   period
 ) {
-
   const list =
     getList(period)
-
 
   if (!list.length) {
     return 0
   }
-
 
   const total =
     list.reduce(
@@ -220,6 +268,13 @@ export function calculatePeriodPercentage(
         sum,
         item
       ) => {
+        const count =
+          Math.max(
+            1,
+            Number(
+              item.count || 1
+            )
+          )
 
         const remaining =
           getRemainingFrom(
@@ -228,24 +283,19 @@ export function calculatePeriodPercentage(
             item
           )
 
+        const completed =
+          count - remaining
 
-        const itemProgress =
-          (
-            item.count -
-            remaining
-          ) /
-          item.count
-
+        const itemPercentage =
+          completed / count
 
         return (
           sum +
-          itemProgress
+          itemPercentage
         )
-
       },
       0
     )
-
 
   return Math.round(
     (
@@ -253,7 +303,6 @@ export function calculatePeriodPercentage(
       list.length
     ) * 100
   )
-
 }
 
 
@@ -261,10 +310,8 @@ export function isPeriodComplete(
   progress,
   period
 ) {
-
   const list =
     getList(period)
-
 
   return (
     list.length > 0 &&
@@ -277,76 +324,104 @@ export function isPeriodComplete(
         ) === 0
     )
   )
-
 }
 
+
+/* =========================================
+   MERGE SAME ACCOUNT ONLY
+
+   الأقل في remaining يعني إنجازًا أكبر.
+   هذا الدمج آمن فقط لأن التخزين المحلي
+   أصبح منفصلًا لكل user_id.
+========================================= */
 
 export function mergePeriodProgress(
-  localMap = {},
-  cloudMap = {},
+  localPeriod = {},
+  cloudPeriod = {},
   list = []
 ) {
+  const merged = {}
 
-  const result = {}
-
-
-  list.forEach(
-    item => {
-
-      const localValue =
-        typeof localMap?.[
-          item.id
-        ] === 'number'
-          ? localMap[item.id]
-          : item.count
-
-
-      const cloudValue =
-        typeof cloudMap?.[
-          item.id
-        ] === 'number'
-          ? cloudMap[item.id]
-          : item.count
-
-
-      const best =
-        Math.min(
-          localValue,
-          cloudValue
+  for (
+    const item of list
+  ) {
+    const count =
+      Math.max(
+        1,
+        Number(
+          item.count || 1
         )
+      )
 
+    const localValue =
+      localPeriod?.[
+        item.id
+      ]
 
-      if (
-        best !==
-        item.count
-      ) {
+    const cloudValue =
+      cloudPeriod?.[
+        item.id
+      ]
 
-        result[item.id] =
-          best
+    const localRemaining =
+      Number.isFinite(
+        Number(localValue)
+      )
+        ? Math.min(
+            count,
+            Math.max(
+              0,
+              Number(localValue)
+            )
+          )
+        : count
 
-      }
+    const cloudRemaining =
+      Number.isFinite(
+        Number(cloudValue)
+      )
+        ? Math.min(
+            count,
+            Math.max(
+              0,
+              Number(cloudValue)
+            )
+          )
+        : count
 
+    const bestRemaining =
+      Math.min(
+        localRemaining,
+        cloudRemaining
+      )
+
+    if (
+      bestRemaining !== count
+    ) {
+      merged[item.id] =
+        bestRemaining
     }
-  )
+  }
 
-
-  return result
-
+  return merged
 }
 
 
-export function calculateStreak(
-  history,
-  today,
-  todayCompleted
-) {
+/* =========================================
+   STREAK
+========================================= */
 
+export function calculateStreak(
+  history = [],
+  todayKey = getDateKey(),
+  todayCompleted = false
+) {
   const completedDates =
     new Set(
-      history
+      (history || [])
         .filter(
           row =>
-            row.day_completed
+            row?.day_completed
         )
         .map(
           row =>
@@ -354,48 +429,37 @@ export function calculateStreak(
         )
     )
 
-
-  if (
-    todayCompleted
-  ) {
-
+  if (todayCompleted) {
     completedDates.add(
-      today
+      todayKey
     )
-
   }
 
-
   let cursor =
-    todayCompleted
-      ? today
+    completedDates.has(
+      todayKey
+    )
+      ? todayKey
       : addDays(
-          today,
+          todayKey,
           -1
         )
 
-
   let streak = 0
-
 
   while (
     completedDates.has(
       cursor
     )
   ) {
-
     streak += 1
-
 
     cursor =
       addDays(
         cursor,
         -1
       )
-
   }
 
-
   return streak
-
 }

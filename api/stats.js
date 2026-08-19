@@ -3,740 +3,324 @@ import {
   getCurrentUser
 } from '../server/auth.js'
 
+function pad(value) {
+  return String(value).padStart(2, '0')
+}
 
-function dateKey(date) {
+function key(year, month, day) {
+  return `${year}-${pad(month)}-${pad(day)}`
+}
 
-  return [
+function addDays(dateString, amount) {
+  const [y, m, d] = dateString
+    .split('-')
+    .map(Number)
+
+  const date = new Date(y, m - 1, d)
+  date.setDate(date.getDate() + amount)
+
+  return key(
     date.getFullYear(),
-    String(
-      date.getMonth() + 1
-    ).padStart(2, '0'),
-    String(
-      date.getDate()
-    ).padStart(2, '0')
-  ].join('-')
-
+    date.getMonth() + 1,
+    date.getDate()
+  )
 }
 
-
-function addDays(
-  date,
-  amount
-) {
-
-  const result =
-    new Date(date)
-
-  result.setDate(
-    result.getDate() +
-    amount
-  )
-
-  return result
-}
-
-
-function startOfWeek(
-  date
-) {
-
-  const result =
-    new Date(date)
-
-  const day =
-    result.getDay()
-
-  /*
-    الأسبوع:
-    السبت → الجمعة
-  */
-
-  const diff =
-    day === 6
-      ? 0
-      : day + 1
-
-  result.setDate(
-    result.getDate() -
-    diff
-  )
-
-  result.setHours(
-    0,
-    0,
-    0,
-    0
-  )
-
-  return result
-}
-
-
-function endOfWeek(
-  date
-) {
-
-  const start =
-    startOfWeek(date)
-
-  return addDays(
-    start,
-    6
-  )
-
-}
-
-
-function getRange(
-  period,
-  year,
-  month
-) {
-
-  const now =
-    new Date()
-
-
-  if (
-    period === 'week'
-  ) {
-
-    return {
-      from:
-        dateKey(
-          startOfWeek(now)
-        ),
-
-      to:
-        dateKey(
-          endOfWeek(now)
-        )
+function todayRiyadh() {
+  const parts = new Intl.DateTimeFormat(
+    'en-US',
+    {
+      timeZone: 'Asia/Riyadh',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
     }
+  ).formatToParts(new Date())
 
-  }
+  const values = Object.fromEntries(
+    parts.map(part => [part.type, part.value])
+  )
 
+  return `${values.year}-${values.month}-${values.day}`
+}
 
-  if (
-    period === 'year'
-  ) {
-
-    const selectedYear =
-      Number(year) ||
-      now.getFullYear()
-
-
-    return {
-
-      from:
-        `${selectedYear}-01-01`,
-
-      to:
-        `${selectedYear}-12-31`
-
-    }
-
-  }
-
-
-  if (
-    period === 'all'
-  ) {
-
-    return {
-      from: null,
-      to: null
-    }
-
-  }
-
+function getRange(period, year, month) {
+  const nowKey = todayRiyadh()
+  const [nowYear, nowMonth] = nowKey
+    .split('-')
+    .map(Number)
 
   const selectedYear =
-    Number(year) ||
-    now.getFullYear()
-
+    Number(year) || nowYear
 
   const selectedMonth =
-    Number(month) ||
-    now.getMonth() + 1
+    Number(month) || nowMonth
 
-
-  const firstDay =
-    new Date(
-      selectedYear,
-      selectedMonth - 1,
-      1
-    )
-
-
-  const lastDay =
-    new Date(
+  if (period === 'month') {
+    const days = new Date(
       selectedYear,
       selectedMonth,
       0
-    )
-
-
-  return {
-
-    from:
-      dateKey(firstDay),
-
-    to:
-      dateKey(lastDay)
-
-  }
-
-}
-
-
-function calculateStreaks(
-  rows
-) {
-
-  const completedDates =
-    rows
-      .filter(
-        row =>
-          row.day_completed
-      )
-      .map(
-        row =>
-          row.progress_date
-      )
-      .sort()
-
-
-  if (
-    completedDates.length === 0
-  ) {
+    ).getDate()
 
     return {
-      current: 0,
-      longest: 0
+      from: key(selectedYear, selectedMonth, 1),
+      to: key(selectedYear, selectedMonth, days),
+      year: selectedYear,
+      month: selectedMonth
     }
-
   }
 
-
-  let longest = 1
-  let running = 1
-
-
-  for (
-    let index = 1;
-    index <
-      completedDates.length;
-    index += 1
-  ) {
-
-    const previous =
-      new Date(
-        `${completedDates[
-          index - 1
-        ]}T12:00:00`
-      )
-
-
-    previous.setDate(
-      previous.getDate() + 1
-    )
-
-
-    if (
-      dateKey(previous) ===
-      completedDates[index]
-    ) {
-
-      running += 1
-
-      longest =
-        Math.max(
-          longest,
-          running
-        )
-
-    } else {
-
-      running = 1
-
+  if (period === 'year') {
+    return {
+      from: `${selectedYear}-01-01`,
+      to: `${selectedYear}-12-31`,
+      year: selectedYear,
+      month: selectedMonth
     }
-
   }
 
+  if (period === 'week') {
+    const [y, m, d] = nowKey
+      .split('-')
+      .map(Number)
 
-  const completedSet =
-    new Set(
-      completedDates
-    )
+    const date = new Date(y, m - 1, d)
+    const day = date.getDay()
+    const daysFromSaturday = (day + 1) % 7
+    const from = addDays(nowKey, -daysFromSaturday)
 
+    return {
+      from,
+      to: addDays(from, 6),
+      year: selectedYear,
+      month: selectedMonth
+    }
+  }
 
-  const today =
-    new Date()
+  return {
+    from: '2000-01-01',
+    to: '2999-12-31',
+    year: selectedYear,
+    month: selectedMonth
+  }
+}
 
+function calculateStreak(rows) {
+  const today = todayRiyadh()
+  const completed = new Set(
+    rows
+      .filter(row => row.day_completed)
+      .map(row => row.progress_date)
+  )
 
-  const todayKey =
-    dateKey(today)
-
-
-  let cursor =
-    completedSet.has(
-      todayKey
-    )
-      ? today
-      : addDays(
-          today,
-          -1
-        )
-
+  let cursor = completed.has(today)
+    ? today
+    : addDays(today, -1)
 
   let current = 0
 
-
-  while (
-    completedSet.has(
-      dateKey(cursor)
-    )
-  ) {
-
+  while (completed.has(cursor)) {
     current += 1
-
-    cursor =
-      addDays(
-        cursor,
-        -1
-      )
-
+    cursor = addDays(cursor, -1)
   }
 
+  const sorted = [...completed].sort()
+  let longest = 0
+  let running = 0
+  let previous = null
+
+  sorted.forEach(date => {
+    if (
+      previous &&
+      addDays(previous, 1) === date
+    ) {
+      running += 1
+    } else {
+      running = 1
+    }
+
+    longest = Math.max(longest, running)
+    previous = date
+  })
 
   return {
     current,
     longest
   }
-
 }
 
-
-function summarize(
-  rows
-) {
-
-  const totalPoints =
-    rows.reduce(
-      (
-        total,
-        row
-      ) =>
-        total +
-        Number(
-          row.morning_percentage ||
-          0
-        ) +
-        Number(
-          row.evening_percentage ||
-          0
-        ),
-      0
-    )
-
-
-  const completedDays =
-    rows.filter(
-      row =>
-        row.day_completed
-    ).length
-
-
-  const partialDays =
-    rows.filter(
-      row =>
-        !row.day_completed &&
-        (
-          Number(
-            row.morning_percentage
-          ) > 0 ||
-          Number(
-            row.evening_percentage
-          ) > 0
-        )
-    ).length
-
-
-  const activeDays =
-    rows.filter(
-      row =>
-        Number(
-          row.morning_percentage
-        ) > 0 ||
-        Number(
-          row.evening_percentage
-        ) > 0
-    ).length
-
-
-  const average =
-    rows.length
-      ? Math.round(
-          totalPoints /
-          (
-            rows.length *
-            2
-          )
-        )
-      : 0
-
-
-  return {
-
-    totalPoints,
-
-    completedDays,
-
-    partialDays,
-
-    activeDays,
-
-    averagePercentage:
-      average
-
+export default async function handler(req, res) {
+  if (req.method !== 'GET') {
+    return res.status(405).json({
+      message: 'طريقة الطلب غير مسموحة.'
+    })
   }
-
-}
-
-
-function monthlySummary(
-  rows,
-  year
-) {
-
-  const result =
-    Array.from(
-      {
-        length: 12
-      },
-      (
-        _,
-        index
-      ) => ({
-
-        month:
-          index + 1,
-
-        totalPoints: 0,
-
-        completedDays: 0,
-
-        partialDays: 0,
-
-        activeDays: 0
-
-      })
-    )
-
-
-  rows.forEach(
-    row => {
-
-      if (
-        !row.progress_date
-          ?.startsWith(
-            `${year}-`
-          )
-      ) {
-
-        return
-
-      }
-
-
-      const month =
-        Number(
-          row.progress_date
-            .slice(
-              5,
-              7
-            )
-        )
-
-
-      const item =
-        result[
-          month - 1
-        ]
-
-
-      if (!item) {
-        return
-      }
-
-
-      const points =
-        Number(
-          row.morning_percentage ||
-          0
-        ) +
-        Number(
-          row.evening_percentage ||
-          0
-        )
-
-
-      item.totalPoints +=
-        points
-
-
-      if (
-        row.day_completed
-      ) {
-
-        item.completedDays += 1
-
-      } else if (
-        points > 0
-      ) {
-
-        item.partialDays += 1
-
-      }
-
-
-      if (
-        points > 0
-      ) {
-
-        item.activeDays += 1
-
-      }
-
-    }
-  )
-
-
-  return result
-}
-
-
-export default async function handler(
-  req,
-  res
-) {
-
-  if (
-    req.method !== 'GET'
-  ) {
-
-    return res
-      .status(405)
-      .json({
-        message:
-          'طريقة الطلب غير مسموحة.'
-      })
-
-  }
-
 
   try {
+    const current = await getCurrentUser(req)
 
-    const current =
-      await getCurrentUser(
-        req
-      )
-
-
-    if (!current) {
-
-      return res
-        .status(401)
-        .json({
-          message:
-            'يجب تسجيل الدخول.'
-        })
-
+    if (!current?.user?.id) {
+      return res.status(401).json({
+        message: 'يجب تسجيل الدخول.'
+      })
     }
 
+    const period = String(
+      req.query?.period || 'month'
+    )
 
-    const supabase =
-      getAdmin()
+    const range = getRange(
+      period,
+      req.query?.year,
+      req.query?.month
+    )
 
-
-    const period =
-      req.query.period ||
-      'month'
-
-
-    const now =
-      new Date()
-
-
-    const selectedYear =
-      Number(
-        req.query.year
-      ) ||
-      now.getFullYear()
-
-
-    const selectedMonth =
-      Number(
-        req.query.month
-      ) ||
-      now.getMonth() + 1
-
-
-    const range =
-      getRange(
-        period,
-        selectedYear,
-        selectedMonth
-      )
-
-
-    /*
-      سجل كامل لحساب
-      الاستمرار الحالي والأطول.
-    */
+    const supabase = getAdmin()
 
     const {
       data: allRows,
-      error: allError
-    } =
-      await supabase
-        .from(
-          'adhkar_daily_progress'
-        )
-        .select(`
-          progress_date,
-          morning_percentage,
-          evening_percentage,
-          morning_completed,
-          evening_completed,
-          day_completed
-        `)
-        .eq(
-          'user_id',
-          current.user.id
-        )
-        .order(
-          'progress_date',
-          {
-            ascending: true
-          }
-        )
-
-
-    if (allError) {
-
-      throw allError
-
-    }
-
-
-    let selectedRows =
-      allRows || []
-
-
-    if (
-      range.from
-    ) {
-
-      selectedRows =
-        selectedRows.filter(
-          row =>
-            row.progress_date >=
-              range.from &&
-            row.progress_date <=
-              range.to
-        )
-
-    }
-
-
-    const summary =
-      summarize(
-        selectedRows
-      )
-
-
-    const streaks =
-      calculateStreaks(
-        allRows || []
-      )
-
-
-    const yearRows =
-      (allRows || [])
-        .filter(
-          row =>
-            row.progress_date
-              ?.startsWith(
-                `${selectedYear}-`
-              )
-        )
-
-
-    return res
-      .status(200)
-      .json({
-
-        period,
-
-        range,
-
-        year:
-          selectedYear,
-
-        month:
-          selectedMonth,
-
-        summary: {
-
-          ...summary,
-
-          currentStreak:
-            streaks.current,
-
-          longestStreak:
-            streaks.longest
-
-        },
-
-        days:
-          selectedRows
-            .slice()
-            .sort(
-              (
-                a,
-                b
-              ) =>
-                b.progress_date
-                  .localeCompare(
-                    a.progress_date
-                  )
-            ),
-
-        months:
-          monthlySummary(
-            yearRows,
-            selectedYear
-          )
-
+      error
+    } = await supabase
+      .from('adhkar_daily_progress')
+      .select(`
+        progress_date,
+        morning_percentage,
+        evening_percentage,
+        morning_completed,
+        evening_completed,
+        day_completed
+      `)
+      .eq('user_id', current.user.id)
+      .order('progress_date', {
+        ascending: true
       })
 
+    if (error) {
+      throw error
+    }
 
-  } catch (error) {
+    const rows = allRows || []
 
-    console.error(
-      'STATS ERROR:',
-      error
+    const selected = rows.filter(row => (
+      row.progress_date >= range.from &&
+      row.progress_date <= range.to
+    ))
+
+    let totalPoints = 0
+    let completedDays = 0
+    let partialDays = 0
+    let activeDays = 0
+    let totalDailyPercentage = 0
+
+    selected.forEach(row => {
+      const morning = Number(
+        row.morning_percentage || 0
+      )
+
+      const evening = Number(
+        row.evening_percentage || 0
+      )
+
+      const average = Math.round(
+        (morning + evening) / 2
+      )
+
+      totalPoints += morning + evening
+      totalDailyPercentage += average
+
+      if (row.day_completed) {
+        completedDays += 1
+      } else if (average > 0) {
+        partialDays += 1
+      }
+
+      if (average > 0) {
+        activeDays += 1
+      }
+    })
+
+    const streak = calculateStreak(rows)
+
+    const months = Array.from(
+      { length: 12 },
+      (_, index) => ({
+        month: index + 1,
+        totalPoints: 0,
+        completedDays: 0,
+        partialDays: 0,
+        activeDays: 0
+      })
     )
 
+    rows
+      .filter(row =>
+        row.progress_date.startsWith(
+          `${range.year}-`
+        )
+      )
+      .forEach(row => {
+        const monthNumber = Number(
+          row.progress_date.slice(5, 7)
+        )
 
-    return res
-      .status(500)
-      .json({
-        message:
-          'تعذر تحميل الإحصائيات.'
+        const item = months[monthNumber - 1]
+        const morning = Number(
+          row.morning_percentage || 0
+        )
+        const evening = Number(
+          row.evening_percentage || 0
+        )
+        const average = Math.round(
+          (morning + evening) / 2
+        )
+
+        item.totalPoints += morning + evening
+
+        if (row.day_completed) {
+          item.completedDays += 1
+        } else if (average > 0) {
+          item.partialDays += 1
+        }
+
+        if (average > 0) {
+          item.activeDays += 1
+        }
       })
 
-  }
+    return res.status(200).json({
+      period,
+      range: {
+        from: range.from,
+        to: range.to
+      },
+      year: range.year,
+      month: range.month,
+      summary: {
+        totalPoints,
+        completedDays,
+        partialDays,
+        activeDays,
+        averagePercentage:
+          selected.length > 0
+            ? Math.round(
+                totalDailyPercentage /
+                selected.length
+              )
+            : 0,
+        currentStreak: streak.current,
+        longestStreak: streak.longest
+      },
+      days: selected,
+      months
+    })
+  } catch (error) {
+    console.error('STATS:', error)
 
+    return res.status(500).json({
+      message:
+        error?.message ||
+        'تعذر تحميل الإحصائيات.'
+    })
+  }
 }

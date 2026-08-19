@@ -1,0 +1,673 @@
+/* =========================================================
+   REFQAT REBUILD OVERRIDES
+   يحافظ على App.css الحالي ويضيف التعديلات الجديدة فقط
+========================================================= */
+
+/* =========================================================
+   MORNING — SUNRISE THEME
+========================================================= */
+
+.app.morning {
+  --bg-1: #fff8d6;
+  --bg-2: #ffe8a9;
+  --bg-3: #ffd3a0;
+  --bg-4: #eaf8ff;
+
+  --text-main: #654c2a;
+  --text-strong: #543b1d;
+  --text-soft: #806b4e;
+
+  --accent-one: #f4b52d;
+  --accent-two: #ef855d;
+  --accent-three: #ffd766;
+  --accent-four: #e36f58;
+
+  --one: #f4b52d;
+  --two: #ef855d;
+  --three: #ffd766;
+  --rose: #e36f58;
+
+  --glass: rgba(255,255,255,.52);
+  --glass-light: rgba(255,255,255,.76);
+  --glass-soft: rgba(255,255,255,.32);
+  --border: rgba(255,255,255,.82);
+
+  --shadow:
+    0 22px 65px rgba(154, 105, 28, .14);
+
+  --progress:
+    linear-gradient(
+      90deg,
+      #f6b82f,
+      #ff925f,
+      #ffd666
+    );
+}
+
+.app.morning {
+  background:
+    radial-gradient(
+      circle at 78% 8%,
+      rgba(255, 230, 105, .72),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 15% 22%,
+      rgba(255, 145, 91, .28),
+      transparent 30%
+    ),
+    linear-gradient(
+      145deg,
+      #fff9da 0%,
+      #ffedb6 30%,
+      #ffd7a5 58%,
+      #eaf8ff 100%
+    ) !important;
+}
+
+.app.morning .ambient-one {
+  background: #ffd64d !important;
+  opacity: .38 !important;
+}
+
+.app.morning .ambient-two {
+  background: #ff8d62 !important;
+  opacity: .24 !important;
+}
+
+.app.morning .ambient-three {
+  background: #fff0a3 !important;
+  opacity: .38 !important;
+}
+
+.app.morning .ambient-four {
+  background: #f5b72d !important;
+  opacity: .18 !important;
+}
+
+.app.morning .hero-label,
+.app.morning .section-title > div > span {
+  color: #c86931 !important;
+}
+
+.app.morning .hero h2 em {
+  background:
+    linear-gradient(
+      90deg,
+      #d98f16,
+      #f29a48,
+      #df6d50,
+      #e4aa21
+    ) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+}
+
+.app.morning .period.active,
+.app.morning .main-tabs button.active,
+.app.morning .progress-view-tabs button.active,
+.app.morning .filter-tabs button.active {
+  background:
+    linear-gradient(
+      135deg,
+      #f5b82e,
+      #f08b5d
+    ) !important;
+  color: #fff !important;
+}
+
+/* =========================================================
+   MORNING GEOMETRY — أقوى وأوضح
+========================================================= */
+
+.hero-geometry {
+  position: absolute;
+  left: 5%;
+  top: 50%;
+  width: 250px;
+  height: 250px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+}
+
+.app.morning .hero-geometry {
+  opacity: 1 !important;
+  filter:
+    drop-shadow(0 15px 28px rgba(191, 113, 21, .22));
+}
+
+.geometry-aura {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      circle,
+      rgba(255, 209, 73, .26),
+      rgba(255, 141, 85, .08) 48%,
+      transparent 72%
+    );
+  animation: geometryPulse 7s ease-in-out infinite;
+}
+
+.geometry-outer {
+  position: absolute;
+  width: 198px;
+  height: 198px;
+  border: 2px solid currentColor;
+  border-radius: 28px;
+  transform: rotate(22.5deg);
+  animation: geometrySpin 36s linear infinite;
+}
+
+.app.morning .geometry-outer {
+  color: rgba(204, 126, 24, .76) !important;
+  border-width: 2px !important;
+}
+
+.app.evening .geometry-outer {
+  color: rgba(255, 208, 156, .46);
+}
+
+.geometry-diamond {
+  position: absolute;
+  width: 142px;
+  height: 142px;
+  border: 1.5px solid currentColor;
+  border-radius: 24px;
+  transform: rotate(45deg);
+}
+
+.diamond-one {
+  animation: geometrySpin 28s linear infinite reverse;
+}
+
+.diamond-two {
+  width: 105px;
+  height: 105px;
+  animation: geometrySpin 22s linear infinite;
+}
+
+.app.morning .geometry-diamond {
+  color: rgba(226, 111, 57, .62) !important;
+}
+
+.geometry-circle {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+}
+
+.circle-one {
+  width: 168px;
+  height: 168px;
+}
+
+.circle-two {
+  width: 82px;
+  height: 82px;
+}
+
+.app.morning .geometry-circle {
+  color: rgba(230, 161, 36, .66) !important;
+}
+
+.geometry-star {
+  position: absolute;
+  width: 74px;
+  height: 74px;
+  display: grid;
+  place-items: center;
+  border-radius: 22px;
+  transform: rotate(45deg);
+  border: 1.5px solid currentColor;
+}
+
+.geometry-star span {
+  transform: rotate(-45deg);
+  font-size: 26px;
+}
+
+.app.morning .geometry-star {
+  color: #d78120 !important;
+  background: rgba(255, 236, 164, .35);
+}
+
+.geometry-core {
+  position: relative;
+  z-index: 4;
+  font-size: 48px;
+  line-height: 1;
+  animation: corePulse 5s ease-in-out infinite;
+}
+
+.app.morning .geometry-core {
+  color: #c96c2b !important;
+  text-shadow: 0 8px 24px rgba(221, 131, 33, .3);
+}
+
+.geo-point,
+.floating-star {
+  position: absolute;
+  display: block;
+}
+
+.geo-point {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.app.morning .geo-point {
+  color: #e58c2e !important;
+  box-shadow: 0 0 12px rgba(229, 140, 46, .6);
+}
+
+.p1 { top: -4px; left: 50%; }
+.p2 { top: 15%; right: 5%; }
+.p3 { top: 50%; right: -4px; }
+.p4 { bottom: 15%; right: 5%; }
+.p5 { bottom: -4px; left: 50%; }
+.p6 { bottom: 15%; left: 5%; }
+.p7 { top: 50%; left: -4px; }
+.p8 { top: 15%; left: 5%; }
+
+.floating-star {
+  color: currentColor;
+  animation: starFloat 5s ease-in-out infinite;
+}
+
+.app.morning .floating-star {
+  color: #d88527 !important;
+}
+
+.star-one { top: 18px; right: 8px; }
+.star-two { bottom: 26px; left: 4px; animation-delay: 1.2s; }
+.star-three { top: 58%; right: -18px; animation-delay: 2.2s; }
+
+@keyframes geometrySpin {
+  to { transform: rotate(382.5deg); }
+}
+
+@keyframes geometryPulse {
+  50% { transform: scale(1.08); opacity: .8; }
+}
+
+@keyframes corePulse {
+  50% { transform: scale(1.08); }
+}
+
+@keyframes starFloat {
+  50% { transform: translateY(-8px) scale(1.2); }
+}
+
+/* =========================================================
+   MAIN TABS — دائمًا ظاهرة
+========================================================= */
+
+.main-tabs {
+  position: relative;
+  z-index: 8;
+  width: min(930px, calc(100% - 18px));
+  margin: 18px auto;
+  padding: 7px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: var(--glass);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(22px);
+}
+
+.main-tabs button {
+  min-height: 44px;
+  border: 0;
+  border-radius: 15px;
+  background: transparent;
+  color: var(--text-soft, var(--soft));
+  font-weight: 800;
+  transition: .2s ease;
+}
+
+.main-tabs button.active {
+  background:
+    linear-gradient(
+      135deg,
+      var(--accent-one, var(--one)),
+      var(--accent-two, var(--two))
+    );
+  color: white;
+}
+
+.tab-lock {
+  margin-inline-start: 4px;
+  opacity: .55;
+}
+
+/* =========================================================
+   CALENDAR
+========================================================= */
+
+.progress-view-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 5px;
+  margin-bottom: 12px;
+  border-radius: 16px;
+  background: var(--glass-light);
+}
+
+.progress-view-tabs button {
+  border: 0;
+  border-radius: 12px;
+  padding: 11px;
+  color: var(--text-soft, var(--soft));
+  background: transparent;
+  font-weight: 800;
+}
+
+.progress-view-tabs button.active {
+  color: white;
+  background:
+    linear-gradient(
+      135deg,
+      var(--accent-one, var(--one)),
+      var(--accent-two, var(--two))
+    );
+}
+
+.calendar-toolbar {
+  display: grid;
+  grid-template-columns: 42px 1fr 42px;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.calendar-toolbar strong {
+  text-align: center;
+  color: var(--text-strong, var(--strong));
+  font-size: 18px;
+}
+
+.calendar-toolbar button {
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  color: var(--text-strong, var(--strong));
+  background: var(--glass-light);
+  font-size: 24px;
+}
+
+.calendar-shell {
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.calendar-weekdays,
+.calendar-grid {
+  min-width: 720px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 7px;
+}
+
+.calendar-weekdays {
+  margin-bottom: 7px;
+}
+
+.calendar-weekdays span {
+  padding: 9px 4px;
+  text-align: center;
+  color: var(--text-soft, var(--soft));
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.calendar-cell {
+  min-height: 118px;
+  padding: 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--glass-light);
+}
+
+.calendar-cell.complete {
+  border-color: rgba(60, 186, 125, .65);
+  background: rgba(68, 190, 132, .12);
+}
+
+.calendar-cell.partial {
+  border-color: rgba(232, 161, 61, .6);
+  background: rgba(232, 161, 61, .1);
+}
+
+.calendar-cell.missed {
+  border-color: rgba(224, 87, 87, .55);
+  background: rgba(224, 87, 87, .09);
+}
+
+.calendar-cell.future {
+  opacity: .62;
+}
+
+.empty-cell {
+  visibility: hidden;
+}
+
+.calendar-date {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.calendar-date strong {
+  color: var(--text-strong, var(--strong));
+  font-size: 15px;
+}
+
+.calendar-date small {
+  padding: 3px 5px;
+  border-radius: 999px;
+  background: var(--glass);
+  color: var(--accent-one, var(--one));
+  font-size: 7px;
+}
+
+.calendar-period-value {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 7px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.08);
+}
+
+.calendar-period-value b {
+  color: var(--text-strong, var(--strong));
+  font-size: 9px;
+}
+
+.calendar-total {
+  margin-top: auto;
+  text-align: center;
+  color: var(--text-strong, var(--strong));
+  font-size: 12px;
+  font-weight: 900;
+}
+
+/* =========================================================
+   COMMUNITY — غير المكتمل أحمر / المكتمل أخضر + تاج
+========================================================= */
+
+.community-summary {
+  grid-template-columns: repeat(3, 1fr) !important;
+}
+
+.member-card.incomplete {
+  border-color: rgba(223, 74, 74, .7) !important;
+  background: rgba(219, 64, 64, .11) !important;
+}
+
+.member-card.completed {
+  border-color: rgba(54, 185, 120, .72) !important;
+  background: rgba(54, 185, 120, .1) !important;
+}
+
+.member-card.incomplete .member-progress-line span,
+.ranking-incomplete .member-progress-line span {
+  background:
+    linear-gradient(
+      90deg,
+      #df5b5b,
+      #ed8b6c
+    ) !important;
+}
+
+.member-card.completed .member-progress-line span,
+.ranking-completed .member-progress-line span {
+  background:
+    linear-gradient(
+      90deg,
+      #4abb83,
+      #75d2a6
+    ) !important;
+}
+
+.crown-tag {
+  color: #2f9367 !important;
+  background: rgba(61, 185, 126, .16) !important;
+}
+
+.member-progress-details {
+  gap: 8px 14px !important;
+  font-size: 8px !important;
+}
+
+/* =========================================================
+   RANKING — إظهار تقدم اليوم
+========================================================= */
+
+.ranking-card {
+  grid-template-columns: 58px minmax(0, 1fr) auto !important;
+}
+
+.ranking-card.ranking-incomplete {
+  border-color: rgba(220, 83, 83, .4);
+}
+
+.ranking-card.ranking-completed {
+  border-color: rgba(56, 182, 119, .52);
+}
+
+.ranking-title-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ranking-today-progress {
+  margin-top: 8px;
+}
+
+.ranking-today-progress > div:first-child {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  color: var(--text-soft, var(--soft));
+  font-size: 8px;
+}
+
+.ranking-today-progress b {
+  color: var(--text-strong, var(--strong));
+}
+
+.ranking-today-progress .member-progress-line {
+  margin-top: 7px;
+}
+
+/* =========================================================
+   BLANK COMPANION PAGE
+========================================================= */
+
+.companion-page {
+  min-height: 100vh;
+}
+
+.companion-header {
+  position: relative;
+  z-index: 4;
+}
+
+.companion-empty-page {
+  position: relative;
+  z-index: 3;
+  width: min(1160px, calc(100% - 24px));
+  min-height: calc(100vh - 140px);
+  margin: 18px auto 40px;
+  border: 1px dashed rgba(255,255,255,.28);
+  border-radius: 34px;
+  background: rgba(255,255,255,.05);
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+  .hero-geometry {
+    width: 135px;
+    height: 135px;
+    left: -18px;
+    top: 30%;
+    opacity: .7;
+    transform: translateY(-50%) scale(.72);
+    transform-origin: center;
+  }
+
+  .app.morning .hero-geometry {
+    opacity: .9 !important;
+  }
+
+  .main-tabs {
+    width: calc(100% - 12px);
+    gap: 3px;
+    padding: 5px;
+  }
+
+  .main-tabs button {
+    min-height: 40px;
+    padding: 8px 2px;
+    font-size: 9px;
+  }
+
+  .calendar-stats {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .community-summary {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+
+  .ranking-card {
+    grid-template-columns: 42px minmax(0, 1fr) !important;
+  }
+
+  .ranking-meta {
+    grid-column: 2;
+    flex-wrap: wrap;
+  }
+}
