@@ -1,4 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
+/* eslint-disable react-hooks/set-state-in-effect */
 
 import {
   createContext,
@@ -27,144 +28,192 @@ export function AuthProvider({
   const [
     currentUser,
     setCurrentUser
-  ] = useState(null)
+  ] =
+    useState(null)
+
 
   const [
     authChecked,
     setAuthChecked
-  ] = useState(false)
+  ] =
+    useState(false)
+
 
   const [
     showLogin,
     setShowLogin
-  ] = useState(false)
+  ] =
+    useState(false)
+
 
   const [
     authMode,
     setAuthMode
-  ] = useState('login')
+  ] =
+    useState('login')
+
 
   const [
     authUsername,
     setAuthUsername
-  ] = useState('')
+  ] =
+    useState('')
+
 
   const [
     password,
     setPassword
-  ] = useState('')
+  ] =
+    useState('')
+
 
   const [
     confirmPassword,
     setConfirmPassword
-  ] = useState('')
+  ] =
+    useState('')
+
 
   const [
     authMessage,
     setAuthMessage
-  ] = useState('')
+  ] =
+    useState('')
+
 
   const [
     authLoading,
     setAuthLoading
-  ] = useState(false)
+  ] =
+    useState(false)
 
+
+  /* =====================================
+     CHECK CURRENT SESSION
+  ===================================== */
 
   useEffect(() => {
-    let cancelled = false
+    let active = true
+
 
     async function checkSession() {
       try {
-        const response =
-          await fetch(
-            '/api/me',
+        const data =
+          await apiRequest(
+            '/api/auth?action=me',
             {
-              method: 'GET',
-              credentials:
-                'include',
-              cache:
-                'no-store'
+              method: 'GET'
             }
           )
 
-        const data =
-          await response
-            .json()
-            .catch(
-              () => ({})
-            )
 
-        if (cancelled) {
+        if (!active) {
           return
         }
 
+
         setCurrentUser(
-          response.ok
-            ? data?.user || null
-            : null
+          data?.user || null
         )
+
       } catch (error) {
+
         console.error(
-          'CHECK SESSION:',
+          'AUTH ME:',
           error
         )
 
-        if (!cancelled) {
+
+        if (active) {
           setCurrentUser(null)
         }
+
       } finally {
-        if (!cancelled) {
+
+        if (active) {
           setAuthChecked(true)
         }
       }
     }
 
+
     checkSession()
 
+
     return () => {
-      cancelled = true
+      active = false
     }
+
   }, [])
 
+
+  /* =====================================
+     MODAL
+  ===================================== */
 
   function openAuth(
     mode = 'login'
   ) {
-    setAuthMode(mode)
-    setAuthMessage('')
+    setAuthMode(
+      mode === 'signup'
+        ? 'signup'
+        : 'login'
+    )
+
+    setAuthUsername('')
     setPassword('')
     setConfirmPassword('')
+    setAuthMessage('')
+
     setShowLogin(true)
   }
 
 
   function closeAuth() {
+    if (authLoading) {
+      return
+    }
+
     setShowLogin(false)
     setAuthMessage('')
-    setPassword('')
-    setConfirmPassword('')
   }
 
 
   function changeAuthMode(
     mode
   ) {
-    setAuthMode(mode)
+    setAuthMode(
+      mode === 'signup'
+        ? 'signup'
+        : 'login'
+    )
+
     setAuthMessage('')
     setPassword('')
     setConfirmPassword('')
   }
 
 
+  /* =====================================
+     LOGIN / REGISTER
+  ===================================== */
+
   async function submitAuth(
     event
   ) {
-    event.preventDefault()
+    event?.preventDefault?.()
+
+
+    if (authLoading) {
+      return
+    }
+
 
     const username =
       normalizeUsername(
         authUsername
       )
+
 
     if (
       !isValidUsername(
@@ -172,109 +221,129 @@ export function AuthProvider({
       )
     ) {
       setAuthMessage(
-        'اسم المستخدم يجب أن يكون من 3 إلى 24 حرفًا بدون مسافات.'
+        'اسم المستخدم يجب أن يكون من 3 إلى 24 حرفًا، ويمكن استخدام الحروف والأرقام و _ أو -.'
       )
+
       return
     }
 
+
     if (
-      password.length < 6
+      String(password).length <
+      6
     ) {
       setAuthMessage(
         'كلمة المرور يجب أن تكون 6 أحرف على الأقل.'
       )
+
       return
     }
 
+
     if (
       authMode === 'signup' &&
-      password !==
-        confirmPassword
+      password !== confirmPassword
     ) {
       setAuthMessage(
         'كلمتا المرور غير متطابقتين.'
       )
+
       return
     }
+
 
     setAuthLoading(true)
     setAuthMessage('')
 
+
     try {
-      const endpoint =
+      const action =
         authMode === 'signup'
-          ? '/api/register'
-          : '/api/login'
+          ? 'register'
+          : 'login'
+
 
       const data =
         await apiRequest(
-          endpoint,
+          `/api/auth?action=${action}`,
           {
             method: 'POST',
 
             body:
               JSON.stringify({
-                username:
-                  authUsername
-                    .trim(),
-
+                username,
                 password
               })
           }
         )
 
-      if (!data?.user) {
-        throw new Error(
-          'لم يتم العثور على بيانات الحساب.'
-        )
-      }
 
       setCurrentUser(
-        data.user
+        data?.user || null
       )
 
+
       setShowLogin(false)
+
+      setAuthUsername('')
       setPassword('')
       setConfirmPassword('')
       setAuthMessage('')
+
+
     } catch (error) {
+
       console.error(
         'AUTH:',
         error
       )
 
+
       setAuthMessage(
         error?.message ||
-        'تعذر إتمام العملية.'
+        'تعذر إكمال العملية.'
       )
+
     } finally {
+
       setAuthLoading(false)
     }
   }
 
 
+  /* =====================================
+     LOGOUT
+  ===================================== */
+
   async function logout() {
     try {
       await apiRequest(
-        '/api/logout',
+        '/api/auth?action=logout',
         {
-          method: 'POST',
-          body:
-            JSON.stringify({})
+          method: 'POST'
         }
       )
+
     } catch (error) {
+
       console.error(
         'LOGOUT:',
         error
       )
-    }
 
-    setCurrentUser(null)
-    setShowLogin(false)
-    setAuthMessage('')
-    setPassword('')
-    setConfirmPassword('')
+    } finally {
+
+      setCurrentUser(null)
+
+      setAuthChecked(true)
+
+      setShowLogin(false)
+
+      setAuthUsername('')
+      setPassword('')
+      setConfirmPassword('')
+      setAuthMessage('')
+    }
   }
 
 
@@ -314,13 +383,17 @@ export function AuthProvider({
 
 export function useAuth() {
   const context =
-    useContext(AuthContext)
+    useContext(
+      AuthContext
+    )
+
 
   if (!context) {
     throw new Error(
       'useAuth must be used inside AuthProvider.'
     )
   }
+
 
   return context
 }

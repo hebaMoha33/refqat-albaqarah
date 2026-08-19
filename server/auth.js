@@ -1,325 +1,1085 @@
-import { createClient } from '@supabase/supabase-js'
+import process from 'node:process'
+
 import {
+  Buffer
+} from 'node:buffer'
+
+import {
+  createHash,
   randomBytes,
   scryptSync,
-  timingSafeEqual,
-  createHash
+  timingSafeEqual
 } from 'node:crypto'
-import process from 'node:process'
-import { Buffer } from 'node:buffer'
 
-const COOKIE_NAME = 'refqat_session'
-const SESSION_MAX_AGE = 60 * 60 * 24 * 365
+import {
+  createClient
+} from '@supabase/supabase-js'
 
-let adminClient = null
+
+/* =========================================
+   CONSTANTS
+========================================= */
+
+export const COOKIE_NAME =
+  'refqat_session'
+
+export const SESSION_COOKIE_NAME =
+  COOKIE_NAME
+
+export const SESSION_DAYS =
+  365
+
+export const SESSION_MAX_AGE =
+  60 * 60 * 24 * SESSION_DAYS
+
+
+let adminClient =
+  null
+
+
+/* =========================================
+   SUPABASE ADMIN
+========================================= */
 
 export function getAdmin() {
   if (adminClient) {
     return adminClient
   }
 
-  const url = process.env.SUPABASE_URL
-  const key =
-    process.env.SUPABASE_SECRET_KEY ||
-    process.env.SUPABASE_SERVICE_ROLE_KEY
 
-  if (!url) {
-    throw new Error('SUPABASE_URL is missing.')
+  const url =
+    process.env.SUPABASE_URL
+
+  const secretKey =
+    process.env.SUPABASE_SECRET_KEY
+
+
+  if (
+    !url ||
+    !secretKey
+  ) {
+    throw new Error(
+      'Supabase server environment variables are missing.'
+    )
   }
 
-  if (!key) {
-    throw new Error('SUPABASE_SECRET_KEY is missing.')
-  }
 
-  adminClient = createClient(url, key, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-      detectSessionInUrl: false
-    }
-  })
+  adminClient =
+    createClient(
+      url,
+      secretKey,
+      {
+        auth: {
+          persistSession:
+            false,
+
+          autoRefreshToken:
+            false,
+
+          detectSessionInUrl:
+            false
+        }
+      }
+    )
+
 
   return adminClient
 }
 
-export function normalizeUsername(value = '') {
-  return String(value)
-    .normalize('NFKC')
+
+/* =========================================
+   USERNAME
+========================================= */
+
+export function normalizeUsername(
+  value = ''
+) {
+  return String(
+    value || ''
+  )
+    .normalize(
+      'NFKC'
+    )
     .trim()
     .toLowerCase()
 }
 
-export function isValidUsername(username) {
-  return /^[\p{L}\p{N}_-]{3,24}$/u
-    .test(username)
+
+export function validUsername(
+  value = ''
+) {
+  const username =
+    normalizeUsername(
+      value
+    )
+
+
+  return (
+    /^[\p{L}\p{N}_-]{3,24}$/u
+      .test(
+        username
+      )
+  )
 }
 
-export function createPasswordHash(password) {
-  const salt = randomBytes(16).toString('hex')
-  const hash = scryptSync(
-    String(password),
+
+/*
+  Alias للتوافق
+*/
+export const isValidUsername =
+  validUsername
+
+
+/* =========================================
+   PASSWORD HASH
+========================================= */
+
+export function createPasswordHash(
+  password,
+  existingSalt = null
+) {
+  const passwordText =
+    String(
+      password || ''
+    )
+
+
+  if (
+    passwordText.length <
+    6
+  ) {
+    throw new Error(
+      'كلمة المرور يجب أن تكون 6 أحرف على الأقل.'
+    )
+  }
+
+
+  const salt =
+    existingSalt ||
+    randomBytes(16)
+      .toString(
+        'hex'
+      )
+
+
+  const hash =
+    scryptSync(
+      passwordText,
+      salt,
+      64
+    )
+      .toString(
+        'hex'
+      )
+
+
+  return {
     salt,
-    64
-  ).toString('hex')
-
-  return { salt, hash }
+    hash
+  }
 }
+
+
+/*
+  Alias قد تستخدمه register.js
+*/
+export function hashPassword(
+  password,
+  salt = null
+) {
+  return createPasswordHash(
+    password,
+    salt
+  )
+}
+
+
+/* =========================================
+   VERIFY PASSWORD
+========================================= */
 
 export function verifyPassword(
   password,
   salt,
-  storedHash
+  expectedHash
 ) {
   try {
-    const calculated = scryptSync(
-      String(password),
-      String(salt),
-      64
+    if (
+      !password ||
+      !salt ||
+      !expectedHash
+    ) {
+      return false
+    }
+
+
+    const actual =
+      scryptSync(
+        String(password),
+        String(salt),
+        64
+      )
+
+
+    const expected =
+      Buffer.from(
+        String(
+          expectedHash
+        ),
+        'hex'
+      )
+
+
+    if (
+      actual.length !==
+      expected.length
+    ) {
+      return false
+    }
+
+
+    return timingSafeEqual(
+      actual,
+      expected
     )
 
-    const saved = Buffer.from(
-      String(storedHash),
-      'hex'
+  } catch (error) {
+
+    console.error(
+      'VERIFY PASSWORD:',
+      error
     )
 
-    return (
-      calculated.length === saved.length &&
-      timingSafeEqual(calculated, saved)
-    )
-  } catch {
+
     return false
   }
 }
 
-function hashToken(token) {
-  return createHash('sha256')
-    .update(String(token))
-    .digest('hex')
+
+/* =========================================
+   SESSION TOKEN HASH
+========================================= */
+
+export function hashSessionToken(
+  token
+) {
+  return createHash(
+    'sha256'
+  )
+    .update(
+      String(
+        token || ''
+      )
+    )
+    .digest(
+      'hex'
+    )
 }
 
-function parseCookies(req) {
-  const header = req?.headers?.cookie || ''
-  const cookies = {}
 
-  header.split(';').forEach(part => {
-    const index = part.indexOf('=')
+/* =========================================
+   COOKIE PARSER
+========================================= */
 
-    if (index === -1) {
-      return
+export function getSessionToken(
+  req
+) {
+  const cookieHeader =
+    String(
+      req?.headers?.cookie ||
+      ''
+    )
+
+
+  if (!cookieHeader) {
+    return null
+  }
+
+
+  const cookies =
+    cookieHeader
+      .split(';')
+      .map(
+        item =>
+          item.trim()
+      )
+
+
+  for (
+    const cookie of
+    cookies
+  ) {
+    const separator =
+      cookie.indexOf('=')
+
+
+    if (
+      separator === -1
+    ) {
+      continue
     }
 
-    const key = part.slice(0, index).trim()
-    const value = part.slice(index + 1).trim()
 
-    if (!key) {
-      return
+    const name =
+      cookie
+        .slice(
+          0,
+          separator
+        )
+        .trim()
+
+
+    const value =
+      cookie
+        .slice(
+          separator + 1
+        )
+        .trim()
+
+
+    if (
+      name ===
+      COOKIE_NAME
+    ) {
+      try {
+        return decodeURIComponent(
+          value
+        )
+      } catch {
+        return value
+      }
     }
+  }
 
-    try {
-      cookies[key] = decodeURIComponent(value)
-    } catch {
-      cookies[key] = value
-    }
-  })
 
-  return cookies
+  return null
 }
 
-function setSessionCookie(res, token) {
+
+/* =========================================
+   COOKIE BUILDERS
+========================================= */
+
+export function buildSessionCookie(
+  token
+) {
+  const secure =
+    process.env.VERCEL_ENV ===
+      'production' ||
+    process.env.NODE_ENV ===
+      'production'
+
+
   const parts = [
-    `${COOKIE_NAME}=${encodeURIComponent(token)}`,
+    `${COOKIE_NAME}=${encodeURIComponent(
+      token
+    )}`,
+
     'Path=/',
+
     'HttpOnly',
+
     'SameSite=Lax',
+
     `Max-Age=${SESSION_MAX_AGE}`
   ]
 
-  if (process.env.VERCEL) {
-    parts.push('Secure')
+
+  if (secure) {
+    parts.push(
+      'Secure'
+    )
   }
 
-  res.setHeader(
-    'Set-Cookie',
-    parts.join('; ')
+
+  return parts.join(
+    '; '
   )
 }
 
-export function clearSessionCookie(res) {
+
+export function buildClearSessionCookie() {
+  const secure =
+    process.env.VERCEL_ENV ===
+      'production' ||
+    process.env.NODE_ENV ===
+      'production'
+
+
   const parts = [
     `${COOKIE_NAME}=`,
     'Path=/',
     'HttpOnly',
     'SameSite=Lax',
-    'Max-Age=0'
+    'Max-Age=0',
+    'Expires=Thu, 01 Jan 1970 00:00:00 GMT'
   ]
 
-  if (process.env.VERCEL) {
-    parts.push('Secure')
-  }
 
-  res.setHeader(
-    'Set-Cookie',
-    parts.join('; ')
-  )
-}
-
-export function safeUser(user) {
-  if (!user) {
-    return null
-  }
-
-  return {
-    id: user.id,
-    username: user.username,
-    display_name: user.display_name,
-    created_at: user.created_at
-  }
-}
-
-export async function createSession(userId, res) {
-  const supabase = getAdmin()
-  const token = randomBytes(32).toString('base64url')
-  const tokenHash = hashToken(token)
-  const expiresAt = new Date(
-    Date.now() + SESSION_MAX_AGE * 1000
-  ).toISOString()
-
-  const { data, error } = await supabase
-    .from('app_sessions')
-    .insert({
-      user_id: userId,
-      token_hash: tokenHash,
-      expires_at: expiresAt
-    })
-    .select('id,user_id,expires_at')
-    .single()
-
-  if (error) {
-    console.error('CREATE SESSION:', error)
-    throw new Error(
-      `تعذر إنشاء الجلسة: ${error.message}`
+  if (secure) {
+    parts.push(
+      'Secure'
     )
   }
 
-  setSessionCookie(res, token)
 
-  return data
+  return parts.join(
+    '; '
+  )
 }
 
-export async function getCurrentUser(req) {
-  const cookies = parseCookies(req)
-  const token = cookies[COOKIE_NAME]
 
-  if (!token) {
+/* =========================================
+   COOKIE SETTERS
+========================================= */
+
+export function setSessionCookie(
+  res,
+  token
+) {
+  if (
+    !res ||
+    typeof res.setHeader !==
+      'function'
+  ) {
+    return
+  }
+
+
+  res.setHeader(
+    'Set-Cookie',
+    buildSessionCookie(
+      token
+    )
+  )
+}
+
+
+export function clearSessionCookie(
+  res
+) {
+  if (
+    !res ||
+    typeof res.setHeader !==
+      'function'
+  ) {
+    return
+  }
+
+
+  res.setHeader(
+    'Set-Cookie',
+    buildClearSessionCookie()
+  )
+}
+
+
+/*
+  Aliases احتياطية
+*/
+export const sessionCookie =
+  buildSessionCookie
+
+export const clearCookie =
+  buildClearSessionCookie
+
+
+/* =========================================
+   CREATE SESSION
+========================================= */
+
+export async function createSession(
+  firstArgument,
+  secondArgument
+) {
+  /*
+    ندعم:
+
+    createSession(userId)
+
+    createSession(userId, res)
+
+    createSession(res, userId)
+  */
+
+
+  let userId =
+    null
+
+  let res =
+    null
+
+
+  if (
+    typeof firstArgument ===
+    'string'
+  ) {
+    userId =
+      firstArgument
+
+    res =
+      secondArgument || null
+  }
+
+
+  else if (
+    firstArgument &&
+    typeof firstArgument.setHeader ===
+      'function'
+  ) {
+    res =
+      firstArgument
+
+    userId =
+      secondArgument
+  }
+
+
+  if (!userId) {
+    throw new Error(
+      'User ID is required to create a session.'
+    )
+  }
+
+
+  const supabase =
+    getAdmin()
+
+
+  const token =
+    randomBytes(48)
+      .toString(
+        'hex'
+      )
+
+
+  const tokenHash =
+    hashSessionToken(
+      token
+    )
+
+
+  const expiresAt =
+    new Date(
+      Date.now() +
+      SESSION_MAX_AGE *
+        1000
+    )
+      .toISOString()
+
+
+  const {
+    data: session,
+    error
+  } =
+    await supabase
+      .from(
+        'app_sessions'
+      )
+      .insert({
+        user_id:
+          userId,
+
+        token_hash:
+          tokenHash,
+
+        expires_at:
+          expiresAt
+      })
+      .select(`
+        id,
+        user_id,
+        created_at,
+        expires_at
+      `)
+      .single()
+
+
+  if (error) {
+    throw error
+  }
+
+
+  /*
+    إذا مررنا res
+    نضع Cookie تلقائيًا.
+  */
+
+  if (res) {
+    setSessionCookie(
+      res,
+      token
+    )
+  }
+
+
+  return {
+    token,
+    tokenHash,
+
+    expiresAt,
+
+    session
+  }
+}
+
+
+/* =========================================
+   SAFE USER
+========================================= */
+
+export function safeUser(
+  value
+) {
+  if (!value) {
     return null
   }
 
-  const tokenHash = hashToken(token)
-  const supabase = getAdmin()
+
+  /*
+    يدعم تمرير:
+    user مباشرة
+
+    أو:
+    { user, session }
+  */
+
+  const user =
+    value?.user ||
+    value
+
+
+  if (!user?.id) {
+    return null
+  }
+
+
+  return {
+    id:
+      user.id,
+
+    username:
+      user.username,
+
+    username_normalized:
+      user.username_normalized,
+
+    display_name:
+      user.display_name ||
+      user.username,
+
+    /*
+      Alias للواجهة لو احتاجته.
+    */
+    displayName:
+      user.display_name ||
+      user.username,
+
+    created_at:
+      user.created_at
+  }
+}
+
+
+/* =========================================
+   CURRENT SESSION + USER
+========================================= */
+
+export async function getCurrentUser(
+  req
+) {
+  const token =
+    getSessionToken(
+      req
+    )
+
+
+  if (!token) {
+    return {
+      user: null,
+      session: null
+    }
+  }
+
+
+  const supabase =
+    getAdmin()
+
+
+  const tokenHash =
+    hashSessionToken(
+      token
+    )
+
 
   const {
     data: session,
     error: sessionError
-  } = await supabase
-    .from('app_sessions')
-    .select('id,user_id,expires_at')
-    .eq('token_hash', tokenHash)
-    .maybeSingle()
+  } =
+    await supabase
+      .from(
+        'app_sessions'
+      )
+      .select(`
+        id,
+        user_id,
+        token_hash,
+        created_at,
+        expires_at
+      `)
+      .eq(
+        'token_hash',
+        tokenHash
+      )
+      .maybeSingle()
+
 
   if (sessionError) {
-    console.error('GET SESSION:', sessionError)
     throw sessionError
   }
 
+
   if (!session) {
-    return null
+    return {
+      user: null,
+      session: null
+    }
   }
 
-  const expires = new Date(
-    session.expires_at
-  ).getTime()
+
+  const expiresAt =
+    new Date(
+      session.expires_at
+    )
+      .getTime()
+
 
   if (
-    !Number.isFinite(expires) ||
-    expires <= Date.now()
+    !Number.isFinite(
+      expiresAt
+    ) ||
+    expiresAt <=
+      Date.now()
   ) {
-    await supabase
-      .from('app_sessions')
-      .delete()
-      .eq('id', session.id)
 
-    return null
+    await supabase
+      .from(
+        'app_sessions'
+      )
+      .delete()
+      .eq(
+        'id',
+        session.id
+      )
+
+
+    return {
+      user: null,
+      session: null
+    }
   }
+
 
   const {
     data: user,
     error: userError
-  } = await supabase
-    .from('app_users')
-    .select('id,username,display_name,created_at')
-    .eq('id', session.user_id)
-    .maybeSingle()
+  } =
+    await supabase
+      .from(
+        'app_users'
+      )
+      .select(`
+        id,
+        username,
+        username_normalized,
+        display_name,
+        created_at
+      `)
+      .eq(
+        'id',
+        session.user_id
+      )
+      .maybeSingle()
+
 
   if (userError) {
-    console.error('GET USER:', userError)
     throw userError
   }
 
+
   if (!user) {
-    return null
+
+    await supabase
+      .from(
+        'app_sessions'
+      )
+      .delete()
+      .eq(
+        'id',
+        session.id
+      )
+
+
+    return {
+      user: null,
+      session: null
+    }
   }
+
 
   return {
-    session,
-    user: safeUser(user)
+    user:
+      safeUser(
+        user
+      ),
+
+    session: {
+      id:
+        session.id,
+
+      user_id:
+        session.user_id,
+
+      created_at:
+        session.created_at,
+
+      expires_at:
+        session.expires_at
+    }
   }
 }
 
-export async function deleteSession(sessionId) {
-  if (!sessionId) {
-    return
-  }
 
-  const supabase = getAdmin()
+/*
+  Alias احتياطي
+*/
+export const getSessionUser =
+  getCurrentUser
 
-  const { error } = await supabase
-    .from('app_sessions')
-    .delete()
-    .eq('id', sessionId)
 
-  if (error) {
-    console.error('DELETE SESSION:', error)
-  }
-}
+/* =========================================
+   DELETE SESSION
+========================================= */
 
-export async function readBody(req) {
+export async function deleteSession(
+  firstArgument,
+  secondArgument
+) {
+  /*
+    يدعم:
+
+    deleteSession(req)
+
+    deleteSession(req, res)
+
+    deleteSession(res, req)
+
+    deleteSession(token)
+
+    deleteSession(token, res)
+  */
+
+
+  let req =
+    null
+
+  let res =
+    null
+
+  let token =
+    null
+
+
   if (
-    req.body &&
-    typeof req.body === 'object'
+    typeof firstArgument ===
+    'string'
+  ) {
+    token =
+      firstArgument
+
+    res =
+      secondArgument || null
+  }
+
+
+  else if (
+    firstArgument?.headers
+  ) {
+    req =
+      firstArgument
+
+    res =
+      secondArgument || null
+  }
+
+
+  else if (
+    firstArgument &&
+    typeof firstArgument.setHeader ===
+      'function'
+  ) {
+    res =
+      firstArgument
+
+    req =
+      secondArgument || null
+  }
+
+
+  if (
+    !token &&
+    req
+  ) {
+    token =
+      getSessionToken(
+        req
+      )
+  }
+
+
+  if (token) {
+    const supabase =
+      getAdmin()
+
+
+    const tokenHash =
+      hashSessionToken(
+        token
+      )
+
+
+    const {
+      error
+    } =
+      await supabase
+        .from(
+          'app_sessions'
+        )
+        .delete()
+        .eq(
+          'token_hash',
+          tokenHash
+        )
+
+
+    if (error) {
+      throw error
+    }
+  }
+
+
+  if (res) {
+    clearSessionCookie(
+      res
+    )
+  }
+
+
+  return {
+    ok: true
+  }
+}
+
+
+/* =========================================
+   DELETE CURRENT SESSION
+========================================= */
+
+export async function deleteCurrentSession(
+  req,
+  res = null
+) {
+  return deleteSession(
+    req,
+    res
+  )
+}
+
+
+/* =========================================
+   REQUEST BODY
+========================================= */
+
+export async function readBody(
+  req
+) {
+  /*
+    في Vercel يكون req.body غالبًا
+    جاهزًا بالفعل.
+  */
+
+
+  if (
+    req?.body &&
+    typeof req.body ===
+      'object' &&
+    !Buffer.isBuffer(
+      req.body
+    )
   ) {
     return req.body
   }
 
-  if (typeof req.body === 'string') {
+
+  if (
+    typeof req?.body ===
+    'string'
+  ) {
     try {
-      return JSON.parse(req.body)
+      return JSON.parse(
+        req.body
+      )
     } catch {
       return {}
     }
   }
 
-  let raw = ''
 
-  for await (const chunk of req) {
-    raw += chunk
-  }
+  const chunks = []
 
-  if (!raw) {
+
+  try {
+    for await (
+      const chunk of req
+    ) {
+      chunks.push(
+        Buffer.from(
+          chunk
+        )
+      )
+    }
+  } catch {
     return {}
   }
 
+
+  if (
+    chunks.length ===
+    0
+  ) {
+    return {}
+  }
+
+
+  const text =
+    Buffer
+      .concat(
+        chunks
+      )
+      .toString(
+        'utf8'
+      )
+
+
+  if (!text) {
+    return {}
+  }
+
+
   try {
-    return JSON.parse(raw)
+    return JSON.parse(
+      text
+    )
   } catch {
     return {}
   }
