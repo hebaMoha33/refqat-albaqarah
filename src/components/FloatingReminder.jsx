@@ -4,6 +4,10 @@ import {
   useState
 } from 'react'
 
+import {
+  createPortal
+} from 'react-dom'
+
 import './FloatingReminder.css'
 
 
@@ -28,71 +32,54 @@ function getDefaultPositionStyle(
 ) {
   const edge = 12
 
+  const topValue =
+    `calc(env(safe-area-inset-top, 0px) + ${
+      edge + stackOffset
+    }px)`
+
+  const bottomValue =
+    `calc(env(safe-area-inset-bottom, 0px) + ${
+      edge + stackOffset
+    }px)`
+
+
   switch (
     positionName
   ) {
     case 'top-left':
       return {
-        top:
-          `${edge + stackOffset}px`,
-
-        left:
-          `${edge}px`,
-
-        right:
-          'auto',
-
-        bottom:
-          'auto'
+        top: topValue,
+        left: `${edge}px`,
+        right: 'auto',
+        bottom: 'auto'
       }
 
 
     case 'bottom-right':
       return {
-        top:
-          'auto',
-
-        left:
-          'auto',
-
-        right:
-          `${edge}px`,
-
-        bottom:
-          `${edge + stackOffset}px`
+        top: 'auto',
+        left: 'auto',
+        right: `${edge}px`,
+        bottom: bottomValue
       }
 
 
     case 'bottom-left':
       return {
-        top:
-          'auto',
-
-        left:
-          `${edge}px`,
-
-        right:
-          'auto',
-
-        bottom:
-          `${edge + stackOffset}px`
+        top: 'auto',
+        left: `${edge}px`,
+        right: 'auto',
+        bottom: bottomValue
       }
 
 
     case 'top-right':
     default:
       return {
-        top:
-          `${edge + stackOffset}px`,
-
-        left:
-          'auto',
-
-        right:
-          `${edge}px`,
-
-        bottom:
-          'auto'
+        top: topValue,
+        left: 'auto',
+        right: `${edge}px`,
+        bottom: 'auto'
       }
   }
 }
@@ -168,11 +155,8 @@ export default function FloatingReminder({
           )
         ) {
           return {
-            x:
-              saved.x,
-
-            y:
-              saved.y
+            x: saved.x,
+            y: saved.y
           }
         }
       } catch {
@@ -183,6 +167,10 @@ export default function FloatingReminder({
       return null
     })
 
+
+  /* =====================================
+     SAVE POSITION
+  ===================================== */
 
   useEffect(() => {
     if (!position) {
@@ -203,10 +191,107 @@ export default function FloatingReminder({
   ])
 
 
-  if (!visible) {
+  /* =====================================
+     KEEP INSIDE SCREEN
+  ===================================== */
+
+  useEffect(() => {
+    function keepInsideScreen() {
+      const element =
+        reminderRef.current
+
+
+      if (!element) {
+        return
+      }
+
+
+      setPosition(
+        previous => {
+          if (!previous) {
+            return previous
+          }
+
+
+          const maxX =
+            Math.max(
+              8,
+
+              window.innerWidth -
+              element.offsetWidth -
+              8
+            )
+
+
+          const maxY =
+            Math.max(
+              8,
+
+              window.innerHeight -
+              element.offsetHeight -
+              8
+            )
+
+
+          return {
+            x:
+              clamp(
+                previous.x,
+                8,
+                maxX
+              ),
+
+            y:
+              clamp(
+                previous.y,
+                8,
+                maxY
+              )
+          }
+        }
+      )
+    }
+
+
+    window.addEventListener(
+      'resize',
+      keepInsideScreen
+    )
+
+
+    window.addEventListener(
+      'orientationchange',
+      keepInsideScreen
+    )
+
+
+    return () => {
+      window.removeEventListener(
+        'resize',
+        keepInsideScreen
+      )
+
+
+      window.removeEventListener(
+        'orientationchange',
+        keepInsideScreen
+      )
+    }
+  }, [])
+
+
+  if (
+    !visible ||
+    typeof document ===
+      'undefined'
+  ) {
     return null
   }
 
+
+  /* =====================================
+     DRAG START
+  ===================================== */
 
   function handlePointerDown(
     event
@@ -264,6 +349,10 @@ export default function FloatingReminder({
   }
 
 
+  /* =====================================
+     DRAG MOVE
+  ===================================== */
+
   function handlePointerMove(
     event
   ) {
@@ -296,10 +385,8 @@ export default function FloatingReminder({
 
 
     if (
-      Math.abs(deltaX) >
-        3 ||
-      Math.abs(deltaY) >
-        3
+      Math.abs(deltaX) > 3 ||
+      Math.abs(deltaY) > 3
     ) {
       dragRef.current.moved =
         true
@@ -350,6 +437,10 @@ export default function FloatingReminder({
   }
 
 
+  /* =====================================
+     DRAG END / CLICK
+  ===================================== */
+
   function handlePointerUp(
     event
   ) {
@@ -379,6 +470,10 @@ export default function FloatingReminder({
   }
 
 
+  /* =====================================
+     POSITION
+  ===================================== */
+
   const positionStyle =
     position
       ? {
@@ -404,6 +499,13 @@ export default function FloatingReminder({
   const style = {
     ...positionStyle,
 
+    /*
+      أهم تعديل:
+      نضمن أنه فوق الهيدر
+      وكل محتويات التطبيق.
+    */
+    zIndex: 2147483647,
+
     '--reminder-height':
       `${height}px`,
 
@@ -412,7 +514,7 @@ export default function FloatingReminder({
   }
 
 
-  return (
+  const reminder = (
     <div
       ref={
         reminderRef
@@ -436,6 +538,21 @@ export default function FloatingReminder({
 
       onPointerUp={
         handlePointerUp
+      }
+
+      onKeyDown={
+        event => {
+          if (
+            event.key ===
+              'Enter' ||
+            event.key ===
+              ' '
+          ) {
+            event.preventDefault()
+
+            onOpen?.()
+          }
+        }
       }
 
       role="button"
@@ -471,14 +588,12 @@ export default function FloatingReminder({
 
           onPointerDown={
             event =>
-              event
-                .stopPropagation()
+              event.stopPropagation()
           }
 
           onClick={
             event => {
-              event
-                .stopPropagation()
+              event.stopPropagation()
 
               onClose?.()
             }
@@ -489,5 +604,20 @@ export default function FloatingReminder({
       )}
 
     </div>
+  )
+
+
+  /*
+    Portal:
+    الشريط لم يعد داخل main-content
+    أو تحت الهيدر.
+
+    يُرسم مباشرة داخل body
+    ولذلك يبقى أعلى التطبيق كله.
+  */
+
+  return createPortal(
+    reminder,
+    document.body
   )
 }

@@ -1,0 +1,173 @@
+.push-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.push-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  padding: 14px;
+
+  border-radius: 16px;
+
+  background:
+    rgba(255, 255, 255, 0.55);
+}
+
+.push-status-row > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.push-status {
+  font-size: 13px;
+  opacity: 0.65;
+}
+
+.push-status--active {
+  opacity: 1;
+  font-weight: 700;
+}
+
+.push-dot {
+  width: 10px;
+  height: 10px;
+
+  border-radius: 50%;
+
+  background:
+    rgba(120, 120, 120, 0.45);
+}
+
+.push-dot--active {
+  background:
+    #2ca36c;
+
+  box-shadow:
+    0 0 0 5px rgba(44, 163, 108, 0.12);
+}
+
+.push-info {
+  padding: 13px 14px;
+
+  border-radius: 14px;
+
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.push-info p {
+  margin:
+    5px 0 0;
+}
+
+.push-info--ios {
+  background:
+    rgba(91, 118, 255, 0.08);
+
+  border:
+    1px solid rgba(91, 118, 255, 0.16);
+}
+
+.push-info--warning {
+  background:
+    rgba(232, 158, 65, 0.11);
+
+  border:
+    1px solid rgba(232, 158, 65, 0.2);
+}
+
+.push-message {
+  padding: 12px 14px;
+
+  border-radius: 14px;
+
+  background:
+    rgba(44, 163, 108, 0.1);
+
+  font-size: 13px;
+}
+
+.push-error {
+  padding: 12px 14px;
+
+  border-radius: 14px;
+
+  background:
+    rgba(190, 64, 64, 0.1);
+
+  font-size: 13px;
+}
+
+.push-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.push-button {
+  min-height: 42px;
+
+  padding:
+    10px 16px;
+
+  border: 0;
+  border-radius: 14px;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.18s ease,
+    opacity 0.18s ease;
+}
+
+.push-button:hover:not(:disabled) {
+  transform:
+    translateY(-1px);
+}
+
+.push-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.push-button--primary {
+  background:
+    var(--primary, #174f3b);
+
+  color:
+    #ffffff;
+}
+
+.push-button--secondary {
+  background:
+    rgba(120, 120, 120, 0.12);
+
+  color:
+    inherit;
+}
+
+.push-loading {
+  margin: 0;
+
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+@media (max-width: 600px) {
+  .push-actions {
+    flex-direction: column;
+  }
+
+  .push-button {
+    width: 100%;
+  }
+}

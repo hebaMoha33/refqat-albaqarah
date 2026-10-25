@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
+
 export default defineConfig({
   plugins: [
     react(),
@@ -14,7 +15,8 @@ export default defineConfig({
       includeAssets: [
         'pwa-192x192.png',
         'pwa-512x512.png',
-        'apple-touch-icon.png'
+        'apple-touch-icon.png',
+        'push-sw.js'
       ],
 
       manifest: {
@@ -68,8 +70,15 @@ export default defineConfig({
           '**/*.{js,css,html,ico,png,svg,jpg,jpeg,json}'
         ],
 
+        maximumFileSizeToCacheInBytes:
+          5 * 1024 * 1024,
+
         navigateFallback:
-          '/index.html'
+          '/index.html',
+
+        importScripts: [
+          '/push-sw.js'
+        ]
       },
 
       devOptions: {

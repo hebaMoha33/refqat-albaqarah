@@ -3,6 +3,9 @@ import {
   useState
 } from 'react'
 
+import PushNotificationSettings
+  from '../components/PushNotificationSettings'
+
 import './ReminderSettingsPage.css'
 
 
@@ -288,7 +291,9 @@ export default function ReminderSettingsPage({
 
     const showMessageTimer =
       window.setTimeout(() => {
-        setSavedMessage('تم الحفظ')
+        setSavedMessage(
+          'تم الحفظ'
+        )
 
         clearMessageTimer =
           window.setTimeout(
@@ -449,6 +454,53 @@ export default function ReminderSettingsPage({
               )
           }
         />
+
+      </section>
+
+
+      {/* =====================================
+          DEVICE PUSH NOTIFICATIONS
+      ===================================== */}
+
+      <section className="reminder-settings-card">
+
+        <div className="settings-section-title">
+
+          <span>
+            iPhone و Android
+          </span>
+
+
+          <h3>
+            إشعارات الجهاز
+          </h3>
+
+        </div>
+
+
+        <p
+          style={{
+            margin:
+              '0 0 12px',
+
+            color:
+              'var(--soft)',
+
+            fontSize:
+              '11px',
+
+            lineHeight:
+              1.8
+          }}
+        >
+          فعّلي إشعارات الجهاز
+          حتى تصلك تذكيرات رفقة البقرة
+          حتى عندما لا يكون التطبيق
+          مفتوحًا أمامك.
+        </p>
+
+
+        <PushNotificationSettings />
 
       </section>
 
