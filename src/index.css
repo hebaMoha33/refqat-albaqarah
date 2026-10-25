@@ -1,4 +1,412 @@
-html { direction: rtl; }
-body { min-width: 320px; min-height: 100vh; }
-#root { min-height: 100vh; }
-button, input { font-family: inherit; }
+/* =========================================
+   رفقة البقرة — GLOBAL THEME SYSTEM
+========================================= */
+
+:root {
+
+  /* =====================================
+     APP
+  ===================================== */
+
+  --app-bg: #f7f5ef;
+  --app-surface: #ffffff;
+
+  --app-primary: #174f3b;
+  --app-primary-soft: #e7f0eb;
+
+  --app-secondary: #c7a96b;
+
+  --app-text: #1f2d27;
+  --app-text-soft: #6f7d76;
+
+  --app-border: #e4e8e5;
+
+  --app-success: #3d8b62;
+  --app-warning: #d9a441;
+  --app-danger: #c85a5a;
+
+
+  /* =====================================
+     MORNING THEME — PEARL RAINBOW
+     مستوحى من الصورة:
+     Turquoise + Sky + Lilac + Pink +
+     Peach + Lemon + Mint
+  ===================================== */
+
+  --morning-bg: #dff7f7;
+
+  --morning-surface:
+    rgba(255, 255, 255, .66);
+
+  --morning-primary: #75d9dc;
+
+  --morning-primary-soft: #c9f2f2;
+
+  --morning-secondary: #d9a8e2;
+
+
+  /* ---------- TEXT ---------- */
+
+  --morning-text: #344f57;
+
+  --morning-text-strong: #203e47;
+
+  --morning-text-soft: #6d7f84;
+
+  --morning-accent: #f3b5dd;
+
+
+  /* ---------- TURQUOISE ---------- */
+
+  --morning-turquoise: #ace8eb;
+
+  --morning-turquoise-strong: #75d9dc;
+
+
+  /* ---------- SKY ---------- */
+
+  --morning-sky: #a7d7e8;
+
+  --morning-sky-soft: #d7edf6;
+
+
+  /* ---------- BLUE ---------- */
+
+  --morning-blue: #b7d9ef;
+
+  --morning-blue-strong: #78b9dd;
+
+
+  /* ---------- LAVENDER ---------- */
+
+  --morning-lavender: #b9b7e7;
+
+  --morning-lavender-soft: #d6d3f2;
+
+
+  /* ---------- LILAC ---------- */
+
+  --morning-lilac: #e1b0e4;
+
+  --morning-lilac-soft: #efd4f0;
+
+
+  /* ---------- PINK ---------- */
+
+  --morning-pink: #f6a9e4;
+
+  --morning-pink-soft: #f8c6eb;
+
+
+  /* ---------- BLUSH ---------- */
+
+  --morning-blush: #f8b6da;
+
+
+  /* ---------- PEACH ---------- */
+
+  --morning-peach: #f8d3c1;
+
+  --morning-peach-soft: #fbe5d9;
+
+
+  /* ---------- LEMON ---------- */
+
+  --morning-lemon: #f8f8c5;
+
+  --morning-lemon-strong: #eee98c;
+
+
+  /* ---------- MINT ---------- */
+
+  --morning-mint: #d8f5d1;
+
+  --morning-mint-strong: #a8e5c1;
+
+
+  /* ---------- PEARL ---------- */
+
+  --morning-pearl: #f0eee7;
+
+  --morning-white: #fffdfb;
+
+
+  /* ---------- MORNING REMINDER ---------- */
+
+  --morning-reminder-bg:
+    rgba(236, 250, 249, .96);
+
+  --morning-reminder-text:
+    #31515a;
+
+  --morning-reminder-border:
+    rgba(164, 219, 224, .62);
+
+
+  /* =====================================
+     EVENING THEME — ORIGINAL
+     لا نغيره
+  ===================================== */
+
+  --evening-bg: #171a34;
+
+  --evening-bg-2: #34254a;
+
+  --evening-bg-3: #c76f5d;
+
+  --evening-surface: #34254a;
+
+  --evening-primary: #ffad68;
+
+  --evening-primary-soft: #ffd089;
+
+  --evening-secondary: #c68cf1;
+
+  --evening-text: #fff3e9;
+
+  --evening-text-strong: #fffaf4;
+
+  --evening-text-soft: #e7cec5;
+
+  --evening-accent: #ef8493;
+
+
+  /* ---------- EVENING REMINDER ---------- */
+
+  --evening-reminder-bg:
+    rgba(41, 31, 64, .94);
+
+  --evening-reminder-text:
+    #fff3e9;
+
+  --evening-reminder-border:
+    rgba(255, 208, 137, .32);
+
+
+  /* =====================================
+     BAQARAH THEME
+  ===================================== */
+
+  --baqarah-bg: #f5f1e7;
+
+  --baqarah-surface: #fffdf7;
+
+  --baqarah-primary: #315e4c;
+
+  --baqarah-primary-soft: #e1ebe5;
+
+  --baqarah-secondary: #b89b62;
+
+  --baqarah-text: #25342d;
+
+  --baqarah-text-soft: #748078;
+
+
+  /* =====================================
+     FLOATING REMINDER
+  ===================================== */
+
+  --reminder-height: 40px;
+
+  --reminder-radius: 13px;
+
+  --reminder-font-size: 13px;
+
+  --reminder-font-weight: 600;
+
+  --reminder-opacity: .96;
+
+  --reminder-shadow:
+    0 6px 24px
+    rgba(0, 0, 0, .12);
+
+  --reminder-horizontal-margin: 12px;
+
+  --reminder-max-width: 420px;
+
+
+  /* =====================================
+     GENERAL UI
+  ===================================== */
+
+  --radius-small: 10px;
+
+  --radius-medium: 16px;
+
+  --radius-large: 24px;
+
+  --shadow-soft:
+    0 8px 30px
+    rgba(18, 45, 34, .08);
+
+  --transition-fast:
+    180ms ease;
+
+  --transition-normal:
+    280ms ease;
+}
+
+
+/* =========================================
+   BASE
+========================================= */
+
+html {
+  direction: rtl;
+
+  background:
+    var(--app-bg);
+}
+
+
+body {
+  min-width: 320px;
+
+  min-height: 100vh;
+
+  margin: 0;
+
+  background:
+    var(--app-bg);
+
+  color:
+    var(--app-text);
+}
+
+
+#root {
+  min-height: 100vh;
+}
+
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+
+/* =========================================
+   THEME HELPERS
+========================================= */
+
+
+/* =====================================
+   MORNING
+===================================== */
+
+.theme-morning {
+
+  --theme-bg:
+    var(--morning-bg);
+
+  --theme-surface:
+    var(--morning-surface);
+
+  --theme-primary:
+    var(--morning-primary);
+
+  --theme-primary-soft:
+    var(--morning-primary-soft);
+
+  --theme-secondary:
+    var(--morning-secondary);
+
+  --theme-text:
+    var(--morning-text);
+
+  --theme-text-strong:
+    var(--morning-text-strong);
+
+  --theme-text-soft:
+    var(--morning-text-soft);
+
+  --theme-accent:
+    var(--morning-accent);
+
+  --theme-reminder-bg:
+    var(--morning-reminder-bg);
+
+  --theme-reminder-text:
+    var(--morning-reminder-text);
+
+  --theme-reminder-border:
+    var(--morning-reminder-border);
+}
+
+
+/* =====================================
+   EVENING
+===================================== */
+
+.theme-evening {
+
+  --theme-bg:
+    var(--evening-bg);
+
+  --theme-surface:
+    var(--evening-surface);
+
+  --theme-primary:
+    var(--evening-primary);
+
+  --theme-primary-soft:
+    var(--evening-primary-soft);
+
+  --theme-secondary:
+    var(--evening-secondary);
+
+  --theme-text:
+    var(--evening-text);
+
+  --theme-text-strong:
+    var(--evening-text-strong);
+
+  --theme-text-soft:
+    var(--evening-text-soft);
+
+  --theme-accent:
+    var(--evening-accent);
+
+  --theme-reminder-bg:
+    var(--evening-reminder-bg);
+
+  --theme-reminder-text:
+    var(--evening-reminder-text);
+
+  --theme-reminder-border:
+    var(--evening-reminder-border);
+}
+
+
+/* =====================================
+   BAQARAH
+===================================== */
+
+.theme-baqarah {
+
+  --theme-bg:
+    var(--baqarah-bg);
+
+  --theme-surface:
+    var(--baqarah-surface);
+
+  --theme-primary:
+    var(--baqarah-primary);
+
+  --theme-primary-soft:
+    var(--baqarah-primary-soft);
+
+  --theme-secondary:
+    var(--baqarah-secondary);
+
+  --theme-text:
+    var(--baqarah-text);
+
+  --theme-text-soft:
+    var(--baqarah-text-soft);
+
+  --theme-accent:
+    var(--baqarah-secondary);
+}

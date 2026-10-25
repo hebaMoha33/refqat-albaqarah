@@ -1,0 +1,529 @@
+.reminder-settings-page {
+  position: relative;
+  z-index: 5;
+
+  width: min(920px, calc(100% - 28px));
+
+  margin: 22px auto 70px;
+
+  direction: rtl;
+}
+
+
+.reminder-settings-heading {
+  display: grid;
+
+  grid-template-columns:
+    auto
+    minmax(0, 1fr)
+    auto;
+
+  align-items: start;
+
+  gap: 14px;
+
+  padding: 22px;
+
+  border: 1px solid
+    rgba(255,255,255,.68);
+
+  border-radius: 24px;
+
+  background:
+    rgba(255,255,255,.38);
+
+  backdrop-filter:
+    blur(18px);
+
+  -webkit-backdrop-filter:
+    blur(18px);
+
+  box-shadow:
+    0 18px 50px
+    rgba(0,0,0,.07);
+}
+
+
+.reminder-settings-heading h2 {
+  margin: 3px 0 7px;
+
+  color: var(--strong);
+
+  font-size: clamp(25px, 4vw, 38px);
+}
+
+
+.reminder-settings-heading p {
+  margin: 0;
+
+  color: var(--soft);
+
+  font-size: 13px;
+}
+
+
+.reminder-settings-heading > div > span {
+  color: var(--soft);
+
+  font-size: 11px;
+}
+
+
+.reminder-back-btn {
+  width: 38px;
+  height: 38px;
+
+  border: 1px solid
+    rgba(255,255,255,.62);
+
+  border-radius: 50%;
+
+  background:
+    rgba(255,255,255,.38);
+
+  color: var(--strong);
+
+  cursor: pointer;
+
+  font-size: 20px;
+}
+
+
+.reminder-saved-state {
+  min-width: 54px;
+
+  padding-top: 8px;
+
+  color: var(--soft);
+
+  font-size: 11px;
+
+  text-align: left;
+}
+
+
+.reminder-settings-card {
+  margin-top: 14px;
+
+  padding: 18px 20px;
+
+  border: 1px solid
+    rgba(255,255,255,.65);
+
+  border-radius: 22px;
+
+  background:
+    rgba(255,255,255,.42);
+
+  backdrop-filter:
+    blur(18px);
+
+  -webkit-backdrop-filter:
+    blur(18px);
+
+  box-shadow:
+    0 12px 40px
+    rgba(0,0,0,.055);
+}
+
+
+.reminder-master-card {
+  background:
+    rgba(255,255,255,.52);
+}
+
+
+.settings-section-title {
+  margin-bottom: 8px;
+}
+
+
+.settings-section-title span {
+  color: var(--soft);
+
+  font-size: 10px;
+}
+
+
+.settings-section-title h3 {
+  margin: 2px 0 0;
+
+  color: var(--strong);
+
+  font-size: 18px;
+}
+
+
+.reminder-setting-row {
+  min-height: 62px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 20px;
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.46);
+}
+
+
+.reminder-setting-row:last-child {
+  border-bottom: 0;
+}
+
+
+.reminder-setting-copy {
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+
+.reminder-setting-copy strong {
+  color: var(--strong);
+
+  font-size: 13px;
+}
+
+
+.reminder-setting-copy span {
+  color: var(--soft);
+
+  font-size: 10px;
+
+  line-height: 1.5;
+}
+
+
+.reminder-setting-control {
+  flex: 0 0 auto;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 11px;
+}
+
+
+.reminder-setting-control input[type="time"],
+.reminder-setting-control select {
+  min-width: 108px;
+
+  height: 34px;
+
+  padding: 0 10px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.68);
+
+  border-radius: 11px;
+
+  outline: none;
+
+  background:
+    rgba(255,255,255,.55);
+
+  color: var(--strong);
+
+  font-size: 12px;
+}
+
+
+.reminder-setting-control select {
+  min-width: 130px;
+}
+
+
+.reminder-setting-control input:disabled {
+  opacity: .42;
+}
+
+
+/* toggle */
+
+.reminder-toggle {
+  width: 42px;
+  height: 23px;
+
+  padding: 3px;
+
+  border: 0;
+
+  border-radius: 999px;
+
+  background:
+    rgba(110,120,120,.22);
+
+  cursor: pointer;
+
+  transition:
+    background 180ms ease;
+}
+
+
+.reminder-toggle span {
+  display: block;
+
+  width: 17px;
+  height: 17px;
+
+  border-radius: 50%;
+
+  background: #fff;
+
+  box-shadow:
+    0 2px 7px
+    rgba(0,0,0,.13);
+
+  transform:
+    translateX(-19px);
+
+  transition:
+    transform 180ms ease;
+}
+
+
+.reminder-toggle.active {
+  background:
+    var(--one);
+}
+
+
+.reminder-toggle.active span {
+  transform:
+    translateX(0);
+}
+
+
+/* sliders */
+
+.reminder-slider-row {
+  min-height: 70px;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(160px, 1fr)
+    minmax(180px, 320px);
+
+  align-items: center;
+
+  gap: 20px;
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.46);
+}
+
+
+.reminder-slider-row input[type="range"] {
+  width: 100%;
+
+  accent-color:
+    var(--one);
+}
+
+
+/* theme */
+
+.theme-coming-card p {
+  margin: 0;
+
+  color: var(--soft);
+
+  font-size: 12px;
+
+  line-height: 1.8;
+}
+
+
+/* footer */
+
+.reminder-settings-footer {
+  margin-top: 18px;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 12px;
+}
+
+
+.reset-reminder-settings,
+.settings-done-btn {
+  min-height: 42px;
+
+  padding: 0 18px;
+
+  border-radius: 13px;
+
+  cursor: pointer;
+
+  font-family: inherit;
+}
+
+
+.reset-reminder-settings {
+  border:
+    1px solid
+    rgba(255,255,255,.64);
+
+  background:
+    rgba(255,255,255,.42);
+
+  color: var(--soft);
+}
+
+
+.settings-done-btn {
+  min-width: 105px;
+
+  border: 0;
+
+  background:
+    var(--one);
+
+  color: var(--strong);
+
+  font-weight: 700;
+}
+
+
+/* header settings */
+
+.header-settings-btn {
+  width: 36px;
+  height: 36px;
+
+  display: grid;
+
+  place-items: center;
+
+  padding: 0;
+
+  border:
+    1px solid
+    rgba(255,255,255,.48);
+
+  border-radius: 50%;
+
+  background:
+    rgba(255,255,255,.22);
+
+  color: var(--strong);
+
+  cursor: pointer;
+
+  font-size: 17px;
+
+  transition:
+    transform 180ms ease,
+    background 180ms ease;
+}
+
+
+.header-settings-btn:hover {
+  transform:
+    rotate(18deg);
+
+  background:
+    rgba(255,255,255,.38);
+}
+
+
+.header-settings-btn.active {
+  background:
+    rgba(255,255,255,.52);
+}
+
+
+/* mobile */
+
+@media (max-width: 650px) {
+
+  .reminder-settings-page {
+    width:
+      calc(100% - 14px);
+
+    margin-top: 10px;
+  }
+
+
+  .reminder-settings-heading {
+    padding: 16px;
+
+    border-radius: 19px;
+  }
+
+
+  .reminder-settings-card {
+    padding:
+      14px 13px;
+
+    border-radius: 18px;
+  }
+
+
+  .reminder-setting-row {
+    gap: 8px;
+  }
+
+
+  .reminder-setting-copy {
+    max-width: 54%;
+  }
+
+
+  .reminder-setting-control {
+    gap: 6px;
+  }
+
+
+  .reminder-setting-control
+  input[type="time"] {
+    min-width: 92px;
+
+    padding: 0 6px;
+  }
+
+
+  .reminder-setting-control select {
+    min-width: 108px;
+  }
+
+
+  .reminder-slider-row {
+    grid-template-columns: 1fr;
+
+    gap: 8px;
+
+    padding: 12px 0;
+  }
+
+
+  .reminder-settings-footer {
+    flex-direction: column-reverse;
+  }
+
+
+  .reset-reminder-settings,
+  .settings-done-btn {
+    width: 100%;
+  }
+
+
+  .user-name {
+    display: none;
+  }
+}

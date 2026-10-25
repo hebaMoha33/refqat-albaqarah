@@ -671,3 +671,1169 @@
     flex-wrap: wrap;
   }
 }
+/* =========================================================
+   MORNING THEME — SOFT SUNRISE REFRESH
+   مستوحى من السماء + الشروق + الخضرة + الأرض
+   مع لمسات Pastel هادئة
+========================================================= */
+
+.app.morning {
+  /* ---------- الخلفيات الأساسية ---------- */
+
+  --bg-1: #eaf3fa;
+  --bg-2: #fff9e9;
+  --bg-3: #f6e6c5;
+  --bg-4: #eef3e5;
+
+
+  /* ---------- النصوص ---------- */
+
+  --text: #44534d;
+  --strong: #2f4039;
+  --soft: #7a857f;
+
+  --text-main: #44534d;
+  --text-strong: #2f4039;
+  --text-soft: #7a857f;
+
+
+  /* ---------- ألوان الصورة الأساسية ---------- */
+
+  --morning-sky: #a9c7df;
+  --morning-sky-soft: #dceaf4;
+
+  --morning-sun: #f3d46d;
+  --morning-gold: #e6bb5c;
+
+  --morning-sand: #f6dba4;
+
+  --morning-green: #99a86d;
+  --morning-green-soft: #dfe8c9;
+
+  --morning-earth: #b47c55;
+
+
+  /* ---------- Pastel Rainbow ---------- */
+
+  --morning-pink: #f3d8de;
+  --morning-peach: #f6ddcc;
+  --morning-yellow: #fff0b8;
+  --morning-mint: #dcebd8;
+  --morning-blue: #d8e8f4;
+  --morning-lilac: #e7dff1;
+
+
+  /* ---------- الألوان المستخدمة حاليًا في التطبيق ---------- */
+
+  --one: #a9c7df;
+  --two: #99a86d;
+  --three: #e6bb5c;
+  --rose: #e8bec7;
+
+  --accent-one: #e6bb5c;
+  --accent-two: #a9c7df;
+  --accent-three: #99a86d;
+  --accent-four: #d8b194;
+
+
+  /* ---------- Glass ---------- */
+
+  --glass:
+    rgba(255, 255, 255, .58);
+
+  --glass-light:
+    rgba(255, 255, 255, .78);
+
+  --glass-soft:
+    rgba(255, 255, 255, .36);
+
+  --border:
+    rgba(255, 255, 255, .82);
+
+
+  /* ---------- Shadow ---------- */
+
+  --shadow:
+    0 22px 65px
+    rgba(86, 108, 99, .10);
+
+
+  /* ---------- Progress ---------- */
+
+  --progress:
+    linear-gradient(
+      90deg,
+      #a9c7df 0%,
+      #dcebd8 30%,
+      #f3d46d 64%,
+      #f3d8de 100%
+    );
+
+
+  /* ---------- Floating Reminder لاحقًا ---------- */
+
+  --morning-reminder-bg:
+    rgba(255, 250, 238, .96);
+
+  --morning-reminder-text:
+    #405049;
+
+  --morning-reminder-border:
+    rgba(203, 173, 105, .30);
+}
+
+
+/* =========================================================
+   MORNING BACKGROUND
+========================================================= */
+
+.app.morning {
+  background:
+
+    /* ضوء الشمس */
+    radial-gradient(
+      circle at 72% 10%,
+      rgba(243, 212, 109, .34),
+      transparent 27%
+    ),
+
+    /* السماء */
+    radial-gradient(
+      circle at 12% 15%,
+      rgba(169, 199, 223, .38),
+      transparent 35%
+    ),
+
+    /* لمسة وردية باستيل */
+    radial-gradient(
+      circle at 92% 54%,
+      rgba(243, 216, 222, .18),
+      transparent 27%
+    ),
+
+    /* خضرة منعشة */
+    radial-gradient(
+      circle at 16% 84%,
+      rgba(220, 235, 216, .30),
+      transparent 31%
+    ),
+
+    /* الخلفية الرئيسية */
+    linear-gradient(
+      145deg,
+      #eaf3fa 0%,
+      #f7f4e9 24%,
+      #fff9e9 45%,
+      #f7e9cc 69%,
+      #eef3e5 100%
+    ) !important;
+}
+
+
+/* =========================================================
+   AMBIENT COLORS
+   ألوان قوس قزح الناعمة في الخلفية
+========================================================= */
+
+.app.morning .ambient-one {
+  background:
+    #f3d46d !important;
+
+  opacity:
+    .22 !important;
+}
+
+
+.app.morning .ambient-two {
+  background:
+    #a9c7df !important;
+
+  opacity:
+    .24 !important;
+}
+
+
+.app.morning .ambient-three {
+  background:
+    #dcebd8 !important;
+
+  opacity:
+    .27 !important;
+}
+
+
+.app.morning .ambient-four {
+  background:
+    #e7dff1 !important;
+
+  opacity:
+    .17 !important;
+}
+
+
+/* =========================================================
+   LABELS
+========================================================= */
+
+.app.morning .hero-label,
+.app.morning .section-title > div > span {
+  color:
+    #9a714c !important;
+}
+
+
+/* =========================================================
+   HERO GRADIENT TEXT
+========================================================= */
+
+.app.morning .hero h2 em {
+  background:
+    linear-gradient(
+      90deg,
+      #b8913d,
+      #c79b48,
+      #a97958,
+      #769bb9
+    ) !important;
+
+  -webkit-background-clip:
+    text !important;
+
+  background-clip:
+    text !important;
+
+  color:
+    transparent !important;
+}
+
+
+/* =========================================================
+   ACTIVE BUTTONS / TABS
+========================================================= */
+
+.app.morning .period.active,
+.app.morning .main-tabs button.active,
+.app.morning .progress-view-tabs button.active,
+.app.morning .filter-tabs button.active {
+  background:
+    linear-gradient(
+      135deg,
+      #f1d47e 0%,
+      #e5d8a3 44%,
+      #b7d0e3 100%
+    ) !important;
+
+  color:
+    #35463f !important;
+
+  box-shadow:
+    0 8px 24px
+    rgba(112, 138, 127, .12) !important;
+}
+
+
+/* =========================================================
+   MORNING GEOMETRY
+   نستخدم ألوان Pastel بدل البرتقالي القوي
+========================================================= */
+
+.app.morning .hero-geometry {
+  opacity:
+    .92 !important;
+
+  filter:
+    drop-shadow(
+      0 15px 28px
+      rgba(104, 132, 149, .15)
+    ) !important;
+}
+
+
+/* الهالة */
+
+.app.morning .geometry-aura {
+  background:
+    radial-gradient(
+      circle,
+      rgba(243, 212, 109, .20),
+      rgba(169, 199, 223, .12) 33%,
+      rgba(231, 223, 241, .08) 52%,
+      transparent 72%
+    ) !important;
+}
+
+
+/* الإطار الخارجي — لون السماء */
+
+.app.morning .geometry-outer {
+  color:
+    rgba(112, 154, 192, .62) !important;
+
+  border-width:
+    1.5px !important;
+}
+
+
+/* Diamond — وردي/خوخي باستيل */
+
+.app.morning .geometry-diamond {
+  color:
+    rgba(211, 163, 155, .48) !important;
+}
+
+
+/* الدوائر — أخضر صباحي */
+
+.app.morning .geometry-circle {
+  color:
+    rgba(137, 151, 92, .48) !important;
+}
+
+/* =========================================================
+   MORNING THEME — FRESH SUNRISE
+   مشرق + منعش + حي
+========================================================= */
+
+.app.morning {
+  /* السماء والشروق */
+  --bg-1: #d9efff;
+  --bg-2: #fff7c7;
+  --bg-3: #ffe09a;
+  --bg-4: #e8f5d5;
+
+  /* النصوص */
+  --text: #31515a;
+  --strong: #183f4c;
+  --soft: #657b80;
+
+  --text-main: #31515a;
+  --text-strong: #183f4c;
+  --text-soft: #657b80;
+
+  /* ألوان الصباح الرئيسية */
+  --morning-sky: #72b8e8;
+  --morning-sky-light: #cceaff;
+
+  --morning-sun: #ffd84d;
+  --morning-yellow: #ffe978;
+
+  --morning-gold: #efb83e;
+  --morning-sand: #ffd58a;
+
+  --morning-green: #88ac49;
+  --morning-green-light: #d9edaa;
+
+  --morning-earth: #b96f3c;
+
+  /* Rainbow refresh */
+  --morning-pink: #ffb9ca;
+  --morning-peach: #ffc49e;
+  --morning-mint: #bce8ce;
+  --morning-blue: #a9d9f7;
+  --morning-lilac: #d7c5f3;
+
+  /* ألوان العناصر */
+  --one: #72b8e8;
+  --two: #88ac49;
+  --three: #ffd84d;
+  --rose: #ff9fb5;
+
+  --accent-one: #ffd84d;
+  --accent-two: #72b8e8;
+  --accent-three: #88ac49;
+  --accent-four: #ff9f7e;
+
+  /* Glass */
+  --glass: rgba(255,255,255,.48);
+  --glass-light: rgba(255,255,255,.72);
+  --glass-soft: rgba(255,255,255,.28);
+  --border: rgba(255,255,255,.78);
+
+  /* ظل أنظف */
+  --shadow:
+    0 22px 60px
+    rgba(52, 107, 126, .13);
+
+  /* Progress */
+  --progress:
+    linear-gradient(
+      90deg,
+      #72b8e8 0%,
+      #7fd6c2 24%,
+      #a8d96d 45%,
+      #ffd84d 67%,
+      #ffae8d 84%,
+      #d7c5f3 100%
+    );
+
+  /* Reminder */
+  --morning-reminder-bg:
+    rgba(255, 248, 205, .97);
+
+  --morning-reminder-text:
+    #284c56;
+
+  --morning-reminder-border:
+    rgba(239, 184, 62, .42);
+}
+
+
+/* =========================================================
+   MORNING BACKGROUND
+========================================================= */
+
+.app.morning {
+  background:
+
+    /* الشمس */
+    radial-gradient(
+      circle at 72% 9%,
+      rgba(255, 216, 77, .72),
+      rgba(255, 229, 125, .30) 18%,
+      transparent 34%
+    ),
+
+    /* السماء */
+    radial-gradient(
+      circle at 9% 9%,
+      rgba(114, 184, 232, .52),
+      transparent 38%
+    ),
+
+    /* أخضر الصباح */
+    radial-gradient(
+      circle at 8% 92%,
+      rgba(136, 172, 73, .32),
+      transparent 34%
+    ),
+
+    /* وردي خفيف */
+    radial-gradient(
+      circle at 94% 65%,
+      rgba(255, 185, 202, .24),
+      transparent 26%
+    ),
+
+    /* ليلكي خفيف */
+    radial-gradient(
+      circle at 28% 54%,
+      rgba(215, 197, 243, .17),
+      transparent 25%
+    ),
+
+    linear-gradient(
+      145deg,
+      #d9efff 0%,
+      #e9f5fb 19%,
+      #fff7c7 43%,
+      #ffe09a 65%,
+      #f7e0ac 79%,
+      #e8f5d5 100%
+    ) !important;
+}
+
+
+/* =========================================================
+   AMBIENT — أكثر حياة
+========================================================= */
+
+.app.morning .ambient-one {
+  background: #ffd84d !important;
+  opacity: .44 !important;
+}
+
+.app.morning .ambient-two {
+  background: #72b8e8 !important;
+  opacity: .34 !important;
+}
+
+.app.morning .ambient-three {
+  background: #8fd39f !important;
+  opacity: .30 !important;
+}
+
+.app.morning .ambient-four {
+  background: #ff9fb5 !important;
+  opacity: .23 !important;
+}
+
+
+/* =========================================================
+   LABELS
+========================================================= */
+
+.app.morning .hero-label,
+.app.morning .section-title > div > span {
+  color: #a96724 !important;
+}
+
+
+/* =========================================================
+   HERO TEXT
+========================================================= */
+
+.app.morning .hero h2 em {
+  background:
+    linear-gradient(
+      90deg,
+      #e5a81f,
+      #f5c338,
+      #ef8b62,
+      #5faada
+    ) !important;
+
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+}
+
+
+/* =========================================================
+   ACTIVE BUTTONS
+========================================================= */
+
+.app.morning .period.active,
+.app.morning .main-tabs button.active,
+.app.morning .progress-view-tabs button.active,
+.app.morning .filter-tabs button.active {
+  background:
+    linear-gradient(
+      135deg,
+      #ffd84d 0%,
+      #ffc46c 40%,
+      #72b8e8 100%
+    ) !important;
+
+  color: #244651 !important;
+
+  box-shadow:
+    0 9px 26px
+    rgba(224, 166, 41, .22) !important;
+}
+
+
+/* =========================================================
+   MORNING — PEARL RAINBOW
+   الثيم الصباحي الجديد
+========================================================= */
+
+.app.morning {
+
+  --bg-1:
+    var(--morning-turquoise);
+
+  --bg-2:
+    var(--morning-lilac);
+
+  --bg-3:
+    var(--morning-pink);
+
+  --bg-4:
+    var(--morning-lemon);
+
+
+  --text:
+    var(--morning-text);
+
+  --strong:
+    var(--morning-text-strong);
+
+  --soft:
+    var(--morning-text-soft);
+
+
+  --text-main:
+    var(--morning-text);
+
+  --text-strong:
+    var(--morning-text-strong);
+
+  --text-soft:
+    var(--morning-text-soft);
+
+
+  --one:
+    var(--morning-turquoise-strong);
+
+  --two:
+    var(--morning-lavender);
+
+  --three:
+    var(--morning-lemon-strong);
+
+  --rose:
+    var(--morning-pink);
+
+
+  --accent-one:
+    var(--morning-turquoise-strong);
+
+  --accent-two:
+    var(--morning-lavender);
+
+  --accent-three:
+    var(--morning-pink);
+
+  --accent-four:
+    var(--morning-lemon-strong);
+
+
+  --glass:
+    rgba(255, 255, 255, .48);
+
+  --glass-light:
+    rgba(255, 255, 255, .72);
+
+  --glass-soft:
+    rgba(255, 255, 255, .30);
+
+  --border:
+    rgba(255, 255, 255, .76);
+
+
+  --shadow:
+    0 20px 60px
+    rgba(98, 137, 153, .13);
+
+
+  --progress:
+    linear-gradient(
+      90deg,
+      #70dedf 0%,
+      #a7d7e8 18%,
+      #b9b7e7 36%,
+      #e1b0e4 52%,
+      #f6a9e4 65%,
+      #f8d3c1 80%,
+      #eaf3a6 100%
+    );
+}
+
+
+/* =========================================================
+   MORNING BACKGROUND
+========================================================= */
+
+.app.morning {
+
+  background:
+
+    /* Turquoise */
+    radial-gradient(
+      circle at 2% 2%,
+      rgba(83, 226, 225, .66),
+      transparent 34%
+    ),
+
+    /* Sky */
+    radial-gradient(
+      circle at 39% 9%,
+      rgba(167, 215, 232, .50),
+      transparent 31%
+    ),
+
+    /* Lavender */
+    radial-gradient(
+      circle at 78% 16%,
+      rgba(185, 183, 231, .58),
+      transparent 35%
+    ),
+
+    /* Lilac */
+    radial-gradient(
+      circle at 80% 36%,
+      rgba(225, 176, 228, .58),
+      transparent 32%
+    ),
+
+    /* Pink */
+    radial-gradient(
+      circle at 54% 49%,
+      rgba(246, 169, 228, .58),
+      transparent 34%
+    ),
+
+    /* Blush */
+    radial-gradient(
+      circle at 30% 59%,
+      rgba(248, 182, 218, .48),
+      transparent 32%
+    ),
+
+    /* Peach */
+    radial-gradient(
+      circle at 50% 71%,
+      rgba(248, 211, 193, .47),
+      transparent 34%
+    ),
+
+    /* Lemon */
+    radial-gradient(
+      circle at 10% 80%,
+      rgba(248, 248, 197, .68),
+      transparent 35%
+    ),
+
+    /* Mint */
+    radial-gradient(
+      circle at 78% 91%,
+      rgba(180, 244, 210, .60),
+      transparent 38%
+    ),
+
+    linear-gradient(
+      160deg,
+
+      #94e7e9 0%,
+
+      #a8dce9 15%,
+
+      #babde9 31%,
+
+      #ddafe4 44%,
+
+      #f1a9df 57%,
+
+      #f7bfd4 67%,
+
+      #f7d9bf 78%,
+
+      #f0f1b1 88%,
+
+      #b4edd8 100%
+    ) !important;
+}
+
+
+/* =========================================================
+   AMBIENT BLOBS
+========================================================= */
+
+.app.morning .ambient-one {
+
+  background:
+    var(--morning-turquoise-strong)
+    !important;
+
+  opacity:
+    .42 !important;
+}
+
+
+.app.morning .ambient-two {
+
+  background:
+    var(--morning-lilac)
+    !important;
+
+  opacity:
+    .34 !important;
+}
+
+
+.app.morning .ambient-three {
+
+  background:
+    var(--morning-lemon)
+    !important;
+
+  opacity:
+    .32 !important;
+}
+
+
+.app.morning .ambient-four {
+
+  background:
+    var(--morning-mint)
+    !important;
+
+  opacity:
+    .30 !important;
+}
+
+
+/* =========================================================
+   LABELS
+========================================================= */
+
+.app.morning .hero-label,
+.app.morning
+.section-title > div > span {
+
+  color:
+    #4f8491
+    !important;
+}
+
+
+/* =========================================================
+   HERO GRADIENT TEXT
+========================================================= */
+
+.app.morning .hero h2 em {
+
+  background:
+
+    linear-gradient(
+      90deg,
+
+      #38b9c3 0%,
+
+      #689fd0 22%,
+
+      #987fcf 42%,
+
+      #c773ca 60%,
+
+      #e26ab6 78%,
+
+      #d9a04f 100%
+    )
+    !important;
+
+
+  -webkit-background-clip:
+    text !important;
+
+  background-clip:
+    text !important;
+
+  color:
+    transparent
+    !important;
+}
+
+
+/* =========================================================
+   ACTIVE TABS / BUTTONS
+========================================================= */
+
+.app.morning .period.active,
+
+.app.morning
+.main-tabs button.active,
+
+.app.morning
+.progress-view-tabs
+button.active,
+
+.app.morning
+.filter-tabs button.active {
+
+  background:
+
+    linear-gradient(
+      135deg,
+
+      #68dcde 0%,
+
+      #9fd9eb 22%,
+
+      #b9b7e7 43%,
+
+      #dfa9df 62%,
+
+      #efa3d4 78%,
+
+      #f3d584 100%
+    )
+    !important;
+
+
+  color:
+    #284851
+    !important;
+
+
+  box-shadow:
+
+    0 8px 26px
+    rgba(
+      93,
+      146,
+      157,
+      .20
+    )
+    !important;
+}
+/* =========================================================
+   MORNING — SOFT ANISE & BLUSH THEME
+   هادئ – ناعم – أنثوي – غير مبالغ فيه
+========================================================= */
+
+.app.morning {
+
+  /* خلفية عامة */
+  --bg-1: #eef6e6;
+  --bg-2: #f6efe2;
+  --bg-3: #f7dfe9;
+  --bg-4: #dfe9f7;
+
+  /* النص */
+  --text: #4c5b5d;
+  --strong: #314346;
+  --soft: #7c8b8d;
+
+  --text-main: #4c5b5d;
+  --text-strong: #314346;
+  --text-soft: #7c8b8d;
+
+  /* ألوان مساعدة */
+  --one: #dcebcf;
+  --two: #f3d8e7;
+  --three: #e8dbf3;
+  --rose: #f0cfd9;
+
+  --accent-one: #dcebcf;
+  --accent-two: #f2d7e5;
+  --accent-three: #eadff5;
+  --accent-four: #dce7f6;
+
+  /* الزجاج */
+  --glass: rgba(255,255,255,.52);
+  --glass-light: rgba(255,255,255,.76);
+  --glass-soft: rgba(255,255,255,.34);
+  --border: rgba(255,255,255,.78);
+
+  /* الظل */
+  --shadow:
+    0 18px 45px
+    rgba(124, 135, 128, .10);
+
+  /* شريط التقدم */
+  --progress:
+    linear-gradient(
+      90deg,
+      #dcebcf 0%,
+      #f7ead8 35%,
+      #f2d7e5 68%,
+      #dfe8f5 100%
+    );
+}
+
+
+/* =========================================================
+   MAIN BACKGROUND
+   البداية: أنّاسي + كريمي + بمبي خفيف
+========================================================= */
+
+.app.morning {
+  background:
+    radial-gradient(
+      circle at 82% 5%,
+      rgba(221, 236, 206, .82),
+      transparent 28%
+    ),
+
+    radial-gradient(
+      circle at 12% 10%,
+      rgba(248, 237, 213, .75),
+      transparent 30%
+    ),
+
+    radial-gradient(
+      circle at 55% 25%,
+      rgba(245, 217, 231, .58),
+      transparent 34%
+    ),
+
+    radial-gradient(
+      circle at 82% 55%,
+      rgba(234, 223, 245, .52),
+      transparent 36%
+    ),
+
+    radial-gradient(
+      circle at 25% 82%,
+      rgba(221, 233, 246, .50),
+      transparent 38%
+    ),
+
+    linear-gradient(
+      180deg,
+      #eef6e6 0%,
+      #f6f1e5 24%,
+      #f8e8ee 52%,
+      #eee5f5 76%,
+      #e1ebf6 100%
+    ) !important;
+}
+
+
+/* =========================================================
+   AMBIENT BACKGROUND BLOBS
+========================================================= */
+
+.app.morning .ambient-one {
+  background: #dfeecf !important;
+  opacity: .32 !important;
+}
+
+.app.morning .ambient-two {
+  background: #f5dbe8 !important;
+  opacity: .24 !important;
+}
+
+.app.morning .ambient-three {
+  background: #eee2f6 !important;
+  opacity: .26 !important;
+}
+
+.app.morning .ambient-four {
+  background: #e5edf8 !important;
+  opacity: .20 !important;
+}
+
+
+/* =========================================================
+   LABELS
+========================================================= */
+
+.app.morning .hero-label,
+.app.morning .section-title > div > span {
+  color: #8a8a7a !important;
+}
+
+
+/* =========================================================
+   HERO EMPHASIS TEXT
+========================================================= */
+
+.app.morning .hero h2 em {
+  background:
+    linear-gradient(
+      90deg,
+      #9daf93,
+      #c9b89b,
+      #dca5bf,
+      #bfa9d7,
+      #a9bfdc
+    ) !important;
+
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+}
+
+
+/* =========================================================
+   ACTIVE TABS / BUTTONS
+   خففناها جدًا بدل التدرج القوي
+========================================================= */
+
+.app.morning .period.active,
+.app.morning .main-tabs button.active,
+.app.morning .progress-view-tabs button.active,
+.app.morning .filter-tabs button.active {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(225, 238, 212, .96),
+      rgba(248, 236, 221, .96),
+      rgba(244, 218, 232, .96),
+      rgba(231, 222, 244, .96)
+    ) !important;
+
+  color: #3f4d4f !important;
+  border: 1px solid rgba(255,255,255,.72) !important;
+
+  box-shadow:
+    0 6px 18px rgba(132, 138, 132, .10) !important;
+}
+
+
+/* الأزرار غير النشطة */
+.app.morning .main-tabs button,
+.app.morning .progress-view-tabs button,
+.app.morning .filter-tabs button,
+.app.morning .period {
+  background: rgba(255,255,255,.34);
+  color: #667577;
+  border: 1px solid rgba(255,255,255,.56);
+}
+
+
+/* =========================================================
+   GEOMETRY
+========================================================= */
+
+.app.morning .hero-geometry {
+  opacity: .92 !important;
+  filter: drop-shadow(0 14px 28px rgba(170, 170, 170, .12));
+}
+
+.app.morning .geometry-aura {
+  background:
+    radial-gradient(
+      circle,
+      rgba(223, 236, 207, .28),
+      rgba(245, 220, 232, .18) 44%,
+      rgba(224, 232, 246, .14) 65%,
+      transparent 76%
+    ) !important;
+}
+
+.app.morning .geometry-outer {
+  color: rgba(179, 195, 170, .72) !important;
+  border-width: 2px !important;
+}
+
+.app.morning .geometry-diamond {
+  color: rgba(217, 178, 197, .58) !important;
+}
+
+.app.morning .geometry-circle {
+  color: rgba(188, 194, 226, .58) !important;
+}
+
+.app.morning .geometry-star {
+  color: #b4a88f !important;
+  background: rgba(255,255,255,.30) !important;
+  box-shadow: 0 0 24px rgba(214, 203, 190, .18) !important;
+}
+
+.app.morning .geometry-core {
+  color: #bda88d !important;
+  text-shadow: 0 8px 20px rgba(190, 172, 150, .18) !important;
+}
+
+.app.morning .geo-point {
+  color: #d5b8c8 !important;
+  box-shadow: 0 0 10px rgba(213, 184, 200, .32) !important;
+}
+
+.app.morning .floating-star {
+  color: #cbb9db !important;
+}
+
+
+/* =========================================================
+   GLASS AREAS
+========================================================= */
+
+.app.morning .hero,
+.app.morning .main-tabs,
+.app.morning .section-title,
+.app.morning .dashboard-page {
+  border-color: rgba(255,255,255,.74);
+}
+
+
+/* =========================================================
+   REMINDER BAR
+========================================================= */
+
+.app.morning {
+  --morning-reminder-bg:
+    linear-gradient(
+      90deg,
+      rgba(227, 239, 216, .96) 0%,
+      rgba(248, 238, 223, .96) 34%,
+      rgba(244, 219, 232, .96) 68%,
+      rgba(232, 225, 245, .96) 100%
+    );
+
+  --morning-reminder-text: #485759;
+  --morning-reminder-border: rgba(255,255,255,.70);
+}

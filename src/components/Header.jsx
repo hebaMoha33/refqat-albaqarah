@@ -1,11 +1,15 @@
-import refqatLogo from '../assets/refqat-logo.jpeg'
+import refqatLogo
+  from '../assets/refqat-logo.jpeg'
+
 
 export default function Header({
   currentUser,
   authChecked,
+  settingsOpen,
   onLogin,
   onLogout,
-  onLogoClick
+  onLogoClick,
+  onSettings
 }) {
   return (
     <header className="topbar">
@@ -19,28 +23,56 @@ export default function Header({
             src={refqatLogo}
             alt="رفقة البقرة"
           />
+
           <span className="logo-glass" />
         </button>
 
+
         <div className="brand-copy">
-          <h1>رفقة البقرة</h1>
+          <h1>
+            رفقة البقرة
+          </h1>
+
           <span>
             نقرأها كل يوم.. لنحيا بالقرآن
           </span>
         </div>
       </div>
 
+
       {!authChecked ? (
-        <span className="saved-label">...</span>
+        <span className="saved-label">
+          ...
+        </span>
       ) : !currentUser ? (
         <button
           className="login-btn"
-          onClick={() => onLogin('login')}
+          onClick={() =>
+            onLogin('login')
+          }
         >
           تسجيل الدخول
         </button>
       ) : (
         <div className="logged-user">
+
+          <button
+            type="button"
+            className={
+              settingsOpen
+                ? 'header-settings-btn active'
+                : 'header-settings-btn'
+            }
+            aria-label="إعدادات التذكيرات"
+            title="الإعدادات"
+            onClick={
+              onSettings
+            }
+          >
+            ⚙
+          </button>
+
+
           <div className="user-chip">
             <span className="user-avatar">
               {(
@@ -56,9 +88,12 @@ export default function Header({
             </span>
           </div>
 
+
           <button
             className="logout-btn"
-            onClick={onLogout}
+            onClick={
+              onLogout
+            }
           >
             خروج
           </button>

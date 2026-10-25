@@ -26,6 +26,9 @@ import CommunityPage
 import RankingPage
   from './RankingPage'
 
+import ReminderSettingsPage
+  from './ReminderSettingsPage'
+
 import {
   useAuth
 } from '../context/AuthContext'
@@ -93,8 +96,32 @@ export default function HomePage() {
   }
 
 
+  function openSettings() {
+    if (!currentUser) {
+      openAuth('login')
+      return
+    }
+
+    setMainTab('settings')
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  }
+
+
+  function closeSettings() {
+    setMainTab('today')
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  }
+
+
   /*
-    مهم:
     قبل تسجيل الخروج نحاول إرسال
     آخر تقدم إلى Supabase فورًا.
   */
@@ -138,6 +165,9 @@ export default function HomePage() {
         authChecked={
           authChecked
         }
+        settingsOpen={
+          visibleTab === 'settings'
+        }
         onLogin={
           openAuth
         }
@@ -147,46 +177,53 @@ export default function HomePage() {
         onLogoClick={
           openCompanionPage
         }
-      />
-
-
-      <Hero
-        period={period}
-        dailyPercentage={
-          dailyPercentage
-        }
-        morningPercentage={
-          morningPercentage
-        }
-        eveningPercentage={
-          eveningPercentage
-        }
-        currentUser={
-          currentUser
-        }
-        streak={
-          streak
-        }
-        syncStatus={
-          syncStatus
+        onSettings={
+          openSettings
         }
       />
 
 
-      <MainTabs
-        activeTab={
-          visibleTab
-        }
-        currentUser={
-          currentUser
-        }
-        onChange={
-          setMainTab
-        }
-        onNeedAuth={() =>
-          openAuth('login')
-        }
-      />
+      {visibleTab !== 'settings' && (
+        <>
+          <Hero
+            period={period}
+            dailyPercentage={
+              dailyPercentage
+            }
+            morningPercentage={
+              morningPercentage
+            }
+            eveningPercentage={
+              eveningPercentage
+            }
+            currentUser={
+              currentUser
+            }
+            streak={
+              streak
+            }
+            syncStatus={
+              syncStatus
+            }
+          />
+
+
+          <MainTabs
+            activeTab={
+              visibleTab
+            }
+            currentUser={
+              currentUser
+            }
+            onChange={
+              setMainTab
+            }
+            onNeedAuth={() =>
+              openAuth('login')
+            }
+          />
+        </>
+      )}
 
 
       {visibleTab ===
@@ -213,6 +250,17 @@ export default function HomePage() {
         'ranking' &&
         currentUser && (
           <RankingPage />
+        )}
+
+
+      {visibleTab ===
+        'settings' &&
+        currentUser && (
+          <ReminderSettingsPage
+            onBack={
+              closeSettings
+            }
+          />
         )}
 
 

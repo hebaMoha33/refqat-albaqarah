@@ -1,0 +1,386 @@
+/* =========================================
+   رفقة البقرة — FLOATING REMINDER
+========================================= */
+
+.floating-reminder {
+  position: fixed;
+
+  z-index: 99999;
+
+  width:
+    min(
+      calc(100vw - 24px),
+      var(--reminder-max-width, 420px)
+    );
+
+  min-height:
+    var(--reminder-height, 40px);
+
+  padding:
+    4px 7px 4px 11px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  border-radius:
+    var(--reminder-radius, 13px);
+
+  border:
+    1px solid
+    rgba(255,255,255,.65);
+
+  box-shadow:
+    var(
+      --reminder-shadow,
+      0 6px 24px
+      rgba(0,0,0,.12)
+    );
+
+  backdrop-filter:
+    blur(14px);
+
+  -webkit-backdrop-filter:
+    blur(14px);
+
+  opacity:
+    var(
+      --reminder-opacity,
+      .96
+    );
+
+  cursor: grab;
+
+  user-select: none;
+
+  touch-action: none;
+
+  transition:
+    box-shadow 180ms ease,
+    opacity 180ms ease;
+
+  direction: rtl;
+}
+
+
+.floating-reminder:active {
+  cursor: grabbing;
+
+  box-shadow:
+    0 10px 30px
+    rgba(0,0,0,.16);
+}
+
+
+/* =========================================
+   CONTENT
+========================================= */
+
+.floating-reminder-content {
+  flex: 1;
+
+  min-width: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+}
+
+
+.floating-reminder-text {
+  flex: 1;
+
+  overflow: hidden;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+
+  font-size:
+    var(
+      --reminder-font-size,
+      13px
+    );
+
+  font-weight:
+    var(
+      --reminder-font-weight,
+      600
+    );
+
+  line-height: 1.25;
+}
+
+
+.floating-reminder-progress {
+  flex: 0 0 auto;
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  opacity: .72;
+}
+
+
+/* =========================================
+   SMALL STATUS DOT
+========================================= */
+
+.floating-reminder-dot {
+  width: 6px;
+
+  height: 6px;
+
+  flex: 0 0 6px;
+
+  border-radius: 50%;
+}
+
+
+/* =========================================
+   CLOSE
+========================================= */
+
+.floating-reminder-close {
+  width: 25px;
+
+  height: 25px;
+
+  flex: 0 0 25px;
+
+  display: grid;
+
+  place-items: center;
+
+  padding: 0;
+
+  border: 0;
+
+  border-radius: 50%;
+
+  background:
+    rgba(255,255,255,.30);
+
+  color: inherit;
+
+  font-size: 17px;
+
+  font-weight: 400;
+
+  line-height: 1;
+
+  cursor: pointer;
+
+  opacity: .58;
+
+  transition:
+    background 160ms ease,
+    opacity 160ms ease;
+}
+
+
+.floating-reminder-close:hover {
+  background:
+    rgba(255,255,255,.52);
+
+  opacity: .90;
+}
+
+
+/* =========================================
+   MORNING
+========================================= */
+
+.floating-reminder-morning {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(239, 246, 225, .96) 0%,
+      rgba(250, 238, 229, .96) 38%,
+      rgba(246, 220, 234, .96) 72%,
+      rgba(234, 227, 246, .96) 100%
+    );
+
+  color:
+    var(
+      --morning-reminder-text,
+      #485759
+    );
+
+  border-color:
+    var(
+      --morning-reminder-border,
+      rgba(255,255,255,.70)
+    );
+}
+
+
+.floating-reminder-morning
+.floating-reminder-dot {
+  background:
+    #d69fba;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(214,159,186,.14);
+}
+
+
+/* =========================================
+   EVENING
+   يستخدم ألوان المساء الأصلية
+========================================= */
+
+.floating-reminder-evening {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(23,26,52,.96),
+      rgba(52,37,74,.96)
+    );
+
+  color:
+    var(
+      --evening-reminder-text,
+      #fff3e9
+    );
+
+  border-color:
+    var(
+      --evening-reminder-border,
+      rgba(255,208,137,.32)
+    );
+}
+
+
+.floating-reminder-evening
+.floating-reminder-dot {
+  background:
+    #ffad68;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(255,173,104,.16);
+}
+
+
+/* =========================================
+   BAQARAH
+========================================= */
+
+.floating-reminder-baqarah {
+  background:
+    rgba(
+      255,
+      253,
+      247,
+      .96
+    );
+
+  color:
+    var(
+      --baqarah-text,
+      #25342d
+    );
+
+  border-color:
+    rgba(
+      184,
+      155,
+      98,
+      .22
+    );
+}
+
+
+.floating-reminder-baqarah
+.floating-reminder-dot {
+  background:
+    var(
+      --baqarah-primary,
+      #315e4c
+    );
+
+  box-shadow:
+    0 0 0 3px
+    rgba(49,94,76,.12);
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+  .floating-reminder {
+    /*
+      الشريط لا يحتل عرض الشاشة.
+      يكون على قد المحتوى فقط.
+    */
+    width: auto;
+
+    min-width: 210px;
+
+    max-width:
+      min(
+        82vw,
+        330px
+      );
+
+    min-height: 32px;
+
+    padding:
+      3px 6px 3px 9px;
+
+    border-radius: 11px;
+  }
+
+
+  .floating-reminder-content {
+    min-width: 0;
+  }
+
+
+  .floating-reminder-text {
+    min-width: 0;
+
+    font-size: 11.5px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+  }
+
+
+  .floating-reminder-progress {
+    font-size: 10px;
+  }
+
+
+  .floating-reminder-close {
+    width: 21px;
+
+    height: 21px;
+
+    flex-basis: 21px;
+
+    font-size: 14px;
+  }
+
+
+  .floating-reminder-dot {
+    width: 5px;
+
+    height: 5px;
+
+    flex-basis: 5px;
+  }
+}
