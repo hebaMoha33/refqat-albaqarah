@@ -1,5 +1,6 @@
-import webpush from 'web-push'
 import process from 'node:process'
+import webpush from 'web-push'
+
 import {
   getAdmin,
   getCurrentUser
@@ -130,11 +131,13 @@ export default async function handler(
        CURRENT USER
     ================================ */
 
-    const user =
+    const current =
       await getCurrentUser(req)
 
 
-    if (!user?.id) {
+    if (
+      !current?.user?.id
+    ) {
       return sendJson(
         res,
         401,
@@ -145,6 +148,10 @@ export default async function handler(
         }
       )
     }
+
+
+    const userId =
+      current.user.id
 
 
     const supabase =
@@ -212,7 +219,7 @@ export default async function handler(
           .upsert(
             {
               user_id:
-                user.id,
+                userId,
 
               endpoint,
 
@@ -322,7 +329,7 @@ export default async function handler(
           })
           .eq(
             'user_id',
-            user.id
+            userId
           )
           .eq(
             'endpoint',
@@ -383,7 +390,7 @@ export default async function handler(
           )
           .eq(
             'user_id',
-            user.id
+            userId
           )
           .eq(
             'is_active',
