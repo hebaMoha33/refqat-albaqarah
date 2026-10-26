@@ -4,11 +4,11 @@ import {
   useState
 } from 'react'
 
-import {
-  createPortal
-} from 'react-dom'
+import './AdhkarQuickActions.css'
 
-import './FloatingReminder.css'
+
+const POSITION_STORAGE_KEY =
+  'refqat-adhkar-quick-position-v3'
 
 
 function clamp(
@@ -26,112 +26,56 @@ function clamp(
 }
 
 
-function getDefaultPositionStyle(
-  positionName,
-  stackOffset = 0
-) {
-  const edge = 12
-
-  const topValue =
-    `calc(env(safe-area-inset-top, 0px) + ${
-      edge + stackOffset
-    }px)`
-
-  const bottomValue =
-    `calc(env(safe-area-inset-bottom, 0px) + ${
-      edge + stackOffset
-    }px)`
+function getInitialPosition() {
+  const width =
+    window.innerWidth <= 600
+      ? 145
+      : 165
 
 
-  switch (
-    positionName
-  ) {
-    case 'top-left':
-      return {
-        top: topValue,
-        left: `${edge}px`,
-        right: 'auto',
-        bottom: 'auto'
-      }
+  return {
+    x:
+      Math.max(
+        window.innerWidth -
+          width -
+          12,
+        8
+      ),
 
-
-    case 'bottom-right':
-      return {
-        top: 'auto',
-        left: 'auto',
-        right: `${edge}px`,
-        bottom: bottomValue
-      }
-
-
-    case 'bottom-left':
-      return {
-        top: 'auto',
-        left: `${edge}px`,
-        right: 'auto',
-        bottom: bottomValue
-      }
-
-
-    case 'top-right':
-    default:
-      return {
-        top: topValue,
-        left: 'auto',
-        right: `${edge}px`,
-        bottom: 'auto'
-      }
+    y:
+      Math.max(
+        window.innerHeight -
+          72,
+        8
+      )
   }
 }
 
 
-export default function FloatingReminder({
-  type = 'morning',
+export default function AdhkarQuickActions({
+  period = 'morning',
 
-  theme = null,
+  items = [],
 
-  text =
-    'أذكار الصباح بانتظارك',
+  getRemaining,
 
-  progress = null,
-
-  visible = true,
-
-  draggable = true,
-
-  showCloseButton = true,
-
-  height = 34,
-
-  opacity = 96,
-
-  defaultPosition =
-    'top-right',
-
-  stackOffset = 0,
-
-  positionStorageKey =
-    'refqat-floating-reminder-position',
-
-  onOpen,
-
-  onClose
+  onResetAll
 }) {
-  const reminderRef =
+  const shellRef =
     useRef(null)
 
 
   const dragRef =
     useRef({
       dragging: false,
-      moved: false,
 
-      startX: 0,
-      startY: 0,
-
-      startLeft: 0,
-      startTop: 0
+      offsetX: 0,
+      offsetY: 0
     })
+
+
+  const toastTimerRef =
+    useRef(null)
 
 
   const [
@@ -143,7 +87,7 @@ export default function FloatingReminder({
         const saved =
           JSON.parse(
             localStorage.getItem(
-              positionStorageKey
+              POSITION_STORAGE_KEY
             )
           )
 
@@ -156,501 +100,591 @@ export default function FloatingReminder({
             saved?.y
           )
         ) {
-          return {
-            x: saved.x,
-            y: saved.y
-          }
+          return saved
         }
+
       } catch {
-        // ignore
+        /* ignore */
       }
 
 
-      return null
+      return getInitialPosition()
     })
 
 
-  /* =====================================
-     NORMALIZED THEME
-  ===================================== */
-
-  const activeTheme =
-    theme === 'evening'
-      ? 'evening'
-      : theme === 'morning'
-        ? 'morning'
-        : type === 'evening'
-          ? 'evening'
-          : 'morning'
+  const [
+    nearBottom,
+    setNearBottom
+  ] =
+    useState(false)
 
 
-  /* =====================================
-     NORMALIZED PROGRESS
-  ===================================== */
+  const [
+    showResetConfirm,
+    setShowResetConfirm
+  ] =
+    useState(false)
 
-  const normalizedProgress =
-    progress === null ||
-    progress === undefined
-      ? null
-      : Math.min(
-          Math.max(
-            Math.round(
-              Number(progress) || 0
-            ),
-            0
-          ),
-          100
-        )
+
+  const [
+    toast,
+    setToast
+  ] =
+    useState('')
 
 
   /* =====================================
-     SAVE POSITION
+     SAVE
   ===================================== */
 
   useEffect(() => {
-    if (!position) {
-      return
-    }
+    try {
+      localStorage.setItem(
+        POSITION_STORAGE_KEY,
 
-
-    localStorage.setItem(
-      positionStorageKey,
-
-      JSON.stringify(
-        position
+        JSON.stringify(
+          position
+        )
       )
-    )
+    } catch {
+      /* ignore */
+    }
   }, [
-    position,
-    positionStorageKey
+    position
   ])
 
 
   /* =====================================
-     KEEP INSIDE SCREEN
+     SCROLL
   ===================================== */
 
   useEffect(() => {
-    function keepInsideScreen() {
-      const element =
-        reminderRef.current
+    function handleScroll() {
+      const bottom =
+        window.scrollY +
+        window.innerHeight
+
+      const pageHeight =
+        document.documentElement
+          .scrollHeight
 
 
-      if (!element) {
-        return
-      }
-
-
-      setPosition(
-        previous => {
-          if (!previous) {
-            return previous
-          }
-
-
-          const maxX =
-            Math.max(
-              8,
-
-              window.innerWidth -
-              element.offsetWidth -
-              8
-            )
-
-
-          const maxY =
-            Math.max(
-              8,
-
-              window.innerHeight -
-              element.offsetHeight -
-              8
-            )
-
-
-          return {
-            x:
-              clamp(
-                previous.x,
-                8,
-                maxX
-              ),
-
-            y:
-              clamp(
-                previous.y,
-                8,
-                maxY
-              )
-          }
-        }
+      setNearBottom(
+        bottom >=
+          pageHeight - 300
       )
     }
 
 
-    window.addEventListener(
-      'resize',
-      keepInsideScreen
-    )
+    handleScroll()
 
 
     window.addEventListener(
-      'orientationchange',
-      keepInsideScreen
+      'scroll',
+      handleScroll,
+      {
+        passive: true
+      }
     )
 
 
     return () => {
       window.removeEventListener(
-        'resize',
-        keepInsideScreen
-      )
-
-
-      window.removeEventListener(
-        'orientationchange',
-        keepInsideScreen
+        'scroll',
+        handleScroll
       )
     }
   }, [])
 
 
-  if (
-    !visible ||
-    typeof document ===
-      'undefined'
+  /* =====================================
+     TOAST
+  ===================================== */
+
+  useEffect(() => {
+    return () => {
+      if (
+        toastTimerRef.current
+      ) {
+        window.clearTimeout(
+          toastTimerRef.current
+        )
+      }
+    }
+  }, [])
+
+
+  function showToast(
+    message
   ) {
-    return null
+    setToast(
+      message
+    )
+
+
+    if (
+      toastTimerRef.current
+    ) {
+      window.clearTimeout(
+        toastTimerRef.current
+      )
+    }
+
+
+    toastTimerRef.current =
+      window.setTimeout(
+        () => {
+          setToast('')
+        },
+        1600
+      )
   }
 
 
   /* =====================================
-     DRAG START
+     DRAG
   ===================================== */
 
-  function handlePointerDown(
+  function startDrag(
     event
   ) {
-    if (
-      event.target.closest(
-        '.floating-reminder-close'
-      )
-    ) {
-      return
-    }
+    const shell =
+      shellRef.current
 
 
-    if (!draggable) {
-      return
-    }
-
-
-    const element =
-      reminderRef.current
-
-
-    if (!element) {
+    if (!shell) {
       return
     }
 
 
     const rect =
-      element
+      shell
         .getBoundingClientRect()
 
 
     dragRef.current = {
       dragging: true,
-      moved: false,
 
-      startX:
-        event.clientX,
-
-      startY:
-        event.clientY,
-
-      startLeft:
+      offsetX:
+        event.clientX -
         rect.left,
 
-      startTop:
+      offsetY:
+        event.clientY -
         rect.top
     }
 
 
-    element
+    event.currentTarget
       .setPointerCapture?.(
         event.pointerId
       )
   }
 
 
+  useEffect(() => {
+    function handleMove(
+      event
+    ) {
+      if (
+        !dragRef.current
+          .dragging ||
+        !shellRef.current
+      ) {
+        return
+      }
+
+
+      const width =
+        shellRef.current
+          .offsetWidth
+
+
+      const height =
+        shellRef.current
+          .offsetHeight
+
+
+      const maxX =
+        Math.max(
+          window.innerWidth -
+            width -
+            8,
+          8
+        )
+
+
+      const maxY =
+        Math.max(
+          window.innerHeight -
+            height -
+            8,
+          8
+        )
+
+
+      setPosition({
+        x:
+          clamp(
+            event.clientX -
+              dragRef.current
+                .offsetX,
+
+            8,
+            maxX
+          ),
+
+        y:
+          clamp(
+            event.clientY -
+              dragRef.current
+                .offsetY,
+
+            8,
+            maxY
+          )
+      })
+    }
+
+
+    function handleUp() {
+      dragRef.current.dragging =
+        false
+    }
+
+
+    window.addEventListener(
+      'pointermove',
+      handleMove
+    )
+
+    window.addEventListener(
+      'pointerup',
+      handleUp
+    )
+
+
+    return () => {
+      window.removeEventListener(
+        'pointermove',
+        handleMove
+      )
+
+      window.removeEventListener(
+        'pointerup',
+        handleUp
+      )
+    }
+  }, [])
+
+
   /* =====================================
-     DRAG MOVE
+     RESET
   ===================================== */
 
-  function handlePointerMove(
-    event
-  ) {
+  function confirmReset() {
+    onResetAll?.()
+
+    setShowResetConfirm(
+      false
+    )
+
+
+    showToast(
+      period === 'morning'
+        ? 'تمت إعادة ورد الصباح'
+        : 'تمت إعادة ورد المساء'
+    )
+  }
+
+
+  /* =====================================
+     UNFINISHED
+  ===================================== */
+
+  function goToUnfinished() {
+    setShowResetConfirm(
+      false
+    )
+
+
+    const indexes =
+      items.reduce(
+        (
+          result,
+          item,
+          index
+        ) => {
+          const remaining =
+            Number(
+              getRemaining?.(
+                item
+              )
+            )
+
+
+          if (
+            Number.isFinite(
+              remaining
+            ) &&
+            remaining > 0
+          ) {
+            result.push(
+              index
+            )
+          }
+
+
+          return result
+        },
+        []
+      )
+
+
     if (
-      !draggable ||
-      !dragRef.current
-        .dragging
+      indexes.length === 0
     ) {
+      showToast(
+        'أكملتِ وردك 🤍'
+      )
+
       return
     }
 
 
-    const element =
-      reminderRef.current
-
-
-    if (!element) {
-      return
-    }
-
-
-    const deltaX =
-      event.clientX -
-      dragRef.current.startX
-
-
-    const deltaY =
-      event.clientY -
-      dragRef.current.startY
-
-
-    if (
-      Math.abs(deltaX) > 3 ||
-      Math.abs(deltaY) > 3
-    ) {
-      dragRef.current.moved =
-        true
-    }
-
-
-    const maxX =
-      Math.max(
-        8,
-
-        window.innerWidth -
-        element.offsetWidth -
-        8
-      )
-
-
-    const maxY =
-      Math.max(
-        8,
-
-        window.innerHeight -
-        element.offsetHeight -
-        8
-      )
-
-
-    setPosition({
-      x:
-        clamp(
-          dragRef.current
-            .startLeft +
-            deltaX,
-
-          8,
-          maxX
-        ),
-
-      y:
-        clamp(
-          dragRef.current
-            .startTop +
-            deltaY,
-
-          8,
-          maxY
+    const cards =
+      Array.from(
+        document.querySelectorAll(
+          `[data-dhikr-period="${period}"][data-dhikr-index]`
         )
+      )
+
+
+    let currentIndex =
+      -1
+
+
+    for (const card of cards) {
+      if (
+        card
+          .getBoundingClientRect()
+          .bottom >
+        130
+      ) {
+        currentIndex =
+          Number(
+            card.dataset
+              .dhikrIndex
+          )
+
+        break
+      }
+    }
+
+
+    const targetIndex =
+      indexes.find(
+        index =>
+          index >
+          currentIndex
+      ) ??
+      indexes[0]
+
+
+    const target =
+      document.querySelector(
+        `[data-dhikr-period="${period}"][data-dhikr-index="${targetIndex}"]`
+      )
+
+
+    target?.scrollIntoView({
+      behavior:
+        'smooth',
+
+      block:
+        'center'
     })
   }
 
 
   /* =====================================
-     DRAG END / CLICK
+     TOP / BOTTOM
   ===================================== */
 
-  function handlePointerUp(
-    event
-  ) {
-    if (!draggable) {
-      onOpen?.()
-      return
-    }
-
-
-    const wasMoved =
-      dragRef.current.moved
-
-
-    dragRef.current.dragging =
+  function topOrBottom() {
+    setShowResetConfirm(
       false
+    )
 
 
-    reminderRef.current
-      ?.releasePointerCapture?.(
-        event.pointerId
+    const target =
+      document.getElementById(
+        nearBottom
+          ? 'adhkar-list-start'
+          : 'adhkar-list-end'
       )
 
 
-    if (!wasMoved) {
-      onOpen?.()
-    }
+    target?.scrollIntoView({
+      behavior:
+        'smooth',
+
+      block:
+        nearBottom
+          ? 'start'
+          : 'end'
+    })
   }
 
 
-  /* =====================================
-     POSITION
-  ===================================== */
-
-  const positionStyle =
-    position
-      ? {
-          top:
-            `${position.y}px`,
-
-          left:
-            `${position.x}px`,
-
-          right:
-            'auto',
-
-          bottom:
-            'auto'
-        }
-
-      : getDefaultPositionStyle(
-          defaultPosition,
-          stackOffset
-        )
+  const popupAbove =
+    position.y >
+    window.innerHeight *
+      0.45
 
 
-  const style = {
-    ...positionStyle,
-
-    zIndex:
-      2147483647,
-
-    '--reminder-height':
-      `${height}px`,
-
-    '--reminder-opacity':
-      opacity / 100
-  }
-
-
-  const reminder = (
+  return (
     <div
       ref={
-        reminderRef
+        shellRef
       }
 
       className={`
-        floating-reminder
-        floating-reminder-${type}
-        floating-reminder-theme-${activeTheme}
+        adhkar-quick-shell
+        adhkar-quick-shell--${period}
       `}
 
-      style={
-        style
-      }
+      style={{
+        left:
+          `${position.x}px`,
 
-      onPointerDown={
-        handlePointerDown
-      }
-
-      onPointerMove={
-        handlePointerMove
-      }
-
-      onPointerUp={
-        handlePointerUp
-      }
-
-      onKeyDown={
-        event => {
-          if (
-            event.key ===
-              'Enter' ||
-            event.key ===
-              ' '
-          ) {
-            event.preventDefault()
-
-            onOpen?.()
-          }
-        }
-      }
-
-      role="button"
-
-      tabIndex={0}
+        top:
+          `${position.y}px`
+      }}
     >
+
       <div
-        className="floating-reminder-content"
+        className={`
+          adhkar-quick-popups
+          ${
+            popupAbove
+              ? 'adhkar-quick-popups--above'
+              : 'adhkar-quick-popups--below'
+          }
+        `}
       >
 
-        <span
-          className="floating-reminder-dot"
-        />
-
-
-        <span
-          className="floating-reminder-text"
-        >
-          {text}
-        </span>
-
-
-        {normalizedProgress !==
-          null && (
-          <span
-            className="floating-reminder-progress"
+        {showResetConfirm && (
+          <div
+            className="adhkar-reset-confirm"
           >
-            {normalizedProgress}%
-          </span>
+            <strong>
+              إعادة ورد {
+                period === 'morning'
+                  ? 'الصباح'
+                  : 'المساء'
+              }؟
+            </strong>
+
+            <span>
+              سيتم تصفير هذا الورد فقط
+            </span>
+
+            <div>
+              <button
+                type="button"
+
+                onClick={
+                  confirmReset
+                }
+              >
+                إعادة
+              </button>
+
+              <button
+                type="button"
+
+                onClick={() =>
+                  setShowResetConfirm(
+                    false
+                  )
+                }
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
+        )}
+
+
+        {toast && (
+          <div
+            className="adhkar-quick-toast"
+          >
+            {toast}
+          </div>
         )}
 
       </div>
 
 
-      {showCloseButton && (
+      <div
+        className="adhkar-quick-actions"
+      >
+
         <button
           type="button"
 
-          className="floating-reminder-close"
-
-          aria-label="إخفاء التذكير"
-
-          onPointerDown={
-            event =>
-              event.stopPropagation()
-          }
-
-          onClick={
-            event => {
-              event.stopPropagation()
-
-              onClose?.()
-            }
+          onClick={() =>
+            setShowResetConfirm(
+              true
+            )
           }
         >
-          ×
+          ↻
         </button>
-      )}
+
+
+        <button
+          type="button"
+
+          className="adhkar-quick-main"
+
+          onClick={
+            goToUnfinished
+          }
+        >
+          ◉
+        </button>
+
+
+        <button
+          type="button"
+
+          onClick={
+            topOrBottom
+          }
+        >
+          {nearBottom
+            ? '↑'
+            : '↓'}
+        </button>
+
+
+        <button
+          type="button"
+
+          className="adhkar-quick-drag"
+
+          onPointerDown={
+            startDrag
+          }
+        >
+          ✦
+        </button>
+
+      </div>
 
     </div>
-  )
-
-
-  return createPortal(
-    reminder,
-    document.body
   )
 }

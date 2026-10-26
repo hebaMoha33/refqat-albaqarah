@@ -107,7 +107,7 @@ export default function FloatingReminder({
     'top-right',
 
   positionStorageKey =
-    'refqat-floating-adhkar-reminder-position',
+    'refqat-floating-adhkar-reminder-v2',
 
   onClose
 }) {
@@ -118,8 +118,6 @@ export default function FloatingReminder({
   const dragRef =
     useRef({
       dragging: false,
-
-      moved: false,
 
       startX: 0,
       startY: 0,
@@ -142,7 +140,6 @@ export default function FloatingReminder({
             )
           )
 
-
         if (
           Number.isFinite(
             saved?.x
@@ -156,10 +153,10 @@ export default function FloatingReminder({
             y: saved.y
           }
         }
+
       } catch {
         /* ignore */
       }
-
 
       return null
     })
@@ -180,11 +177,9 @@ export default function FloatingReminder({
       return
     }
 
-
     try {
       localStorage.setItem(
         positionStorageKey,
-
         JSON.stringify(
           position
         )
@@ -207,20 +202,15 @@ export default function FloatingReminder({
       const element =
         reminderRef.current
 
-
-      if (
-        !element
-      ) {
+      if (!element) {
         return
       }
-
 
       setPosition(
         previous => {
           if (!previous) {
             return previous
           }
-
 
           const maxX =
             Math.max(
@@ -231,7 +221,6 @@ export default function FloatingReminder({
                 8
             )
 
-
           const maxY =
             Math.max(
               8,
@@ -240,7 +229,6 @@ export default function FloatingReminder({
                 element.offsetHeight -
                 8
             )
-
 
           return {
             x:
@@ -267,7 +255,6 @@ export default function FloatingReminder({
       keepInsideScreen
     )
 
-
     window.addEventListener(
       'orientationchange',
       keepInsideScreen
@@ -280,7 +267,6 @@ export default function FloatingReminder({
         keepInsideScreen
       )
 
-
       window.removeEventListener(
         'orientationchange',
         keepInsideScreen
@@ -290,47 +276,34 @@ export default function FloatingReminder({
 
 
   /* =====================================
-     DRAG START
+     DRAG
   ===================================== */
 
   function handlePointerDown(
     event
   ) {
     if (
+      !draggable ||
       event.target.closest(
-        '.floating-reminder-close'
-      ) ||
-      event.target.closest(
-        '.floating-reminder-row'
+        'button'
       )
     ) {
       return
     }
 
-
-    if (!draggable) {
-      return
-    }
-
-
     const element =
       reminderRef.current
-
 
     if (!element) {
       return
     }
 
-
     const rect =
       element
         .getBoundingClientRect()
 
-
     dragRef.current = {
       dragging: true,
-
-      moved: false,
 
       startX:
         event.clientX,
@@ -345,7 +318,6 @@ export default function FloatingReminder({
         rect.top
     }
 
-
     element
       .setPointerCapture?.(
         event.pointerId
@@ -353,50 +325,30 @@ export default function FloatingReminder({
   }
 
 
-  /* =====================================
-     DRAG MOVE
-  ===================================== */
-
   function handlePointerMove(
     event
   ) {
     if (
       !draggable ||
-      !dragRef.current
-        .dragging
+      !dragRef.current.dragging
     ) {
       return
     }
 
-
     const element =
       reminderRef.current
-
 
     if (!element) {
       return
     }
 
-
     const deltaX =
       event.clientX -
       dragRef.current.startX
 
-
     const deltaY =
       event.clientY -
       dragRef.current.startY
-
-
-    if (
-      Math.abs(deltaX) >
-        3 ||
-      Math.abs(deltaY) >
-        3
-    ) {
-      dragRef.current.moved =
-        true
-    }
 
 
     const maxX =
@@ -443,16 +395,11 @@ export default function FloatingReminder({
   }
 
 
-  /* =====================================
-     DRAG END
-  ===================================== */
-
   function handlePointerUp(
     event
   ) {
     dragRef.current.dragging =
       false
-
 
     reminderRef.current
       ?.releasePointerCapture?.(
@@ -488,7 +435,6 @@ export default function FloatingReminder({
 
   if (
     !visible ||
-    !Array.isArray(items) ||
     items.length === 0 ||
     typeof document ===
       'undefined'
@@ -506,11 +452,6 @@ export default function FloatingReminder({
       className={`
         floating-reminder
         floating-reminder-theme-${activeTheme}
-        ${
-          items.length > 1
-            ? 'floating-reminder-multiple'
-            : 'floating-reminder-single'
-        }
       `}
 
       style={{
@@ -532,10 +473,6 @@ export default function FloatingReminder({
         handlePointerUp
       }
     >
-
-      {/* =================================
-          TOP BAR
-      ================================= */}
 
       <div
         className="floating-reminder-top"
@@ -559,16 +496,9 @@ export default function FloatingReminder({
 
             aria-label="إخفاء التذكير"
 
-            onPointerDown={
-              event =>
-                event
-                  .stopPropagation()
-            }
-
             onClick={
               event => {
-                event
-                  .stopPropagation()
+                event.stopPropagation()
 
                 onClose?.()
               }
@@ -581,29 +511,19 @@ export default function FloatingReminder({
       </div>
 
 
-      {/* =================================
-          ITEMS
-      ================================= */}
-
       <div
         className="floating-reminder-list"
       >
 
         {items.map(
-          (
-            item,
-            index
-          ) => {
+          item => {
             const progress =
               normalizeProgress(
                 item.progress
               )
 
-
             const started =
-              Boolean(
-                item.started
-              ) ||
+              item.started ||
               progress > 0
 
 
@@ -615,9 +535,7 @@ export default function FloatingReminder({
 
                 type="button"
 
-                className="
-                  floating-reminder-row
-                "
+                className="floating-reminder-row"
 
                 onClick={
                   item.onOpen
@@ -625,22 +543,16 @@ export default function FloatingReminder({
               >
 
                 <span
-                  className="
-                    floating-reminder-dot
-                  "
+                  className="floating-reminder-dot"
                 />
 
 
                 <span
-                  className="
-                    floating-reminder-row-main
-                  "
+                  className="floating-reminder-row-main"
                 >
 
                   <span
-                    className="
-                      floating-reminder-text
-                    "
+                    className="floating-reminder-text"
                   >
                     {started
                       ? item.title
@@ -650,14 +562,10 @@ export default function FloatingReminder({
 
                   {started && (
                     <span
-                      className="
-                        floating-reminder-progress-track
-                      "
+                      className="floating-reminder-progress-track"
                     >
                       <span
-                        className="
-                          floating-reminder-progress-fill
-                        "
+                        className="floating-reminder-progress-fill"
 
                         style={{
                           width:
@@ -672,23 +580,10 @@ export default function FloatingReminder({
 
                 {started && (
                   <span
-                    className="
-                      floating-reminder-progress
-                    "
+                    className="floating-reminder-progress"
                   >
                     {progress}%
                   </span>
-                )}
-
-
-                {index <
-                  items.length -
-                    1 && (
-                  <span
-                    className="
-                      floating-reminder-row-divider
-                    "
-                  />
                 )}
 
               </button>

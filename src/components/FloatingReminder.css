@@ -1,6 +1,5 @@
 /* =========================================
-   رفقة البقرة
-   UNIFIED FLOATING ADHKAR REMINDER
+   ONE FLOATING ADHKAR REMINDER
 ========================================= */
 
 .floating-reminder {
@@ -10,12 +9,11 @@
 
   width:
     min(
-      360px,
+      350px,
       calc(100vw - 24px)
     );
 
-  box-sizing:
-    border-box;
+  box-sizing: border-box;
 
   overflow: hidden;
 
@@ -55,58 +53,21 @@
 
   -webkit-user-select:
     none;
-
-  touch-action:
-    none;
-
-  transition:
-    background
-      180ms ease,
-    color
-      180ms ease,
-    border-color
-      180ms ease,
-    box-shadow
-      180ms ease;
 }
 
 
 /* =========================================
-   MORNING THEME
+   MORNING
 ========================================= */
 
 .floating-reminder-theme-morning {
   --fr-background:
     linear-gradient(
       105deg,
-
-      rgba(
-        243,
-        248,
-        230,
-        0.94
-      ) 0%,
-
-      rgba(
-        255,
-        243,
-        231,
-        0.94
-      ) 42%,
-
-      rgba(
-        248,
-        222,
-        235,
-        0.93
-      ) 73%,
-
-      rgba(
-        239,
-        231,
-        247,
-        0.93
-      ) 100%
+      rgba(243,248,230,.95),
+      rgba(255,243,231,.95),
+      rgba(248,222,235,.94),
+      rgba(239,231,247,.94)
     );
 
   --fr-text:
@@ -116,39 +77,17 @@
     #82908e;
 
   --fr-border:
-    rgba(
-      255,
-      255,
-      255,
-      0.78
-    );
+    rgba(255,255,255,.78);
 
   --fr-shadow:
     0 10px 32px
-    rgba(
-      140,
-      113,
-      78,
-      0.13
-    ),
-    0 0 20px
-    rgba(
-      224,
-      169,
-      195,
-      0.08
-    );
+    rgba(140,113,78,.13);
 
   --fr-dot:
     #d89eb9;
 
   --fr-dot-glow:
-    rgba(
-      216,
-      158,
-      185,
-      0.48
-    );
+    rgba(216,158,185,.48);
 
   --fr-progress:
     linear-gradient(
@@ -159,74 +98,27 @@
     );
 
   --fr-track:
-    rgba(
-      97,
-      116,
-      108,
-      0.10
-    );
+    rgba(97,116,108,.10);
 
   --fr-percent-text:
     #7b6039;
 
   --fr-percent-bg:
-    rgba(
-      255,
-      249,
-      232,
-      0.82
-    );
-
-  --fr-close-text:
-    #70807d;
-
-  --fr-close-bg:
-    rgba(
-      255,
-      255,
-      255,
-      0.48
-    );
-
-  --fr-divider:
-    rgba(
-      95,
-      111,
-      104,
-      0.10
-    );
+    rgba(255,249,232,.82);
 }
 
 
 /* =========================================
-   EVENING THEME
+   EVENING
 ========================================= */
 
 .floating-reminder-theme-evening {
   --fr-background:
     linear-gradient(
       105deg,
-
-      rgba(
-        31,
-        27,
-        57,
-        0.95
-      ) 0%,
-
-      rgba(
-        57,
-        39,
-        76,
-        0.95
-      ) 52%,
-
-      rgba(
-        83,
-        48,
-        82,
-        0.94
-      ) 100%
+      rgba(31,27,57,.96),
+      rgba(57,39,76,.96),
+      rgba(83,48,82,.95)
     );
 
   --fr-text:
@@ -236,39 +128,17 @@
     #dbcfe1;
 
   --fr-border:
-    rgba(
-      255,
-      219,
-      184,
-      0.20
-    );
+    rgba(255,219,184,.20);
 
   --fr-shadow:
     0 11px 34px
-    rgba(
-      17,
-      13,
-      36,
-      0.34
-    ),
-    0 0 20px
-    rgba(
-      199,
-      143,
-      220,
-      0.15
-    );
+    rgba(17,13,36,.34);
 
   --fr-dot:
     #f1a1c4;
 
   --fr-dot-glow:
-    rgba(
-      241,
-      161,
-      196,
-      0.65
-    );
+    rgba(241,161,196,.65);
 
   --fr-progress:
     linear-gradient(
@@ -279,47 +149,18 @@
     );
 
   --fr-track:
-    rgba(
-      255,
-      255,
-      255,
-      0.11
-    );
+    rgba(255,255,255,.11);
 
   --fr-percent-text:
     #fff8f6;
 
   --fr-percent-bg:
-    rgba(
-      255,
-      255,
-      255,
-      0.10
-    );
-
-  --fr-close-text:
-    #fff8f5;
-
-  --fr-close-bg:
-    rgba(
-      255,
-      255,
-      255,
-      0.10
-    );
-
-  --fr-divider:
-    rgba(
-      255,
-      255,
-      255,
-      0.10
-    );
+    rgba(255,255,255,.11);
 }
 
 
 /* =========================================
-   TOP / DRAG
+   TOP
 ========================================= */
 
 .floating-reminder-top {
@@ -336,26 +177,17 @@
     5px 7px 0;
 
   cursor: grab;
-}
 
-
-.floating-reminder-top:active {
-  cursor: grabbing;
+  touch-action: none;
 }
 
 
 .floating-reminder-drag {
   display: flex;
 
-  align-items: center;
-
   gap: 3px;
 
-  margin-inline-start:
-    3px;
-
-  opacity:
-    0.48;
+  opacity: .48;
 }
 
 
@@ -364,8 +196,7 @@
 
   height: 3px;
 
-  border-radius:
-    50%;
+  border-radius: 50%;
 
   background:
     var(--fr-soft);
@@ -389,38 +220,17 @@
 
   border: 0;
 
-  border-radius:
-    50%;
+  border-radius: 50%;
 
   color:
-    var(--fr-close-text);
+    var(--fr-text);
 
   background:
-    var(--fr-close-bg);
+    rgba(255,255,255,.12);
 
-  font-family:
-    inherit;
-
-  font-size:
-    14px;
-
-  line-height:
-    1;
+  font-size: 14px;
 
   cursor: pointer;
-
-  -webkit-tap-highlight-color:
-    transparent;
-
-  transition:
-    transform
-      150ms ease;
-}
-
-
-.floating-reminder-close:active {
-  transform:
-    scale(0.9);
 }
 
 
@@ -443,13 +253,9 @@
 ========================================= */
 
 .floating-reminder-row {
-  position: relative;
-
   width: 100%;
 
-  min-width: 0;
-
-  min-height: 43px;
+  min-height: 44px;
 
   display: flex;
 
@@ -458,7 +264,7 @@
   gap: 8px;
 
   padding:
-    6px 6px;
+    6px;
 
   border: 0;
 
@@ -474,41 +280,25 @@
   font-family:
     inherit;
 
-  direction: rtl;
+  direction:
+    rtl;
 
-  text-align: right;
+  text-align:
+    right;
 
-  cursor: pointer;
-
-  -webkit-tap-highlight-color:
-    transparent;
-
-  transition:
-    background
-      150ms ease,
-    transform
-      150ms ease;
+  cursor:
+    pointer;
 }
 
 
-.floating-reminder-row:active {
-  transform:
-    scale(0.99);
-}
+.floating-reminder-row +
+.floating-reminder-row {
+  border-top:
+    1px solid
+    rgba(255,255,255,.10);
 
-
-@media (
-  hover: hover
-) {
-  .floating-reminder-row:hover {
-    background:
-      rgba(
-        255,
-        255,
-        255,
-        0.08
-      );
-  }
+  border-radius:
+    0 0 13px 13px;
 }
 
 
@@ -537,12 +327,11 @@
 
 
 /* =========================================
-   ROW MAIN
+   MAIN
 ========================================= */
 
 .floating-reminder-row-main {
-  flex:
-    1 1 auto;
+  flex: 1;
 
   min-width: 0;
 
@@ -559,8 +348,6 @@
 ========================================= */
 
 .floating-reminder-text {
-  display: block;
-
   min-width: 0;
 
   overflow: hidden;
@@ -575,32 +362,23 @@
     !important;
 
   font-size:
-    12.5px;
+    12px;
 
   font-weight:
     750;
-
-  line-height:
-    1.35;
-
-  opacity:
-    1 !important;
 }
 
 
 /* =========================================
-   PROGRESS BADGE
+   PERCENT
 ========================================= */
 
 .floating-reminder-progress {
-  flex:
-    0 0 auto;
+  flex: 0 0 auto;
 
-  min-width:
-    44px;
+  min-width: 42px;
 
-  height:
-    25px;
+  height: 24px;
 
   display:
     inline-flex;
@@ -612,7 +390,7 @@
     center;
 
   padding:
-    0 7px;
+    0 6px;
 
   border-radius:
     999px;
@@ -630,16 +408,8 @@
   font-weight:
     900;
 
-  line-height: 1;
-
   white-space:
     nowrap;
-
-  opacity:
-    1 !important;
-
-  box-sizing:
-    border-box;
 }
 
 
@@ -649,8 +419,6 @@
 
 .floating-reminder-progress-track {
   position: relative;
-
-  display: block;
 
   width: 100%;
 
@@ -682,31 +450,7 @@
     var(--fr-progress);
 
   transition:
-    width
-      250ms ease;
-}
-
-
-/* =========================================
-   DIVIDER
-========================================= */
-
-.floating-reminder-row-divider {
-  position: absolute;
-
-  right: 18px;
-
-  left: 18px;
-
-  bottom: -1px;
-
-  height: 1px;
-
-  background:
-    var(--fr-divider);
-
-  pointer-events:
-    none;
+    width 250ms ease;
 }
 
 
@@ -722,7 +466,7 @@
     width:
       min(
         88vw,
-        315px
+        310px
       );
 
     border-radius:
@@ -730,36 +474,9 @@
   }
 
 
-  .floating-reminder-top {
-    height:
-      16px;
-
-    padding:
-      4px 6px 0;
-  }
-
-
-  .floating-reminder-close {
-    width:
-      20px;
-
-    height:
-      20px;
-
-    font-size:
-      13px;
-  }
-
-
-  .floating-reminder-list {
-    padding:
-      0 5px 5px;
-  }
-
-
   .floating-reminder-row {
     min-height:
-      41px;
+      40px;
 
     padding:
       5px;
@@ -771,33 +488,18 @@
 
   .floating-reminder-text {
     font-size:
-      11.5px;
+      11px;
   }
 
 
   .floating-reminder-progress {
     min-width:
-      40px;
+      39px;
 
     height:
-      23px;
-
-    padding:
-      0 5px;
+      22px;
 
     font-size:
-      9.5px;
-  }
-
-
-  .floating-reminder-dot {
-    width:
-      6px;
-
-    height:
-      6px;
-
-    flex-basis:
-      6px;
+      9px;
   }
 }

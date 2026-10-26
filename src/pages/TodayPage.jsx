@@ -41,47 +41,30 @@ const DEFAULT_SETTINGS = {
   enabled: true,
 
   morningEnabled: true,
-
-  morningOffsetMinutes:
-    20,
+  morningOffsetMinutes: 20,
 
   eveningEnabled: true,
+  eveningOffsetMinutes: 20,
 
-  eveningOffsetMinutes:
-    20,
+  morningTime: '06:30',
+  eveningTime: '15:30',
 
-  morningTime:
-    '06:30',
+  baqarahEnabled: true,
+  baqarahTime: '20:00',
 
-  eveningTime:
-    '15:30',
+  streakEnabled: true,
+  streakTime: '21:30',
 
-  baqarahEnabled:
-    true,
+  draggable: true,
 
-  baqarahTime:
-    '20:00',
-
-  streakEnabled:
-    true,
-
-  streakTime:
-    '21:30',
-
-  draggable:
-    true,
-
-  showCloseButton:
-    true,
+  showCloseButton: true,
 
   defaultPosition:
     'top-right',
 
-  height:
-    34,
+  height: 34,
 
-  opacity:
-    96
+  opacity: 96
 }
 
 
@@ -98,7 +81,6 @@ function loadSettings() {
         )
       )
 
-
     return {
       ...DEFAULT_SETTINGS,
       ...(saved || {})
@@ -113,26 +95,21 @@ function loadSettings() {
 
 
 /* =====================================
-   DATE KEY
+   DATE
 ===================================== */
 
-function dateKey(
-  date
-) {
+function dateKey(date) {
   const year =
     date.getFullYear()
 
-
   const month =
     String(
-      date.getMonth() +
-        1
+      date.getMonth() + 1
     )
       .padStart(
         2,
         '0'
       )
-
 
   const day =
     String(
@@ -143,20 +120,11 @@ function dateKey(
         '0'
       )
 
-
-  return (
-    `${year}-${month}-${day}`
-  )
+  return `${year}-${month}-${day}`
 }
 
 
-/* =====================================
-   DATE FROM KEY
-===================================== */
-
-function dateFromKey(
-  key
-) {
+function dateFromKey(key) {
   const [
     year,
     month,
@@ -166,7 +134,6 @@ function dateFromKey(
       .split('-')
       .map(Number)
 
-
   return new Date(
     year,
     month - 1,
@@ -174,10 +141,6 @@ function dateFromKey(
   )
 }
 
-
-/* =====================================
-   TIME TO TODAY
-===================================== */
 
 function timeToToday(
   value,
@@ -187,7 +150,6 @@ function timeToToday(
     return null
   }
 
-
   const [
     hour,
     minute
@@ -196,7 +158,6 @@ function timeToToday(
       .split(':')
       .map(Number)
 
-
   if (
     Number.isNaN(hour) ||
     Number.isNaN(minute)
@@ -204,12 +165,10 @@ function timeToToday(
     return null
   }
 
-
   const result =
     new Date(
       baseDate
     )
-
 
   result.setHours(
     hour,
@@ -218,13 +177,12 @@ function timeToToday(
     0
   )
 
-
   return result
 }
 
 
 /* =====================================
-   DISMISS KEY
+   DISMISS
 ===================================== */
 
 function dismissalKey(
@@ -292,10 +250,6 @@ export default function TodayPage() {
     useState(0)
 
 
-  /*
-    نجبر React على إعادة
-    قراءة حالة الإخفاء.
-  */
   void dismissVersion
 
 
@@ -314,7 +268,6 @@ export default function TodayPage() {
         30000
       )
 
-
     return () => {
       window.clearInterval(
         timer
@@ -331,9 +284,7 @@ export default function TodayPage() {
     function handleSettingsChange(
       event
     ) {
-      if (
-        event?.detail
-      ) {
+      if (event?.detail) {
         setSettings({
           ...DEFAULT_SETTINGS,
           ...event.detail
@@ -341,7 +292,6 @@ export default function TodayPage() {
 
         return
       }
-
 
       setSettings(
         loadSettings()
@@ -368,7 +318,6 @@ export default function TodayPage() {
       handleSettingsChange
     )
 
-
     window.addEventListener(
       'storage',
       handleStorage
@@ -380,7 +329,6 @@ export default function TodayPage() {
         'refqat-reminder-settings-change',
         handleSettingsChange
       )
-
 
       window.removeEventListener(
         'storage',
@@ -415,9 +363,7 @@ export default function TodayPage() {
           await getCurrentPosition()
 
 
-        if (
-          cancelled
-        ) {
+        if (cancelled) {
           return
         }
 
@@ -449,9 +395,7 @@ export default function TodayPage() {
           })
 
 
-        if (
-          !cancelled
-        ) {
+        if (!cancelled) {
           setPrayerSchedule(
             schedule
           )
@@ -463,10 +407,7 @@ export default function TodayPage() {
           error
         )
 
-
-        if (
-          !cancelled
-        ) {
+        if (!cancelled) {
           setPrayerSchedule(
             null
           )
@@ -485,10 +426,8 @@ export default function TodayPage() {
 
   }, [
     todayKey,
-    settings
-      .morningOffsetMinutes,
-    settings
-      .eveningOffsetMinutes
+    settings.morningOffsetMinutes,
+    settings.eveningOffsetMinutes
   ])
 
 
@@ -497,15 +436,13 @@ export default function TodayPage() {
   ===================================== */
 
   const periodPercentage =
-    period ===
-    'morning'
+    period === 'morning'
       ? morningPercentage
       : eveningPercentage
 
 
   const currentAdhkarItems =
-    period ===
-    'morning'
+    period === 'morning'
       ? morningAdhkarList
       : eveningAdhkarList
 
@@ -532,7 +469,6 @@ export default function TodayPage() {
             )
           )
 
-
         if (
           Number.isFinite(
             remaining
@@ -541,7 +477,6 @@ export default function TodayPage() {
         ) {
           return total + 1
         }
-
 
         return total
       },
@@ -554,15 +489,14 @@ export default function TodayPage() {
   ===================================== */
 
   function resetCurrentAdhkar() {
-    currentAdhkarItems
-      .forEach(
-        item => {
-          resetDhikr(
-            item,
-            period
-          )
-        }
-      )
+    currentAdhkarItems.forEach(
+      item => {
+        resetDhikr(
+          item,
+          period
+        )
+      }
+    )
   }
 
 
@@ -617,48 +551,35 @@ export default function TodayPage() {
 
 
   /* =====================================
-     MORNING DUE
+     DUE STATES
   ===================================== */
 
   const morningDue =
     settings.enabled &&
     settings.morningEnabled &&
-    Boolean(
-      morningStart
-    ) &&
-    now >=
-      morningStart &&
-    morningPercentage <
-      100 &&
+    Boolean(morningStart) &&
+    now >= morningStart &&
+    morningPercentage < 100 &&
     !morningDismissed
 
-
-  /* =====================================
-     EVENING DUE
-  ===================================== */
 
   const eveningDue =
     settings.enabled &&
     settings.eveningEnabled &&
-    Boolean(
-      eveningStart
-    ) &&
-    now >=
-      eveningStart &&
-    eveningPercentage <
-      100 &&
+    Boolean(eveningStart) &&
+    now >= eveningStart &&
+    eveningPercentage < 100 &&
     !eveningDismissed
 
 
   /* =====================================
-     OPEN MORNING
+     OPEN
   ===================================== */
 
   function openMorning() {
     changePeriod(
       'morning'
     )
-
 
     window.setTimeout(
       () => {
@@ -679,15 +600,10 @@ export default function TodayPage() {
   }
 
 
-  /* =====================================
-     OPEN EVENING
-  ===================================== */
-
   function openEvening() {
     changePeriod(
       'evening'
     )
-
 
     window.setTimeout(
       () => {
@@ -716,9 +632,7 @@ export default function TodayPage() {
     []
 
 
-  if (
-    morningDue
-  ) {
+  if (morningDue) {
     reminderItems.push({
       id:
         'morning',
@@ -733,8 +647,7 @@ export default function TodayPage() {
         morningPercentage,
 
       started:
-        morningPercentage >
-        0,
+        morningPercentage > 0,
 
       onOpen:
         openMorning
@@ -742,9 +655,7 @@ export default function TodayPage() {
   }
 
 
-  if (
-    eveningDue
-  ) {
+  if (eveningDue) {
     reminderItems.push({
       id:
         'evening',
@@ -759,8 +670,7 @@ export default function TodayPage() {
         eveningPercentage,
 
       started:
-        eveningPercentage >
-        0,
+        eveningPercentage > 0,
 
       onOpen:
         openEvening
@@ -769,7 +679,7 @@ export default function TodayPage() {
 
 
   /* =====================================
-     CLOSE CURRENT VISIBLE ITEMS
+     CLOSE UNIFIED REMINDER
   ===================================== */
 
   function closeVisibleReminder() {
@@ -784,7 +694,6 @@ export default function TodayPage() {
         )
       }
     )
-
 
     setDismissVersion(
       previous =>
@@ -825,7 +734,7 @@ export default function TodayPage() {
 
 
       {/* =================================
-          ONE FLOATING REMINDER
+          ONE REMINDER ONLY
       ================================= */}
 
       <FloatingReminder
@@ -838,8 +747,7 @@ export default function TodayPage() {
         }
 
         visible={
-          reminderItems.length >
-          0
+          reminderItems.length > 0
         }
 
         draggable={
@@ -847,8 +755,7 @@ export default function TodayPage() {
         }
 
         showCloseButton={
-          settings
-            .showCloseButton
+          settings.showCloseButton
         }
 
         opacity={
@@ -856,11 +763,10 @@ export default function TodayPage() {
         }
 
         defaultPosition={
-          settings
-            .defaultPosition
+          settings.defaultPosition
         }
 
-        positionStorageKey="refqat-floating-adhkar-reminder-position"
+        positionStorageKey="refqat-floating-adhkar-reminder-v2"
 
         onClose={
           closeVisibleReminder
@@ -880,8 +786,7 @@ export default function TodayPage() {
           type="button"
 
           className={
-            period ===
-            'morning'
+            period === 'morning'
               ? 'period active'
               : 'period'
           }
@@ -904,8 +809,7 @@ export default function TodayPage() {
           type="button"
 
           className={
-            period ===
-            'evening'
+            period === 'evening'
               ? 'period active'
               : 'period'
           }
@@ -940,8 +844,7 @@ export default function TodayPage() {
           ADHKAR
       ================================= */}
 
-      {period ===
-      'morning' ? (
+      {period === 'morning' ? (
 
         <MorningAdhkar
           items={
