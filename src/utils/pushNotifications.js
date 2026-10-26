@@ -1,25 +1,3 @@
-function urlBase64ToUint8Array(base64String) {
-  const padding =
-    '='.repeat(
-      (4 - (base64String.length % 4)) % 4
-    )
-
-  const base64 =
-    (base64String + padding)
-      .replace(/-/g, '+')
-      .replace(/_/g, '/')
-
-  const rawData =
-    window.atob(base64)
-
-  return Uint8Array.from(
-    [...rawData].map(
-      char => char.charCodeAt(0)
-    )
-  )
-}
-
-
 export function isIosDevice() {
   return /iphone|ipad|ipod/i.test(
     navigator.userAgent
@@ -46,35 +24,53 @@ export function pushIsSupported() {
 }
 
 
-export async function getPushStatus() {
-  if (!pushIsSupported()) {
-    return {
-      supported: false,
-      permission: 'unsupported',
-      subscribed: false
-    }
+/* =====================================
+   NORMALIZE VAPID PUBLIC KEY
+===================================== */
+
+function normalizePublicKey(value) {
+  const publicKey =
+    String(value || '')
+      .trim()
+      .replace(/^['"]|['"]$/g, '')
+      .replace(/\s+/g, '')
+      .replace(/=+$/g, '')
+
+
+  if (!publicKey) {
+    throw new Error(
+      'مفتاح الإشعارات العام غير موجود.'
+    )
   }
 
 
-  const registration =
-    await navigator.serviceWorker.ready
-
-
-  const subscription =
-    await registration.pushManager
-      .getSubscription()
-
-
-  return {
-    supported: true,
-    permission:
-      Notification.permission,
-
-    subscribed:
-      Boolean(subscription)
+  if (
+    !/^[A-Za-z0-9_-]+$/.test(
+      publicKey
+    )
+  ) {
+    throw new Error(
+      'صيغة VAPID_PUBLIC_KEY غير صحيحة في Vercel.'
+    )
   }
+
+
+  if (
+    publicKey.length !== 87
+  ) {
+    throw new Error(
+      `مفتاح VAPID العام طوله ${publicKey.length} حرفًا، والمفترض 87 حرفًا.`
+    )
+  }
+
+
+  return publicKey
 }
 
+
+/* =====================================
+   GET PUBLIC KEY
+===================================== */
 
 async function getPublicKey() {
   const response =
@@ -82,7 +78,12 @@ async function getPublicKey() {
       '/api/push?action=public-key',
       {
         method: 'GET',
-        credentials: 'include'
+
+        credentials:
+          'include',
+
+        cache:
+          'no-store'
       }
     )
 
@@ -102,9 +103,15 @@ async function getPublicKey() {
   }
 
 
-  return data.publicKey
+  return normalizePublicKey(
+    data.publicKey
+  )
 }
 
+
+/* =====================================
+   PLATFORM
+===================================== */
 
 function detectPlatform() {
   if (
@@ -129,6 +136,48 @@ function detectPlatform() {
 }
 
 
+/* =====================================
+   STATUS
+===================================== */
+
+export async function getPushStatus() {
+  if (!pushIsSupported()) {
+    return {
+      supported: false,
+      permission: 'unsupported',
+      subscribed: false
+    }
+  }
+
+
+  const registration =
+    await navigator
+      .serviceWorker
+      .ready
+
+
+  const subscription =
+    await registration
+      .pushManager
+      .getSubscription()
+
+
+  return {
+    supported: true,
+
+    permission:
+      Notification.permission,
+
+    subscribed:
+      Boolean(subscription)
+  }
+}
+
+
+/* =====================================
+   ENABLE PUSH
+===================================== */
+
 export async function enablePushNotifications() {
   if (!pushIsSupported()) {
     throw new Error(
@@ -147,9 +196,26 @@ export async function enablePushNotifications() {
   }
 
 
-  const permission =
-    await Notification
-      .requestPermission()
+  /*
+    نحصل على مفتاح VAPID
+    ونتأكد من صحته قبل طلب الاشتراك.
+  */
+  const publicKey =
+    await getPublicKey()
+
+
+  let permission =
+    Notification.permission
+
+
+  if (
+    permission ===
+    'default'
+  ) {
+    permission =
+      await Notification
+        .requestPermission()
+  }
 
 
   if (
@@ -174,11 +240,27 @@ export async function enablePushNotifications() {
       .getSubscription()
 
 
-  if (!subscription) {
-    const publicKey =
-      await getPublicKey()
+  /*
+    نحذف أي اشتراك قديم،
+    خصوصًا بعد تغيير مفاتيح VAPID.
+  */
+  if (subscription) {
+    try {
+      await subscription
+        .unsubscribe()
+    } catch (error) {
+      console.warn(
+        'Old push unsubscribe warning:',
+        error
+      )
+    }
+  }
 
 
+  /*
+    إنشاء اشتراك Push جديد.
+  */
+  try {
     subscription =
       await registration
         .pushManager
@@ -186,13 +268,29 @@ export async function enablePushNotifications() {
           userVisibleOnly: true,
 
           applicationServerKey:
-            urlBase64ToUint8Array(
-              publicKey
-            )
+            publicKey
         })
+  } catch (error) {
+    console.error(
+      'Push subscribe error:',
+      error
+    )
+
+
+    throw new Error(
+      error?.message ||
+        'تعذر إنشاء اشتراك الإشعارات على الجهاز.',
+      {
+        cause: error
+      }
+    )
   }
 
 
+  /*
+    إرسال الاشتراك للسيرفر
+    حتى يتم حفظ الجهاز في Supabase.
+  */
   const response =
     await fetch(
       '/api/push?action=subscribe',
@@ -238,6 +336,10 @@ export async function enablePushNotifications() {
 }
 
 
+/* =====================================
+   DISABLE PUSH
+===================================== */
+
 export async function disablePushNotifications() {
   if (!pushIsSupported()) {
     return {
@@ -269,6 +371,9 @@ export async function disablePushNotifications() {
     subscription.endpoint
 
 
+  /*
+    نوقف الاشتراك في قاعدة البيانات أولًا.
+  */
   const response =
     await fetch(
       '/api/push?action=unsubscribe',
@@ -303,6 +408,9 @@ export async function disablePushNotifications() {
   }
 
 
+  /*
+    ثم نلغي الاشتراك من الجهاز.
+  */
   await subscription
     .unsubscribe()
 
@@ -312,6 +420,10 @@ export async function disablePushNotifications() {
   }
 }
 
+
+/* =====================================
+   TEST PUSH
+===================================== */
 
 export async function sendTestPush() {
   const response =
