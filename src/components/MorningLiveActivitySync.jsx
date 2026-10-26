@@ -15,13 +15,18 @@ export default function MorningLiveActivitySync({
   enabled = true,
   active = false,
   completed = 0,
-  total = 34
+  total = 0,
+  progress = 0
 }) {
   const startedRef =
     useRef(false)
 
-  const previousProgressRef =
-    useRef(-1)
+  const previousStateRef =
+    useRef({
+      completed: -1,
+      total: -1,
+      progress: -1
+    })
 
 
   useEffect(() => {
@@ -35,8 +40,8 @@ export default function MorningLiveActivitySync({
 
     const safeTotal =
       Math.max(
-        Number(total) || 1,
-        1
+        Number(total) || 0,
+        0
       )
 
 
@@ -50,12 +55,14 @@ export default function MorningLiveActivitySync({
       )
 
 
-    const progress =
-      Math.round(
-        (
-          safeCompleted /
-          safeTotal
-        ) *
+    const safeProgress =
+      Math.min(
+        Math.max(
+          Math.round(
+            Number(progress) || 0
+          ),
+          0
+        ),
         100
       )
 
@@ -64,51 +71,80 @@ export default function MorningLiveActivitySync({
       try {
 
         /*
-          إذا لم يكن وقت أذكار الصباح
-          أو انتهى التذكير
+          =====================================
+          NOT ACTIVE
+          =====================================
         */
+
         if (!active) {
 
-          if (startedRef.current) {
+          if (
+            startedRef.current
+          ) {
             await endMorningLiveActivity()
-
-            startedRef.current =
-              false
-
-            previousProgressRef.current =
-              -1
           }
 
-          return
-        }
-
-
-        /*
-          إذا اكتمل الورد
-          ننهي Live Activity
-        */
-        if (
-          safeCompleted >=
-          safeTotal
-        ) {
-          await endMorningLiveActivity()
 
           startedRef.current =
             false
 
-          previousProgressRef.current =
-            100
+
+          previousStateRef.current = {
+            completed: -1,
+            total: -1,
+            progress: -1
+          }
+
 
           return
         }
 
 
         /*
-          أول مرة:
-          نبدأ Live Activity
+          =====================================
+          COMPLETED
+          =====================================
         */
-        if (!startedRef.current) {
 
+        if (
+          safeProgress >= 100 ||
+          (
+            safeTotal > 0 &&
+            safeCompleted >= safeTotal
+          )
+        ) {
+          await endMorningLiveActivity()
+
+
+          startedRef.current =
+            false
+
+
+          previousStateRef.current = {
+            completed:
+              safeCompleted,
+
+            total:
+              safeTotal,
+
+            progress:
+              100
+          }
+
+
+          return
+        }
+
+
+        /*
+          =====================================
+          START
+          =====================================
+        */
+
+        if (
+          !startedRef.current
+        ) {
           await startMorningLiveActivity({
             completed:
               safeCompleted,
@@ -116,35 +152,59 @@ export default function MorningLiveActivitySync({
             total:
               safeTotal,
 
-            progress
+            progress:
+              safeProgress
           })
 
 
           startedRef.current =
             true
 
-          previousProgressRef.current =
-            progress
+
+          previousStateRef.current = {
+            completed:
+              safeCompleted,
+
+            total:
+              safeTotal,
+
+            progress:
+              safeProgress
+          }
+
 
           return
         }
 
 
         /*
-          لا نرسل تحديثًا
-          إذا لم تتغير النسبة
+          =====================================
+          NO CHANGE
+          =====================================
         */
+
+        const previous =
+          previousStateRef.current
+
+
         if (
-          previousProgressRef.current ===
-          progress
+          previous.completed ===
+            safeCompleted &&
+          previous.total ===
+            safeTotal &&
+          previous.progress ===
+            safeProgress
         ) {
           return
         }
 
 
         /*
-          تحديث Dynamic Island
+          =====================================
+          UPDATE
+          =====================================
         */
+
         await updateMorningLiveActivity({
           completed:
             safeCompleted,
@@ -152,12 +212,21 @@ export default function MorningLiveActivitySync({
           total:
             safeTotal,
 
-          progress
+          progress:
+            safeProgress
         })
 
 
-        previousProgressRef.current =
-          progress
+        previousStateRef.current = {
+          completed:
+            safeCompleted,
+
+          total:
+            safeTotal,
+
+          progress:
+            safeProgress
+        }
 
       } catch (error) {
         console.error(
@@ -174,7 +243,8 @@ export default function MorningLiveActivitySync({
     enabled,
     active,
     completed,
-    total
+    total,
+    progress
   ])
 
 
