@@ -27,25 +27,18 @@ function clamp(
 
 
 function getDefaultPositionStyle(
-  positionName,
-  stackOffset = 0
+  positionName
 ) {
   const edge = 12
 
   const topValue =
-    `calc(env(safe-area-inset-top, 0px) + ${
-      edge + stackOffset
-    }px)`
+    `calc(env(safe-area-inset-top, 0px) + ${edge}px)`
 
   const bottomValue =
-    `calc(env(safe-area-inset-bottom, 0px) + ${
-      edge + stackOffset
-    }px)`
+    `calc(env(safe-area-inset-bottom, 0px) + ${edge}px)`
 
 
-  switch (
-    positionName
-  ) {
+  switch (positionName) {
     case 'top-left':
       return {
         top: topValue,
@@ -53,16 +46,6 @@ function getDefaultPositionStyle(
         right: 'auto',
         bottom: 'auto'
       }
-
-
-    case 'bottom-right':
-      return {
-        top: 'auto',
-        left: 'auto',
-        right: `${edge}px`,
-        bottom: bottomValue
-      }
-
 
     case 'bottom-left':
       return {
@@ -72,6 +55,13 @@ function getDefaultPositionStyle(
         bottom: bottomValue
       }
 
+    case 'bottom-right':
+      return {
+        top: 'auto',
+        left: 'auto',
+        right: `${edge}px`,
+        bottom: bottomValue
+      }
 
     case 'top-right':
     default:
@@ -85,13 +75,25 @@ function getDefaultPositionStyle(
 }
 
 
+function normalizeProgress(
+  value
+) {
+  return Math.min(
+    Math.max(
+      Math.round(
+        Number(value) || 0
+      ),
+      0
+    ),
+    100
+  )
+}
+
+
 export default function FloatingReminder({
-  type = 'morning',
+  items = [],
 
-  text =
-    'أذكار الصباح بانتظارك',
-
-  progress = null,
+  theme = 'morning',
 
   visible = true,
 
@@ -99,19 +101,13 @@ export default function FloatingReminder({
 
   showCloseButton = true,
 
-  height = 34,
-
   opacity = 96,
 
   defaultPosition =
     'top-right',
 
-  stackOffset = 0,
-
   positionStorageKey =
-    'refqat-floating-reminder-position',
-
-  onOpen,
+    'refqat-floating-adhkar-reminder-position',
 
   onClose
 }) {
@@ -122,6 +118,7 @@ export default function FloatingReminder({
   const dragRef =
     useRef({
       dragging: false,
+
       moved: false,
 
       startX: 0,
@@ -160,12 +157,18 @@ export default function FloatingReminder({
           }
         }
       } catch {
-        // ignore
+        /* ignore */
       }
 
 
       return null
     })
+
+
+  const activeTheme =
+    theme === 'evening'
+      ? 'evening'
+      : 'morning'
 
 
   /* =====================================
@@ -178,13 +181,17 @@ export default function FloatingReminder({
     }
 
 
-    localStorage.setItem(
-      positionStorageKey,
+    try {
+      localStorage.setItem(
+        positionStorageKey,
 
-      JSON.stringify(
-        position
+        JSON.stringify(
+          position
+        )
       )
-    )
+    } catch {
+      /* ignore */
+    }
   }, [
     position,
     positionStorageKey
@@ -201,7 +208,9 @@ export default function FloatingReminder({
         reminderRef.current
 
 
-      if (!element) {
+      if (
+        !element
+      ) {
         return
       }
 
@@ -218,8 +227,8 @@ export default function FloatingReminder({
               8,
 
               window.innerWidth -
-              element.offsetWidth -
-              8
+                element.offsetWidth -
+                8
             )
 
 
@@ -228,8 +237,8 @@ export default function FloatingReminder({
               8,
 
               window.innerHeight -
-              element.offsetHeight -
-              8
+                element.offsetHeight -
+                8
             )
 
 
@@ -280,15 +289,6 @@ export default function FloatingReminder({
   }, [])
 
 
-  if (
-    !visible ||
-    typeof document ===
-      'undefined'
-  ) {
-    return null
-  }
-
-
   /* =====================================
      DRAG START
   ===================================== */
@@ -299,6 +299,9 @@ export default function FloatingReminder({
     if (
       event.target.closest(
         '.floating-reminder-close'
+      ) ||
+      event.target.closest(
+        '.floating-reminder-row'
       )
     ) {
       return
@@ -326,6 +329,7 @@ export default function FloatingReminder({
 
     dragRef.current = {
       dragging: true,
+
       moved: false,
 
       startX:
@@ -385,8 +389,10 @@ export default function FloatingReminder({
 
 
     if (
-      Math.abs(deltaX) > 3 ||
-      Math.abs(deltaY) > 3
+      Math.abs(deltaX) >
+        3 ||
+      Math.abs(deltaY) >
+        3
     ) {
       dragRef.current.moved =
         true
@@ -398,8 +404,8 @@ export default function FloatingReminder({
         8,
 
         window.innerWidth -
-        element.offsetWidth -
-        8
+          element.offsetWidth -
+          8
       )
 
 
@@ -408,8 +414,8 @@ export default function FloatingReminder({
         8,
 
         window.innerHeight -
-        element.offsetHeight -
-        8
+          element.offsetHeight -
+          8
       )
 
 
@@ -438,22 +444,12 @@ export default function FloatingReminder({
 
 
   /* =====================================
-     DRAG END / CLICK
+     DRAG END
   ===================================== */
 
   function handlePointerUp(
     event
   ) {
-    if (!draggable) {
-      onOpen?.()
-      return
-    }
-
-
-    const wasMoved =
-      dragRef.current.moved
-
-
     dragRef.current.dragging =
       false
 
@@ -462,11 +458,6 @@ export default function FloatingReminder({
       ?.releasePointerCapture?.(
         event.pointerId
       )
-
-
-    if (!wasMoved) {
-      onOpen?.()
-    }
   }
 
 
@@ -491,26 +482,18 @@ export default function FloatingReminder({
         }
 
       : getDefaultPositionStyle(
-          defaultPosition,
-          stackOffset
+          defaultPosition
         )
 
 
-  const style = {
-    ...positionStyle,
-
-    /*
-      أهم تعديل:
-      نضمن أنه فوق الهيدر
-      وكل محتويات التطبيق.
-    */
-    zIndex: 2147483647,
-
-    '--reminder-height':
-      `${height}px`,
-
-    '--reminder-opacity':
-      opacity / 100
+  if (
+    !visible ||
+    !Array.isArray(items) ||
+    items.length === 0 ||
+    typeof document ===
+      'undefined'
+  ) {
+    return null
   }
 
 
@@ -520,13 +503,22 @@ export default function FloatingReminder({
         reminderRef
       }
 
-      className={
-        `floating-reminder floating-reminder-${type}`
-      }
+      className={`
+        floating-reminder
+        floating-reminder-theme-${activeTheme}
+        ${
+          items.length > 1
+            ? 'floating-reminder-multiple'
+            : 'floating-reminder-single'
+        }
+      `}
 
-      style={
-        style
-      }
+      style={{
+        ...positionStyle,
+
+        '--reminder-opacity':
+          opacity / 100
+      }}
 
       onPointerDown={
         handlePointerDown
@@ -539,82 +531,176 @@ export default function FloatingReminder({
       onPointerUp={
         handlePointerUp
       }
-
-      onKeyDown={
-        event => {
-          if (
-            event.key ===
-              'Enter' ||
-            event.key ===
-              ' '
-          ) {
-            event.preventDefault()
-
-            onOpen?.()
-          }
-        }
-      }
-
-      role="button"
-
-      tabIndex={0}
     >
-      <div className="floating-reminder-content">
 
-        <span className="floating-reminder-dot" />
+      {/* =================================
+          TOP BAR
+      ================================= */}
+
+      <div
+        className="floating-reminder-top"
+      >
+
+        <div
+          className="floating-reminder-drag"
+          aria-hidden="true"
+        >
+          <span />
+          <span />
+          <span />
+        </div>
 
 
-        <span className="floating-reminder-text">
-          {text}
-        </span>
+        {showCloseButton && (
+          <button
+            type="button"
 
+            className="floating-reminder-close"
 
-        {progress !== null && (
-          <span className="floating-reminder-progress">
-            {progress}%
-          </span>
+            aria-label="إخفاء التذكير"
+
+            onPointerDown={
+              event =>
+                event
+                  .stopPropagation()
+            }
+
+            onClick={
+              event => {
+                event
+                  .stopPropagation()
+
+                onClose?.()
+              }
+            }
+          >
+            ×
+          </button>
         )}
 
       </div>
 
 
-      {showCloseButton && (
-        <button
-          type="button"
+      {/* =================================
+          ITEMS
+      ================================= */}
 
-          className="floating-reminder-close"
+      <div
+        className="floating-reminder-list"
+      >
 
-          aria-label="إخفاء التذكير"
+        {items.map(
+          (
+            item,
+            index
+          ) => {
+            const progress =
+              normalizeProgress(
+                item.progress
+              )
 
-          onPointerDown={
-            event =>
-              event.stopPropagation()
+
+            const started =
+              Boolean(
+                item.started
+              ) ||
+              progress > 0
+
+
+            return (
+              <button
+                key={
+                  item.id
+                }
+
+                type="button"
+
+                className="
+                  floating-reminder-row
+                "
+
+                onClick={
+                  item.onOpen
+                }
+              >
+
+                <span
+                  className="
+                    floating-reminder-dot
+                  "
+                />
+
+
+                <span
+                  className="
+                    floating-reminder-row-main
+                  "
+                >
+
+                  <span
+                    className="
+                      floating-reminder-text
+                    "
+                  >
+                    {started
+                      ? item.title
+                      : item.waitingText}
+                  </span>
+
+
+                  {started && (
+                    <span
+                      className="
+                        floating-reminder-progress-track
+                      "
+                    >
+                      <span
+                        className="
+                          floating-reminder-progress-fill
+                        "
+
+                        style={{
+                          width:
+                            `${progress}%`
+                        }}
+                      />
+                    </span>
+                  )}
+
+                </span>
+
+
+                {started && (
+                  <span
+                    className="
+                      floating-reminder-progress
+                    "
+                  >
+                    {progress}%
+                  </span>
+                )}
+
+
+                {index <
+                  items.length -
+                    1 && (
+                  <span
+                    className="
+                      floating-reminder-row-divider
+                    "
+                  />
+                )}
+
+              </button>
+            )
           }
+        )}
 
-          onClick={
-            event => {
-              event.stopPropagation()
-
-              onClose?.()
-            }
-          }
-        >
-          ×
-        </button>
-      )}
+      </div>
 
     </div>
   )
 
-
-  /*
-    Portal:
-    الشريط لم يعد داخل main-content
-    أو تحت الهيدر.
-
-    يُرسم مباشرة داخل body
-    ولذلك يبقى أعلى التطبيق كله.
-  */
 
   return createPortal(
     reminder,

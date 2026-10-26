@@ -1,0 +1,826 @@
+/* =========================================
+   FLOATING ROOT
+========================================= */
+
+.adhkar-quick-shell {
+  position: fixed;
+
+  z-index: 9999;
+
+  width: max-content;
+
+  pointer-events: auto;
+
+  user-select: none;
+  -webkit-user-select: none;
+
+  touch-action: none;
+}
+
+
+/* =========================================
+   MORNING
+========================================= */
+
+.adhkar-quick-shell--morning {
+  --aq-text:
+    #415e5c;
+
+  --aq-soft:
+    #778b87;
+
+  --aq-glass:
+    rgba(
+      255,
+      253,
+      246,
+      0.67
+    );
+
+  --aq-border:
+    rgba(
+      255,
+      255,
+      255,
+      0.72
+    );
+
+  --aq-neon-1:
+    #f5c987;
+
+  --aq-neon-2:
+    #e7b4ce;
+
+  --aq-neon-3:
+    #b4dad7;
+
+  --aq-shadow:
+    rgba(
+      223,
+      170,
+      110,
+      0.20
+    );
+}
+
+
+/* =========================================
+   EVENING
+========================================= */
+
+.adhkar-quick-shell--evening {
+  --aq-text:
+    #f9effa;
+
+  --aq-soft:
+    #ded0e5;
+
+  --aq-glass:
+    rgba(
+      67,
+      46,
+      75,
+      0.70
+    );
+
+  --aq-border:
+    rgba(
+      255,
+      255,
+      255,
+      0.18
+    );
+
+  --aq-neon-1:
+    #f3a4c6;
+
+  --aq-neon-2:
+    #c69ce9;
+
+  --aq-neon-3:
+    #8cbde1;
+
+  --aq-shadow:
+    rgba(
+      202,
+      142,
+      223,
+      0.27
+    );
+}
+
+
+/* =========================================
+   TOOLBAR
+========================================= */
+
+.adhkar-quick-actions-wrap {
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+}
+
+
+.adhkar-quick-actions {
+  height: 45px;
+
+  display: flex;
+
+  align-items: center;
+
+  padding:
+    4px 6px;
+
+  border-radius:
+    18px;
+
+  border:
+    1px solid
+    var(--aq-border);
+
+  background:
+    var(--aq-glass);
+
+  box-shadow:
+    0 8px 26px
+      rgba(
+        20,
+        20,
+        30,
+        0.12
+      ),
+    0 0 22px
+      var(--aq-shadow);
+
+  backdrop-filter:
+    blur(22px)
+    saturate(145%);
+
+  -webkit-backdrop-filter:
+    blur(22px)
+    saturate(145%);
+}
+
+
+/* =========================================
+   BUTTON
+========================================= */
+
+.adhkar-quick-button {
+  width: 34px;
+  height: 34px;
+
+  display: grid;
+
+  place-items: center;
+
+  padding: 0;
+
+  border: 0;
+
+  border-radius:
+    12px;
+
+  background:
+    transparent;
+
+  color:
+    var(--aq-text);
+
+  font-family:
+    inherit;
+
+  font-size:
+    17px;
+
+  cursor:
+    pointer;
+
+  -webkit-tap-highlight-color:
+    transparent;
+
+  transition:
+    transform
+      0.15s ease,
+    background
+      0.15s ease;
+}
+
+
+.adhkar-quick-button:active {
+  transform:
+    scale(0.9);
+}
+
+
+.adhkar-quick-button--unfinished {
+  color:
+    #35464b;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--aq-neon-1),
+      var(--aq-neon-2),
+      var(--aq-neon-3)
+    );
+
+  box-shadow:
+    0 0 15px
+      var(--aq-shadow);
+}
+
+
+/* =========================================
+   SEPARATOR
+========================================= */
+
+.adhkar-quick-separator {
+  width: 1px;
+  height: 19px;
+
+  margin:
+    0 2px;
+
+  background:
+    linear-gradient(
+      to bottom,
+      transparent,
+      var(--aq-border),
+      transparent
+    );
+}
+
+
+/* =========================================
+   DRAG HANDLE
+========================================= */
+
+.adhkar-quick-drag-handle {
+  width: 29px;
+  height: 38px;
+
+  display: grid;
+
+  place-items: center;
+
+  padding: 0;
+
+  border:
+    1px solid
+    var(--aq-border);
+
+  border-radius:
+    14px;
+
+  background:
+    var(--aq-glass);
+
+  color:
+    var(--aq-soft);
+
+  box-shadow:
+    0 7px 22px
+      rgba(
+        20,
+        20,
+        30,
+        0.10
+      );
+
+  backdrop-filter:
+    blur(18px);
+
+  -webkit-backdrop-filter:
+    blur(18px);
+
+  cursor:
+    grab;
+
+  touch-action:
+    none;
+
+  font-size:
+    13px;
+
+  -webkit-tap-highlight-color:
+    transparent;
+}
+
+
+.adhkar-quick-drag-handle:active {
+  cursor:
+    grabbing;
+
+  transform:
+    scale(0.94);
+}
+
+
+/* =========================================
+   POPUPS
+========================================= */
+
+.adhkar-quick-popups {
+  position: absolute;
+
+  width:
+    min(
+      245px,
+      calc(
+        100vw - 20px
+      )
+    );
+
+  display: flex;
+
+  flex-direction:
+    column;
+
+  gap: 8px;
+
+  pointer-events: auto;
+}
+
+
+/*
+  الأدوات تحت الشاشة
+  -> الرسالة فوقها
+*/
+
+.adhkar-quick-popups--above {
+  bottom:
+    calc(
+      100% + 10px
+    );
+}
+
+
+/*
+  الأدوات فوق الشاشة
+  -> الرسالة تحتها
+*/
+
+.adhkar-quick-popups--below {
+  top:
+    calc(
+      100% + 10px
+    );
+}
+
+
+/*
+  الأدوات في النصف الأيمن
+*/
+
+.adhkar-quick-popups--right {
+  right: 0;
+
+  align-items:
+    flex-end;
+}
+
+
+/*
+  الأدوات في النصف الأيسر
+*/
+
+.adhkar-quick-popups--left {
+  left: 0;
+
+  align-items:
+    flex-start;
+}
+
+
+/* =========================================
+   CONFIRM
+========================================= */
+
+.adhkar-reset-confirm {
+  position: relative;
+
+  overflow: hidden;
+
+  box-sizing:
+    border-box;
+
+  width: 100%;
+
+  padding:
+    14px;
+
+  border:
+    1px solid
+    var(--aq-border);
+
+  border-radius:
+    20px;
+
+  background:
+    var(--aq-glass);
+
+  box-shadow:
+    0 12px 34px
+      rgba(
+        20,
+        20,
+        30,
+        0.15
+      ),
+    0 0 24px
+      var(--aq-shadow);
+
+  backdrop-filter:
+    blur(24px)
+    saturate(145%);
+
+  -webkit-backdrop-filter:
+    blur(24px)
+    saturate(145%);
+
+  direction:
+    rtl;
+
+  text-align:
+    right;
+
+  animation:
+    adhkarPopupIn
+    0.18s ease;
+}
+
+
+.adhkar-reset-confirm__glow {
+  position: absolute;
+
+  top: -52px;
+  right: -30px;
+
+  width: 100px;
+  height: 100px;
+
+  border-radius:
+    50%;
+
+  background:
+    radial-gradient(
+      circle,
+      var(--aq-neon-2),
+      transparent 70%
+    );
+
+  opacity:
+    0.28;
+
+  pointer-events:
+    none;
+}
+
+
+.adhkar-reset-confirm__title {
+  position:
+    relative;
+
+  color:
+    var(--aq-text);
+
+  font-size:
+    14px;
+
+  font-weight:
+    800;
+}
+
+
+.adhkar-reset-confirm__text {
+  position:
+    relative;
+
+  margin-top:
+    4px;
+
+  color:
+    var(--aq-soft);
+
+  font-size:
+    11px;
+}
+
+
+/* =========================================
+   CONFIRM BUTTONS
+========================================= */
+
+.adhkar-reset-confirm__actions {
+  position:
+    relative;
+
+  display:
+    flex;
+
+  gap:
+    7px;
+
+  margin-top:
+    12px;
+}
+
+
+.adhkar-reset-confirm__actions
+button {
+  flex: 1;
+
+  height:
+    35px;
+
+  border-radius:
+    12px;
+
+  font-family:
+    inherit;
+
+  font-size:
+    12px;
+
+  font-weight:
+    700;
+
+  cursor:
+    pointer;
+}
+
+
+.adhkar-reset-accept {
+  border: 0;
+
+  color:
+    #344249;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--aq-neon-1),
+      var(--aq-neon-2),
+      var(--aq-neon-3)
+    );
+}
+
+
+.adhkar-reset-cancel {
+  color:
+    var(--aq-text);
+
+  border:
+    1px solid
+    var(--aq-border);
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.10
+    );
+}
+
+
+/* =========================================
+   TOAST
+========================================= */
+
+.adhkar-quick-toast {
+  box-sizing:
+    border-box;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    7px;
+
+  max-width:
+    100%;
+
+  padding:
+    9px 13px;
+
+  border:
+    1px solid
+    var(--aq-border);
+
+  border-radius:
+    15px;
+
+  background:
+    var(--aq-glass);
+
+  color:
+    var(--aq-text);
+
+  box-shadow:
+    0 10px 28px
+      rgba(
+        20,
+        20,
+        30,
+        0.13
+      ),
+    0 0 20px
+      var(--aq-shadow);
+
+  backdrop-filter:
+    blur(22px);
+
+  -webkit-backdrop-filter:
+    blur(22px);
+
+  direction:
+    rtl;
+
+  font-size:
+    11px;
+
+  font-weight:
+    700;
+
+  white-space:
+    nowrap;
+
+  animation:
+    adhkarPopupIn
+    0.18s ease;
+}
+
+
+.adhkar-quick-toast-dot {
+  width:
+    7px;
+
+  height:
+    7px;
+
+  flex:
+    0 0 7px;
+
+  border-radius:
+    50%;
+
+  background:
+    var(--aq-neon-2);
+
+  box-shadow:
+    0 0 10px
+      var(--aq-neon-2);
+}
+
+
+/* =========================================
+   HIGHLIGHT
+========================================= */
+
+.dhikr-quick-highlight {
+  animation:
+    dhikrQuickHighlight
+    1.15s ease;
+}
+
+
+@keyframes
+dhikrQuickHighlight {
+  0%,
+  100% {
+    filter:
+      none;
+  }
+
+  35% {
+    filter:
+      drop-shadow(
+        0 0 14px
+        var(--aq-shadow)
+      );
+  }
+}
+
+
+/* =========================================
+   POPUP ANIMATION
+========================================= */
+
+@keyframes
+adhkarPopupIn {
+  from {
+    opacity:
+      0;
+
+    transform:
+      translateY(5px)
+      scale(0.98);
+  }
+
+  to {
+    opacity:
+      1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (
+  max-width: 768px
+) {
+
+  .adhkar-quick-actions {
+    height:
+      42px;
+
+    padding:
+      3px 5px;
+
+    border-radius:
+      16px;
+  }
+
+
+  .adhkar-quick-button {
+    width:
+      31px;
+
+    height:
+      31px;
+
+    border-radius:
+      10px;
+
+    font-size:
+      16px;
+  }
+
+
+  .adhkar-quick-drag-handle {
+    width:
+      25px;
+
+    height:
+      34px;
+
+    border-radius:
+      12px;
+
+    font-size:
+      11px;
+  }
+
+
+  .adhkar-quick-separator {
+    height:
+      17px;
+
+    margin:
+      0 1px;
+  }
+
+
+  .adhkar-quick-popups {
+    width:
+      min(
+        238px,
+        calc(
+          100vw - 18px
+        )
+      );
+  }
+
+}
+
+
+/* =========================================
+   CARD ANCHOR
+========================================= */
+
+.adhkar-card-anchor {
+  width:
+    100%;
+
+  min-width:
+    0;
+}
+
+
+.adhkar-card-anchor > * {
+  width:
+    100%;
+}

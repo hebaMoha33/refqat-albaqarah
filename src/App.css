@@ -2699,3 +2699,7 @@ button {
   }
 
 }
+.adhkar-card-anchor {
+  width: 100%;
+  min-width: 0;
+}

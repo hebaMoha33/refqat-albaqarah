@@ -1,144 +1,374 @@
 /* =========================================
-   رفقة البقرة — FLOATING REMINDER
+   رفقة البقرة
+   UNIFIED FLOATING ADHKAR REMINDER
 ========================================= */
 
 .floating-reminder {
   position: fixed;
 
-  z-index: 99999;
+  z-index: 2147483647;
 
   width:
     min(
-      calc(100vw - 24px),
-      var(--reminder-max-width, 420px)
+      360px,
+      calc(100vw - 24px)
     );
 
-  min-height:
-    var(--reminder-height, 40px);
+  box-sizing:
+    border-box;
 
-  padding:
-    4px 7px 4px 11px;
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 6px;
-
-  border-radius:
-    var(--reminder-radius, 13px);
+  overflow: hidden;
 
   border:
     1px solid
-    rgba(255,255,255,.65);
+    var(--fr-border);
+
+  border-radius:
+    18px;
+
+  background:
+    var(--fr-background);
+
+  color:
+    var(--fr-text);
 
   box-shadow:
-    var(
-      --reminder-shadow,
-      0 6px 24px
-      rgba(0,0,0,.12)
-    );
+    var(--fr-shadow);
 
   backdrop-filter:
-    blur(14px);
+    blur(22px)
+    saturate(145%);
 
   -webkit-backdrop-filter:
-    blur(14px);
+    blur(22px)
+    saturate(145%);
 
   opacity:
     var(
       --reminder-opacity,
-      .96
+      0.96
     );
 
-  cursor: grab;
+  direction: rtl;
 
   user-select: none;
 
-  touch-action: none;
+  -webkit-user-select:
+    none;
+
+  touch-action:
+    none;
 
   transition:
-    box-shadow 180ms ease,
-    opacity 180ms ease;
-
-  direction: rtl;
-}
-
-
-.floating-reminder:active {
-  cursor: grabbing;
-
-  box-shadow:
-    0 10px 30px
-    rgba(0,0,0,.16);
+    background
+      180ms ease,
+    color
+      180ms ease,
+    border-color
+      180ms ease,
+    box-shadow
+      180ms ease;
 }
 
 
 /* =========================================
-   CONTENT
+   MORNING THEME
 ========================================= */
 
-.floating-reminder-content {
-  flex: 1;
+.floating-reminder-theme-morning {
+  --fr-background:
+    linear-gradient(
+      105deg,
 
-  min-width: 0;
+      rgba(
+        243,
+        248,
+        230,
+        0.94
+      ) 0%,
+
+      rgba(
+        255,
+        243,
+        231,
+        0.94
+      ) 42%,
+
+      rgba(
+        248,
+        222,
+        235,
+        0.93
+      ) 73%,
+
+      rgba(
+        239,
+        231,
+        247,
+        0.93
+      ) 100%
+    );
+
+  --fr-text:
+    #42585b;
+
+  --fr-soft:
+    #82908e;
+
+  --fr-border:
+    rgba(
+      255,
+      255,
+      255,
+      0.78
+    );
+
+  --fr-shadow:
+    0 10px 32px
+    rgba(
+      140,
+      113,
+      78,
+      0.13
+    ),
+    0 0 20px
+    rgba(
+      224,
+      169,
+      195,
+      0.08
+    );
+
+  --fr-dot:
+    #d89eb9;
+
+  --fr-dot-glow:
+    rgba(
+      216,
+      158,
+      185,
+      0.48
+    );
+
+  --fr-progress:
+    linear-gradient(
+      90deg,
+      #e6b977,
+      #dda4c0,
+      #b7d7d2
+    );
+
+  --fr-track:
+    rgba(
+      97,
+      116,
+      108,
+      0.10
+    );
+
+  --fr-percent-text:
+    #7b6039;
+
+  --fr-percent-bg:
+    rgba(
+      255,
+      249,
+      232,
+      0.82
+    );
+
+  --fr-close-text:
+    #70807d;
+
+  --fr-close-bg:
+    rgba(
+      255,
+      255,
+      255,
+      0.48
+    );
+
+  --fr-divider:
+    rgba(
+      95,
+      111,
+      104,
+      0.10
+    );
+}
+
+
+/* =========================================
+   EVENING THEME
+========================================= */
+
+.floating-reminder-theme-evening {
+  --fr-background:
+    linear-gradient(
+      105deg,
+
+      rgba(
+        31,
+        27,
+        57,
+        0.95
+      ) 0%,
+
+      rgba(
+        57,
+        39,
+        76,
+        0.95
+      ) 52%,
+
+      rgba(
+        83,
+        48,
+        82,
+        0.94
+      ) 100%
+    );
+
+  --fr-text:
+    #fff7f4;
+
+  --fr-soft:
+    #dbcfe1;
+
+  --fr-border:
+    rgba(
+      255,
+      219,
+      184,
+      0.20
+    );
+
+  --fr-shadow:
+    0 11px 34px
+    rgba(
+      17,
+      13,
+      36,
+      0.34
+    ),
+    0 0 20px
+    rgba(
+      199,
+      143,
+      220,
+      0.15
+    );
+
+  --fr-dot:
+    #f1a1c4;
+
+  --fr-dot-glow:
+    rgba(
+      241,
+      161,
+      196,
+      0.65
+    );
+
+  --fr-progress:
+    linear-gradient(
+      90deg,
+      #f5a56f,
+      #e49ac5,
+      #bf91e8
+    );
+
+  --fr-track:
+    rgba(
+      255,
+      255,
+      255,
+      0.11
+    );
+
+  --fr-percent-text:
+    #fff8f6;
+
+  --fr-percent-bg:
+    rgba(
+      255,
+      255,
+      255,
+      0.10
+    );
+
+  --fr-close-text:
+    #fff8f5;
+
+  --fr-close-bg:
+    rgba(
+      255,
+      255,
+      255,
+      0.10
+    );
+
+  --fr-divider:
+    rgba(
+      255,
+      255,
+      255,
+      0.10
+    );
+}
+
+
+/* =========================================
+   TOP / DRAG
+========================================= */
+
+.floating-reminder-top {
+  height: 18px;
 
   display: flex;
 
   align-items: center;
 
-  gap: 7px;
+  justify-content:
+    space-between;
+
+  padding:
+    5px 7px 0;
+
+  cursor: grab;
 }
 
 
-.floating-reminder-text {
-  flex: 1;
-
-  overflow: hidden;
-
-  white-space: nowrap;
-
-  text-overflow: ellipsis;
-
-  font-size:
-    var(
-      --reminder-font-size,
-      13px
-    );
-
-  font-weight:
-    var(
-      --reminder-font-weight,
-      600
-    );
-
-  line-height: 1.25;
+.floating-reminder-top:active {
+  cursor: grabbing;
 }
 
 
-.floating-reminder-progress {
-  flex: 0 0 auto;
+.floating-reminder-drag {
+  display: flex;
 
-  font-size: 11px;
+  align-items: center;
 
-  font-weight: 800;
+  gap: 3px;
 
-  opacity: .72;
+  margin-inline-start:
+    3px;
+
+  opacity:
+    0.48;
 }
 
 
-/* =========================================
-   SMALL STATUS DOT
-========================================= */
+.floating-reminder-drag span {
+  width: 3px;
 
-.floating-reminder-dot {
-  width: 6px;
+  height: 3px;
 
-  height: 6px;
+  border-radius:
+    50%;
 
-  flex: 0 0 6px;
-
-  border-radius: 50%;
+  background:
+    var(--fr-soft);
 }
 
 
@@ -147,11 +377,9 @@
 ========================================= */
 
 .floating-reminder-close {
-  width: 25px;
+  width: 21px;
 
-  height: 25px;
-
-  flex: 0 0 25px;
+  height: 21px;
 
   display: grid;
 
@@ -161,154 +389,324 @@
 
   border: 0;
 
-  border-radius: 50%;
+  border-radius:
+    50%;
+
+  color:
+    var(--fr-close-text);
 
   background:
-    rgba(255,255,255,.30);
+    var(--fr-close-bg);
 
-  color: inherit;
+  font-family:
+    inherit;
 
-  font-size: 17px;
+  font-size:
+    14px;
 
-  font-weight: 400;
-
-  line-height: 1;
+  line-height:
+    1;
 
   cursor: pointer;
 
-  opacity: .58;
+  -webkit-tap-highlight-color:
+    transparent;
 
   transition:
-    background 160ms ease,
-    opacity 160ms ease;
+    transform
+      150ms ease;
 }
 
 
-.floating-reminder-close:hover {
-  background:
-    rgba(255,255,255,.52);
-
-  opacity: .90;
-}
-
-
-/* =========================================
-   MORNING
-========================================= */
-
-.floating-reminder-morning {
-  background:
-    linear-gradient(
-      90deg,
-      rgba(239, 246, 225, .96) 0%,
-      rgba(250, 238, 229, .96) 38%,
-      rgba(246, 220, 234, .96) 72%,
-      rgba(234, 227, 246, .96) 100%
-    );
-
-  color:
-    var(
-      --morning-reminder-text,
-      #485759
-    );
-
-  border-color:
-    var(
-      --morning-reminder-border,
-      rgba(255,255,255,.70)
-    );
-}
-
-
-.floating-reminder-morning
-.floating-reminder-dot {
-  background:
-    #d69fba;
-
-  box-shadow:
-    0 0 0 3px
-    rgba(214,159,186,.14);
+.floating-reminder-close:active {
+  transform:
+    scale(0.9);
 }
 
 
 /* =========================================
-   EVENING
-   يستخدم ألوان المساء الأصلية
+   LIST
 ========================================= */
 
-.floating-reminder-evening {
-  background:
-    linear-gradient(
-      90deg,
-      rgba(23,26,52,.96),
-      rgba(52,37,74,.96)
-    );
+.floating-reminder-list {
+  display: flex;
 
-  color:
-    var(
-      --evening-reminder-text,
-      #fff3e9
-    );
+  flex-direction: column;
 
-  border-color:
-    var(
-      --evening-reminder-border,
-      rgba(255,208,137,.32)
-    );
-}
-
-
-.floating-reminder-evening
-.floating-reminder-dot {
-  background:
-    #ffad68;
-
-  box-shadow:
-    0 0 0 3px
-    rgba(255,173,104,.16);
+  padding:
+    1px 6px 6px;
 }
 
 
 /* =========================================
-   BAQARAH
+   ROW
 ========================================= */
 
-.floating-reminder-baqarah {
+.floating-reminder-row {
+  position: relative;
+
+  width: 100%;
+
+  min-width: 0;
+
+  min-height: 43px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  padding:
+    6px 6px;
+
+  border: 0;
+
+  border-radius:
+    13px;
+
   background:
-    rgba(
-      255,
-      253,
-      247,
-      .96
-    );
+    transparent;
 
   color:
-    var(
-      --baqarah-text,
-      #25342d
-    );
+    var(--fr-text);
 
-  border-color:
-    rgba(
-      184,
-      155,
-      98,
-      .22
-    );
+  font-family:
+    inherit;
+
+  direction: rtl;
+
+  text-align: right;
+
+  cursor: pointer;
+
+  -webkit-tap-highlight-color:
+    transparent;
+
+  transition:
+    background
+      150ms ease,
+    transform
+      150ms ease;
 }
 
 
-.floating-reminder-baqarah
+.floating-reminder-row:active {
+  transform:
+    scale(0.99);
+}
+
+
+@media (
+  hover: hover
+) {
+  .floating-reminder-row:hover {
+    background:
+      rgba(
+        255,
+        255,
+        255,
+        0.08
+      );
+  }
+}
+
+
+/* =========================================
+   DOT
+========================================= */
+
 .floating-reminder-dot {
+  width: 7px;
+
+  height: 7px;
+
+  flex:
+    0 0 7px;
+
+  border-radius:
+    50%;
+
   background:
-    var(
-      --baqarah-primary,
-      #315e4c
-    );
+    var(--fr-dot);
 
   box-shadow:
-    0 0 0 3px
-    rgba(49,94,76,.12);
+    0 0 10px
+    var(--fr-dot-glow);
+}
+
+
+/* =========================================
+   ROW MAIN
+========================================= */
+
+.floating-reminder-row-main {
+  flex:
+    1 1 auto;
+
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+
+/* =========================================
+   TEXT
+========================================= */
+
+.floating-reminder-text {
+  display: block;
+
+  min-width: 0;
+
+  overflow: hidden;
+
+  white-space: nowrap;
+
+  text-overflow:
+    ellipsis;
+
+  color:
+    var(--fr-text)
+    !important;
+
+  font-size:
+    12.5px;
+
+  font-weight:
+    750;
+
+  line-height:
+    1.35;
+
+  opacity:
+    1 !important;
+}
+
+
+/* =========================================
+   PROGRESS BADGE
+========================================= */
+
+.floating-reminder-progress {
+  flex:
+    0 0 auto;
+
+  min-width:
+    44px;
+
+  height:
+    25px;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  padding:
+    0 7px;
+
+  border-radius:
+    999px;
+
+  background:
+    var(--fr-percent-bg);
+
+  color:
+    var(--fr-percent-text)
+    !important;
+
+  font-size:
+    10px;
+
+  font-weight:
+    900;
+
+  line-height: 1;
+
+  white-space:
+    nowrap;
+
+  opacity:
+    1 !important;
+
+  box-sizing:
+    border-box;
+}
+
+
+/* =========================================
+   PROGRESS LINE
+========================================= */
+
+.floating-reminder-progress-track {
+  position: relative;
+
+  display: block;
+
+  width: 100%;
+
+  height: 3px;
+
+  overflow: hidden;
+
+  border-radius:
+    999px;
+
+  background:
+    var(--fr-track);
+}
+
+
+.floating-reminder-progress-fill {
+  position: absolute;
+
+  top: 0;
+
+  right: 0;
+
+  bottom: 0;
+
+  border-radius:
+    999px;
+
+  background:
+    var(--fr-progress);
+
+  transition:
+    width
+      250ms ease;
+}
+
+
+/* =========================================
+   DIVIDER
+========================================= */
+
+.floating-reminder-row-divider {
+  position: absolute;
+
+  right: 18px;
+
+  left: 18px;
+
+  bottom: -1px;
+
+  height: 1px;
+
+  background:
+    var(--fr-divider);
+
+  pointer-events:
+    none;
 }
 
 
@@ -316,71 +714,90 @@
    MOBILE
 ========================================= */
 
-@media (max-width: 600px) {
+@media (
+  max-width: 600px
+) {
 
   .floating-reminder {
-    /*
-      الشريط لا يحتل عرض الشاشة.
-      يكون على قد المحتوى فقط.
-    */
-    width: auto;
-
-    min-width: 210px;
-
-    max-width:
+    width:
       min(
-        82vw,
-        330px
+        88vw,
+        315px
       );
 
-    min-height: 32px;
+    border-radius:
+      16px;
+  }
+
+
+  .floating-reminder-top {
+    height:
+      16px;
 
     padding:
-      3px 6px 3px 9px;
-
-    border-radius: 11px;
-  }
-
-
-  .floating-reminder-content {
-    min-width: 0;
-  }
-
-
-  .floating-reminder-text {
-    min-width: 0;
-
-    font-size: 11.5px;
-
-    white-space: nowrap;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-  }
-
-
-  .floating-reminder-progress {
-    font-size: 10px;
+      4px 6px 0;
   }
 
 
   .floating-reminder-close {
-    width: 21px;
+    width:
+      20px;
 
-    height: 21px;
+    height:
+      20px;
 
-    flex-basis: 21px;
+    font-size:
+      13px;
+  }
 
-    font-size: 14px;
+
+  .floating-reminder-list {
+    padding:
+      0 5px 5px;
+  }
+
+
+  .floating-reminder-row {
+    min-height:
+      41px;
+
+    padding:
+      5px;
+
+    gap:
+      7px;
+  }
+
+
+  .floating-reminder-text {
+    font-size:
+      11.5px;
+  }
+
+
+  .floating-reminder-progress {
+    min-width:
+      40px;
+
+    height:
+      23px;
+
+    padding:
+      0 5px;
+
+    font-size:
+      9.5px;
   }
 
 
   .floating-reminder-dot {
-    width: 5px;
+    width:
+      6px;
 
-    height: 5px;
+    height:
+      6px;
 
-    flex-basis: 5px;
+    flex-basis:
+      6px;
   }
 }

@@ -18,7 +18,10 @@ export default function EveningAdhkar({
     <>
       <section className="today-progress">
         <div>
-          <span>إنجاز ورد المساء</span>
+          <span>
+            إنجاز ورد المساء
+          </span>
+
           <strong>
             {completedCards} من {items.length} ذكرًا مكتملًا
           </strong>
@@ -31,31 +34,46 @@ export default function EveningAdhkar({
         <div className="progress-line">
           <div
             className="progress-fill"
-            style={{ width: `${progress}%` }}
+            style={{
+              width: `${progress}%`
+            }}
           />
         </div>
       </section>
+
 
       <div className="section-title">
         <div>
-          <span>مساءٌ ساكن</span>
-          <h3>أذكار المساء</h3>
+          <span>
+            مساءٌ ساكن
+          </span>
+
+          <h3>
+            أذكار المساء
+          </h3>
         </div>
       </div>
 
+
       <section className="adhkar-grid">
-        {items.map(item => (
-          <AdhkarCard
-            key={item.id}
-            item={item}
-            remaining={getRemaining(item)}
-            expanded={expandedId === item.id}
-            onToggle={() => onToggle(item.id)}
-            onCount={onCount}
-            onReset={onReset}
-          />
-        ))}
-      </section>
+  {items.map((item, index) => (
+    <div
+      key={item.id}
+      data-dhikr-period="evening"
+      data-dhikr-index={index}
+      className="adhkar-card-anchor"
+    >
+      <AdhkarCard
+        item={item}
+        remaining={getRemaining(item)}
+        expanded={expandedId === item.id}
+        onToggle={() => onToggle(item.id)}
+        onCount={onCount}
+        onReset={onReset}
+      />
+    </div>
+  ))}
+</section>
     </>
   )
 }

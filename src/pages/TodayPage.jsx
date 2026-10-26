@@ -3,6 +3,9 @@ import {
   useState
 } from 'react'
 
+import AdhkarQuickActions
+  from '../components/AdhkarQuickActions'
+
 import MorningAdhkar
   from '../components/MorningAdhkar'
 
@@ -26,10 +29,6 @@ import {
 } from '../utils/prayerSchedule'
 
 import {
-  useAuth
-} from '../context/AuthContext'
-
-import {
   useProgress
 } from '../context/ProgressContext'
 
@@ -42,35 +41,52 @@ const DEFAULT_SETTINGS = {
   enabled: true,
 
   morningEnabled: true,
-  morningOffsetMinutes: 20,
+
+  morningOffsetMinutes:
+    20,
 
   eveningEnabled: true,
-  eveningOffsetMinutes: 20,
 
-  morningTime: '06:30',
-  eveningTime: '15:30',
+  eveningOffsetMinutes:
+    20,
 
-  baqarahEnabled: true,
-  baqarahTime: '20:00',
+  morningTime:
+    '06:30',
 
-  streakEnabled: true,
-  streakTime: '21:30',
+  eveningTime:
+    '15:30',
 
-  draggable: true,
+  baqarahEnabled:
+    true,
 
-  showCloseButton: true,
+  baqarahTime:
+    '20:00',
+
+  streakEnabled:
+    true,
+
+  streakTime:
+    '21:30',
+
+  draggable:
+    true,
+
+  showCloseButton:
+    true,
 
   defaultPosition:
     'top-right',
 
-  height: 34,
+  height:
+    34,
 
-  opacity: 96
+  opacity:
+    96
 }
 
 
 /* =====================================
-   LOAD SETTINGS
+   SETTINGS
 ===================================== */
 
 function loadSettings() {
@@ -100,18 +116,23 @@ function loadSettings() {
    DATE KEY
 ===================================== */
 
-function dateKey(date) {
+function dateKey(
+  date
+) {
   const year =
     date.getFullYear()
 
+
   const month =
     String(
-      date.getMonth() + 1
+      date.getMonth() +
+        1
     )
       .padStart(
         2,
         '0'
       )
+
 
   const day =
     String(
@@ -123,7 +144,9 @@ function dateKey(date) {
       )
 
 
-  return `${year}-${month}-${day}`
+  return (
+    `${year}-${month}-${day}`
+  )
 }
 
 
@@ -131,7 +154,9 @@ function dateKey(date) {
    DATE FROM KEY
 ===================================== */
 
-function dateFromKey(key) {
+function dateFromKey(
+  key
+) {
   const [
     year,
     month,
@@ -151,7 +176,7 @@ function dateFromKey(key) {
 
 
 /* =====================================
-   TIME TO DATE
+   TIME TO TODAY
 ===================================== */
 
 function timeToToday(
@@ -213,83 +238,10 @@ function dismissalKey(
 
 
 /* =====================================
-   NORMALIZE BAQARAH
-===================================== */
-
-function normalizeBaqarahState(
-  payload
-) {
-  const source =
-    payload?.state ||
-    payload?.readerState ||
-    payload?.data ||
-    payload ||
-    {}
-
-
-  const rawAyah =
-    Number(
-      source.last_ayah_number ??
-      source.lastAyahNumber ??
-      1
-    )
-
-
-  const rawPercentage =
-    Number(
-      source.reader_percentage ??
-      source.readerPercentage ??
-      0
-    )
-
-
-  const lastAyahNumber =
-    Math.min(
-      Math.max(
-        Number.isFinite(rawAyah)
-          ? Math.round(rawAyah)
-          : 1,
-        1
-      ),
-      286
-    )
-
-
-  const readerPercentage =
-    Math.min(
-      Math.max(
-        Number.isFinite(
-          rawPercentage
-        )
-          ? Math.round(
-              rawPercentage
-            )
-          : 0,
-        0
-      ),
-      100
-    )
-
-
-  return {
-    lastAyahNumber,
-    readerPercentage
-  }
-}
-
-
-/* =====================================
    PAGE
 ===================================== */
 
 export default function TodayPage() {
-  const {
-    currentUser,
-    openAuth
-  } =
-    useAuth()
-
-
   const {
     period,
     expandedId,
@@ -334,16 +286,6 @@ export default function TodayPage() {
 
 
   const [
-    baqarahState,
-    setBaqarahState
-  ] =
-    useState({
-      lastAyahNumber: 1,
-      readerPercentage: 0
-    })
-
-
-  const [
     dismissVersion,
     setDismissVersion
   ] =
@@ -351,8 +293,8 @@ export default function TodayPage() {
 
 
   /*
-    يجعل React يعرف أن dismissVersion
-    مستخدم في الحسابات أدناه.
+    نجبر React على إعادة
+    قراءة حالة الإخفاء.
   */
   void dismissVersion
 
@@ -382,7 +324,7 @@ export default function TodayPage() {
 
 
   /* =====================================
-     SETTINGS CHANGES
+     SETTINGS UPDATE
   ===================================== */
 
   useEffect(() => {
@@ -459,7 +401,7 @@ export default function TodayPage() {
 
 
   /* =====================================
-     PRAYER SCHEDULE
+     PRAYER TIMES
   ===================================== */
 
   useEffect(() => {
@@ -473,7 +415,9 @@ export default function TodayPage() {
           await getCurrentPosition()
 
 
-        if (cancelled) {
+        if (
+          cancelled
+        ) {
           return
         }
 
@@ -541,116 +485,33 @@ export default function TodayPage() {
 
   }, [
     todayKey,
-    settings.morningOffsetMinutes,
-    settings.eveningOffsetMinutes
+    settings
+      .morningOffsetMinutes,
+    settings
+      .eveningOffsetMinutes
   ])
 
 
   /* =====================================
-     BAQARAH STATE
+     CURRENT PERIOD
   ===================================== */
 
-  useEffect(() => {
-    let cancelled =
-      false
+  const periodPercentage =
+    period ===
+    'morning'
+      ? morningPercentage
+      : eveningPercentage
 
 
-    async function loadBaqarahState() {
-      if (
-        !currentUser
-      ) {
-        if (
-          !cancelled
-        ) {
-          setBaqarahState({
-            lastAyahNumber: 1,
-            readerPercentage: 0
-          })
-        }
-
-        return
-      }
-
-
-      try {
-        const response =
-          await fetch(
-            '/api/baqarah-reader-state',
-            {
-              method:
-                'GET',
-
-              credentials:
-                'include',
-
-              cache:
-                'no-store'
-            }
-          )
-
-
-        if (!response.ok) {
-          throw new Error(
-            `Baqarah state ${response.status}`
-          )
-        }
-
-
-        const payload =
-          await response.json()
-
-
-        if (
-          !cancelled
-        ) {
-          setBaqarahState(
-            normalizeBaqarahState(
-              payload
-            )
-          )
-        }
-
-      } catch (error) {
-        console.warn(
-          'Baqarah state error:',
-          error
-        )
-      }
-    }
-
-
-    loadBaqarahState()
-
-
-    function handleFocus() {
-      loadBaqarahState()
-    }
-
-
-    window.addEventListener(
-      'focus',
-      handleFocus
-    )
-
-
-    return () => {
-      cancelled =
-        true
-
-
-      window.removeEventListener(
-        'focus',
-        handleFocus
-      )
-    }
-
-  }, [
-    currentUser
-  ])
+  const currentAdhkarItems =
+    period ===
+    'morning'
+      ? morningAdhkarList
+      : eveningAdhkarList
 
 
   /* =====================================
-     REAL MORNING COUNTS
+     MORNING COUNTS
   ===================================== */
 
   const morningTotalItems =
@@ -689,18 +550,24 @@ export default function TodayPage() {
 
 
   /* =====================================
-     PERIOD PERCENTAGE
+     RESET CURRENT PERIOD
   ===================================== */
 
-  const periodPercentage =
-    period ===
-    'morning'
-      ? morningPercentage
-      : eveningPercentage
+  function resetCurrentAdhkar() {
+    currentAdhkarItems
+      .forEach(
+        item => {
+          resetDhikr(
+            item,
+            period
+          )
+        }
+      )
+  }
 
 
   /* =====================================
-     REMINDER START TIMES
+     REMINDER TIMES
   ===================================== */
 
   const baseDate =
@@ -727,20 +594,6 @@ export default function TodayPage() {
     )
 
 
-  const baqarahStart =
-    timeToToday(
-      settings.baqarahTime,
-      baseDate
-    )
-
-
-  const streakStart =
-    timeToToday(
-      settings.streakTime,
-      baseDate
-    )
-
-
   /* =====================================
      DISMISSED
   ===================================== */
@@ -763,132 +616,173 @@ export default function TodayPage() {
     ) === '1'
 
 
-  const baqarahDismissed =
-    localStorage.getItem(
-      dismissalKey(
-        todayKey,
-        'baqarah'
-      )
-    ) === '1'
-
-
-  const streakDismissed =
-    localStorage.getItem(
-      dismissalKey(
-        todayKey,
-        'streak'
-      )
-    ) === '1'
-
-
   /* =====================================
-     DUE STATES
+     MORNING DUE
   ===================================== */
 
   const morningDue =
     settings.enabled &&
     settings.morningEnabled &&
-    Boolean(morningStart) &&
-    now >= morningStart &&
-    morningPercentage < 100 &&
+    Boolean(
+      morningStart
+    ) &&
+    now >=
+      morningStart &&
+    morningPercentage <
+      100 &&
     !morningDismissed
 
+
+  /* =====================================
+     EVENING DUE
+  ===================================== */
 
   const eveningDue =
     settings.enabled &&
     settings.eveningEnabled &&
-    Boolean(eveningStart) &&
-    now >= eveningStart &&
-    eveningPercentage < 100 &&
+    Boolean(
+      eveningStart
+    ) &&
+    now >=
+      eveningStart &&
+    eveningPercentage <
+      100 &&
     !eveningDismissed
 
 
-  const baqarahDue =
-    settings.enabled &&
-    settings.baqarahEnabled &&
-    Boolean(currentUser) &&
-    Boolean(baqarahStart) &&
-    now >= baqarahStart &&
-    baqarahState.readerPercentage <
-      100 &&
-    !baqarahDismissed
+  /* =====================================
+     OPEN MORNING
+  ===================================== */
+
+  function openMorning() {
+    changePeriod(
+      'morning'
+    )
 
 
-  const streakDue =
-    settings.enabled &&
-    settings.streakEnabled &&
-    Boolean(streakStart) &&
-    now >= streakStart &&
-    (
-      morningPercentage < 100 ||
-      eveningPercentage < 100
-    ) &&
-    !streakDismissed
+    window.setTimeout(
+      () => {
+        document
+          .getElementById(
+            'adhkar-list-start'
+          )
+          ?.scrollIntoView({
+            behavior:
+              'smooth',
+
+            block:
+              'start'
+          })
+      },
+      50
+    )
+  }
 
 
   /* =====================================
-     STACK OFFSETS
+     OPEN EVENING
   ===================================== */
 
-  const reminderGap =
-    Math.max(
-      Number(
-        settings.height
-      ) || 34,
-      34
-    ) + 10
+  function openEvening() {
+    changePeriod(
+      'evening'
+    )
 
 
-  const morningOffset =
-    0
+    window.setTimeout(
+      () => {
+        document
+          .getElementById(
+            'adhkar-list-start'
+          )
+          ?.scrollIntoView({
+            behavior:
+              'smooth',
+
+            block:
+              'start'
+          })
+      },
+      50
+    )
+  }
 
 
-  const eveningOffset =
+  /* =====================================
+     ONE UNIFIED REMINDER
+  ===================================== */
+
+  const reminderItems =
+    []
+
+
+  if (
     morningDue
-      ? reminderGap
-      : 0
+  ) {
+    reminderItems.push({
+      id:
+        'morning',
+
+      title:
+        'أذكار الصباح',
+
+      waitingText:
+        'أذكار الصباح بانتظارك',
+
+      progress:
+        morningPercentage,
+
+      started:
+        morningPercentage >
+        0,
+
+      onOpen:
+        openMorning
+    })
+  }
 
 
-  const baqarahOffset =
-    (
-      Number(
-        morningDue
-      ) +
-      Number(
-        eveningDue
-      )
-    ) *
-    reminderGap
+  if (
+    eveningDue
+  ) {
+    reminderItems.push({
+      id:
+        'evening',
 
+      title:
+        'أذكار المساء',
 
-  const streakOffset =
-    (
-      Number(
-        morningDue
-      ) +
-      Number(
-        eveningDue
-      ) +
-      Number(
-        baqarahDue
-      )
-    ) *
-    reminderGap
+      waitingText:
+        'أذكار المساء بانتظارك',
+
+      progress:
+        eveningPercentage,
+
+      started:
+        eveningPercentage >
+        0,
+
+      onOpen:
+        openEvening
+    })
+  }
 
 
   /* =====================================
-     DISMISS
+     CLOSE CURRENT VISIBLE ITEMS
   ===================================== */
 
-  function dismissReminder(
-    type
-  ) {
-    localStorage.setItem(
-      dismissalKey(
-        todayKey,
-        type
-      ),
-      '1'
+  function closeVisibleReminder() {
+    reminderItems.forEach(
+      item => {
+        localStorage.setItem(
+          dismissalKey(
+            todayKey,
+            item.id
+          ),
+          '1'
+        )
+      }
     )
 
 
@@ -899,94 +793,12 @@ export default function TodayPage() {
   }
 
 
-  /* =====================================
-     OPEN
-  ===================================== */
-
-  function openMorning() {
-    changePeriod(
-      'morning'
-    )
-
-
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    })
-  }
-
-
-  function openEvening() {
-    changePeriod(
-      'evening'
-    )
-
-
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    })
-  }
-
-
-  function openBaqarah() {
-    if (
-      !currentUser
-    ) {
-      openAuth?.()
-      return
-    }
-
-
-    window.location.hash =
-      '#/companion/read'
-  }
-
-
-  function openStreak() {
-    if (
-      morningPercentage < 100
-    ) {
-      openMorning()
-      return
-    }
-
-
-    openEvening()
-  }
-
-
-  /* =====================================
-     STREAK TEXT
-  ===================================== */
-
-  let streakText =
-    'ورد اليوم لم يكتمل بعد'
-
-
-  if (
-    morningPercentage < 100 &&
-    eveningPercentage >= 100
-  ) {
-    streakText =
-      'أذكار الصباح لم تكتمل بعد'
-  }
-
-
-  if (
-    eveningPercentage < 100 &&
-    morningPercentage >= 100
-  ) {
-    streakText =
-      'أذكار المساء لم تكتمل بعد'
-  }
-
-
   return (
     <>
-      {/* =====================================
+
+      {/* =================================
           iOS LIVE ACTIVITY
-      ===================================== */}
+      ================================= */}
 
       <MorningLiveActivitySync
         enabled={
@@ -1012,21 +824,22 @@ export default function TodayPage() {
       />
 
 
-      {/* =====================================
-          FLOATING REMINDERS
-      ===================================== */}
+      {/* =================================
+          ONE FLOATING REMINDER
+      ================================= */}
 
       <FloatingReminder
-        type="morning"
+        items={
+          reminderItems
+        }
 
-        text="أذكار الصباح بانتظارك"
-
-        progress={
-          morningPercentage
+        theme={
+          period
         }
 
         visible={
-          morningDue
+          reminderItems.length >
+          0
         }
 
         draggable={
@@ -1034,11 +847,8 @@ export default function TodayPage() {
         }
 
         showCloseButton={
-          settings.showCloseButton
-        }
-
-        height={
-          settings.height
+          settings
+            .showCloseButton
         }
 
         opacity={
@@ -1046,197 +856,25 @@ export default function TodayPage() {
         }
 
         defaultPosition={
-          settings.defaultPosition
+          settings
+            .defaultPosition
         }
 
-        stackOffset={
-          morningOffset
-        }
+        positionStorageKey="refqat-floating-adhkar-reminder-position"
 
-        positionStorageKey="
-          refqat-floating-reminder-position-morning
-        "
-
-        onOpen={
-          openMorning
-        }
-
-        onClose={() =>
-          dismissReminder(
-            'morning'
-          )
+        onClose={
+          closeVisibleReminder
         }
       />
 
 
-      <FloatingReminder
-        type="evening"
-
-        text="أذكار المساء بانتظارك"
-
-        progress={
-          eveningPercentage
-        }
-
-        visible={
-          eveningDue
-        }
-
-        draggable={
-          settings.draggable
-        }
-
-        showCloseButton={
-          settings.showCloseButton
-        }
-
-        height={
-          settings.height
-        }
-
-        opacity={
-          settings.opacity
-        }
-
-        defaultPosition={
-          settings.defaultPosition
-        }
-
-        stackOffset={
-          eveningOffset
-        }
-
-        positionStorageKey="
-          refqat-floating-reminder-position-evening
-        "
-
-        onOpen={
-          openEvening
-        }
-
-        onClose={() =>
-          dismissReminder(
-            'evening'
-          )
-        }
-      />
-
-
-      <FloatingReminder
-        type="baqarah"
-
-        text={
-          `سورة البقرة • تابعي من الآية ${baqarahState.lastAyahNumber}`
-        }
-
-        progress={
-          baqarahState.readerPercentage
-        }
-
-        visible={
-          baqarahDue
-        }
-
-        draggable={
-          settings.draggable
-        }
-
-        showCloseButton={
-          settings.showCloseButton
-        }
-
-        height={
-          settings.height
-        }
-
-        opacity={
-          settings.opacity
-        }
-
-        defaultPosition={
-          settings.defaultPosition
-        }
-
-        stackOffset={
-          baqarahOffset
-        }
-
-        positionStorageKey="
-          refqat-floating-reminder-position-baqarah
-        "
-
-        onOpen={
-          openBaqarah
-        }
-
-        onClose={() =>
-          dismissReminder(
-            'baqarah'
-          )
-        }
-      />
-
-
-      <FloatingReminder
-        type="streak"
-
-        text={
-          streakText
-        }
-
-        progress={
-          null
-        }
-
-        visible={
-          streakDue
-        }
-
-        draggable={
-          settings.draggable
-        }
-
-        showCloseButton={
-          settings.showCloseButton
-        }
-
-        height={
-          settings.height
-        }
-
-        opacity={
-          settings.opacity
-        }
-
-        defaultPosition={
-          settings.defaultPosition
-        }
-
-        stackOffset={
-          streakOffset
-        }
-
-        positionStorageKey="
-          refqat-floating-reminder-position-streak
-        "
-
-        onOpen={
-          openStreak
-        }
-
-        onClose={() =>
-          dismissReminder(
-            'streak'
-          )
-        }
-      />
-
-
-      {/* =====================================
+      {/* =================================
           PERIOD SWITCH
-      ===================================== */}
+      ================================= */}
 
-      <div className="period-switch">
+      <div
+        className="period-switch"
+      >
 
         <button
           type="button"
@@ -1288,9 +926,19 @@ export default function TodayPage() {
       </div>
 
 
-      {/* =====================================
+      {/* =================================
+          START
+      ================================= */}
+
+      <div
+        id="adhkar-list-start"
+        aria-hidden="true"
+      />
+
+
+      {/* =================================
           ADHKAR
-      ===================================== */}
+      ================================= */}
 
       {period ===
       'morning' ? (
@@ -1382,6 +1030,43 @@ export default function TodayPage() {
         />
 
       )}
+
+
+      {/* =================================
+          END
+      ================================= */}
+
+      <div
+        id="adhkar-list-end"
+        aria-hidden="true"
+      />
+
+
+      {/* =================================
+          QUICK ACTIONS
+      ================================= */}
+
+      <AdhkarQuickActions
+        period={
+          period
+        }
+
+        items={
+          currentAdhkarItems
+        }
+
+        getRemaining={
+          item =>
+            getRemaining(
+              item,
+              period
+            )
+        }
+
+        onResetAll={
+          resetCurrentAdhkar
+        }
+      />
 
     </>
   )
