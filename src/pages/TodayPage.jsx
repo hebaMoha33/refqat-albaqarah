@@ -3,6 +3,9 @@ import {
   useState
 } from 'react'
 
+import useReminderScheduleSync
+  from '../hooks/useReminderScheduleSync'
+
 import AdhkarQuickActions
   from '../components/AdhkarQuickActions'
 
@@ -15,8 +18,14 @@ import EveningAdhkar
 import FloatingReminder
   from '../components/FloatingReminder'
 
+import InAppAdhkarPill
+  from '../components/InAppAdhkarPill'
+
 import MorningLiveActivitySync
   from '../components/MorningLiveActivitySync'
+
+import useAppVisibility
+  from '../hooks/useAppVisibility'
 
 import {
   morningAdhkarList,
@@ -69,7 +78,7 @@ const DEFAULT_SETTINGS = {
 
 
 /* =====================================
-   SETTINGS
+   LOAD SETTINGS
 ===================================== */
 
 function loadSettings() {
@@ -95,10 +104,12 @@ function loadSettings() {
 
 
 /* =====================================
-   DATE
+   DATE KEY
 ===================================== */
 
-function dateKey(date) {
+function dateKey(
+  date
+) {
   const year =
     date.getFullYear()
 
@@ -124,7 +135,13 @@ function dateKey(date) {
 }
 
 
-function dateFromKey(key) {
+/* =====================================
+   DATE FROM KEY
+===================================== */
+
+function dateFromKey(
+  key
+) {
   const [
     year,
     month,
@@ -141,6 +158,10 @@ function dateFromKey(key) {
   )
 }
 
+
+/* =====================================
+   TIME TO DATE
+===================================== */
 
 function timeToToday(
   value,
@@ -182,7 +203,7 @@ function timeToToday(
 
 
 /* =====================================
-   DISMISS
+   DISMISS KEY
 ===================================== */
 
 function dismissalKey(
@@ -215,6 +236,14 @@ export default function TodayPage() {
     resetDhikr
   } =
     useProgress()
+
+
+  const {
+    isAppActive,
+    isNative,
+    platform
+  } =
+    useAppVisibility()
 
 
   const [
@@ -250,6 +279,11 @@ export default function TodayPage() {
     useState(0)
 
 
+  /*
+    نستخدم القيمة فقط لإجبار
+    React على إعادة الحساب بعد
+    إخفاء التذكير.
+  */
   void dismissVersion
 
 
@@ -349,7 +383,7 @@ export default function TodayPage() {
 
 
   /* =====================================
-     PRAYER TIMES
+     PRAYER SCHEDULE
   ===================================== */
 
   useEffect(() => {
@@ -406,6 +440,7 @@ export default function TodayPage() {
           'Prayer schedule fallback:',
           error
         )
+
 
         if (!cancelled) {
           setPrayerSchedule(
@@ -469,6 +504,7 @@ export default function TodayPage() {
             )
           )
 
+
         if (
           Number.isFinite(
             remaining
@@ -477,6 +513,7 @@ export default function TodayPage() {
         ) {
           return total + 1
         }
+
 
         return total
       },
@@ -526,7 +563,23 @@ export default function TodayPage() {
       settings.eveningTime,
       baseDate
     )
+useReminderScheduleSync({
+  reminderDate:
+    todayKey,
 
+  morningAt:
+    settings.morningEnabled
+      ? morningStart
+      : null,
+
+  eveningAt:
+    settings.eveningEnabled
+      ? eveningStart
+      : null,
+
+  enabled:
+    settings.enabled
+})
 
   /* =====================================
      DISMISSED
@@ -551,7 +604,7 @@ export default function TodayPage() {
 
 
   /* =====================================
-     DUE STATES
+     MORNING DUE
   ===================================== */
 
   const morningDue =
@@ -563,6 +616,10 @@ export default function TodayPage() {
     !morningDismissed
 
 
+  /* =====================================
+     EVENING DUE
+  ===================================== */
+
   const eveningDue =
     settings.enabled &&
     settings.eveningEnabled &&
@@ -573,7 +630,7 @@ export default function TodayPage() {
 
 
   /* =====================================
-     OPEN
+     OPEN MORNING
   ===================================== */
 
   function openMorning() {
@@ -581,29 +638,6 @@ export default function TodayPage() {
       'morning'
     )
 
-    window.setTimeout(
-      () => {
-        document
-          .getElementById(
-            'adhkar-list-start'
-          )
-          ?.scrollIntoView({
-            behavior:
-              'smooth',
-
-            block:
-              'start'
-          })
-      },
-      50
-    )
-  }
-
-
-  function openEvening() {
-    changePeriod(
-      'evening'
-    )
 
     window.setTimeout(
       () => {
@@ -625,7 +659,36 @@ export default function TodayPage() {
 
 
   /* =====================================
-     ONE UNIFIED REMINDER
+     OPEN EVENING
+  ===================================== */
+
+  function openEvening() {
+    changePeriod(
+      'evening'
+    )
+
+
+    window.setTimeout(
+      () => {
+        document
+          .getElementById(
+            'adhkar-list-start'
+          )
+          ?.scrollIntoView({
+            behavior:
+              'smooth',
+
+            block:
+              'start'
+          })
+      },
+      50
+    )
+  }
+
+
+  /* =====================================
+     ONE UNIFIED REMINDER DATA
   ===================================== */
 
   const reminderItems =
@@ -679,7 +742,7 @@ export default function TodayPage() {
 
 
   /* =====================================
-     CLOSE UNIFIED REMINDER
+     CLOSE CURRENT REMINDER
   ===================================== */
 
   function closeVisibleReminder() {
@@ -695,11 +758,57 @@ export default function TodayPage() {
       }
     )
 
+
     setDismissVersion(
       previous =>
         previous + 1
     )
   }
+
+
+  /* =====================================
+     PLATFORM DISPLAY LOGIC
+  ===================================== */
+
+  /*
+    Android Native + التطبيق مفتوح:
+    نظهر الكبسولة الصغيرة فقط.
+  */
+
+  const showAndroidInAppPill =
+    isNative &&
+    platform === 'android' &&
+    isAppActive &&
+    reminderItems.length > 0
+
+
+  /*
+    iPhone Native + التطبيق مفتوح:
+    لا نظهر FloatingReminder داخل الصفحة،
+    لأننا سنستخدم Dynamic Island.
+  */
+
+  const showIosLiveActivityOnly =
+    isNative &&
+    platform === 'ios' &&
+    isAppActive
+
+
+  /*
+    PWA / Web:
+    نظهر البطاقة العائمة المعتادة.
+
+    Android بالخلفية:
+    لاحقًا Native Overlay.
+
+    iOS بالخلفية:
+    لاحقًا Notification.
+  */
+
+  const showNormalFloatingReminder =
+    reminderItems.length > 0 &&
+    !showAndroidInAppPill &&
+    !showIosLiveActivityOnly
 
 
   return (
@@ -711,11 +820,16 @@ export default function TodayPage() {
 
       <MorningLiveActivitySync
         enabled={
+          isNative &&
+          platform === 'ios' &&
           settings.enabled &&
           settings.morningEnabled
         }
 
         active={
+          isNative &&
+          platform === 'ios' &&
+          isAppActive &&
           morningDue
         }
 
@@ -734,7 +848,7 @@ export default function TodayPage() {
 
 
       {/* =================================
-          ONE REMINDER ONLY
+          WEB / PWA FLOATING REMINDER
       ================================= */}
 
       <FloatingReminder
@@ -747,7 +861,7 @@ export default function TodayPage() {
         }
 
         visible={
-          reminderItems.length > 0
+          showNormalFloatingReminder
         }
 
         draggable={
@@ -772,6 +886,23 @@ export default function TodayPage() {
           closeVisibleReminder
         }
       />
+
+
+      {/* =================================
+          ANDROID NATIVE — IN APP PILL
+      ================================= */}
+
+      {showAndroidInAppPill && (
+        <InAppAdhkarPill
+          items={
+            reminderItems
+          }
+
+          theme={
+            period
+          }
+        />
+      )}
 
 
       {/* =================================
@@ -947,6 +1078,7 @@ export default function TodayPage() {
 
       {/* =================================
           QUICK ACTIONS
+          ↻ ◉ ↓ ✦
       ================================= */}
 
       <AdhkarQuickActions

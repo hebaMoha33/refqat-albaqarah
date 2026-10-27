@@ -1,0 +1,319 @@
+/* =========================================
+   ANDROID IN-APP MINI PILL
+========================================= */
+
+.in-app-adhkar-pill {
+  position: fixed;
+
+  left: 50%;
+
+  bottom:
+    calc(
+      env(
+        safe-area-inset-bottom,
+        0px
+      )
+      + 74px
+    );
+
+  transform:
+    translateX(-50%);
+
+  z-index:
+    2147483645;
+
+  display: flex;
+  align-items: center;
+
+  min-height: 34px;
+
+  max-width:
+    calc(
+      100vw - 28px
+    );
+
+  padding:
+    3px 5px;
+
+  border:
+    1px solid
+    var(--iap-border);
+
+  border-radius:
+    999px;
+
+  background:
+    var(--iap-background);
+
+  box-shadow:
+    var(--iap-shadow);
+
+  backdrop-filter:
+    blur(20px)
+    saturate(140%);
+
+  -webkit-backdrop-filter:
+    blur(20px)
+    saturate(140%);
+
+  direction: rtl;
+}
+
+
+/* =========================================
+   MORNING
+========================================= */
+
+.in-app-adhkar-pill--morning {
+  --iap-background:
+    linear-gradient(
+      100deg,
+      rgba(246,249,235,.90),
+      rgba(255,241,229,.90),
+      rgba(247,220,235,.88)
+    );
+
+  --iap-border:
+    rgba(255,255,255,.76);
+
+  --iap-text:
+    #49605f;
+
+  --iap-soft:
+    #927344;
+
+  --iap-accent:
+    #d99fbb;
+
+  --iap-shadow:
+    0 7px 24px
+    rgba(126,105,78,.13);
+}
+
+
+/* =========================================
+   EVENING
+========================================= */
+
+.in-app-adhkar-pill--evening {
+  --iap-background:
+    linear-gradient(
+      100deg,
+      rgba(35,30,62,.92),
+      rgba(61,41,79,.92),
+      rgba(83,49,83,.91)
+    );
+
+  --iap-border:
+    rgba(255,255,255,.18);
+
+  --iap-text:
+    #fff7f4;
+
+  --iap-soft:
+    #f3c2d7;
+
+  --iap-accent:
+    #e69bc6;
+
+  --iap-shadow:
+    0 8px 27px
+    rgba(15,12,35,.28),
+    0 0 15px
+    rgba(196,140,220,.12);
+}
+
+
+/* =========================================
+   WRAP
+========================================= */
+
+.in-app-adhkar-pill-item-wrap {
+  display: flex;
+  align-items: center;
+}
+
+
+/* =========================================
+   BUTTON
+========================================= */
+
+.in-app-adhkar-pill-item {
+  height: 28px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 5px;
+
+  padding:
+    0 8px;
+
+  border: 0;
+
+  border-radius:
+    999px;
+
+  background:
+    transparent;
+
+  color:
+    var(--iap-text);
+
+  font-family:
+    inherit;
+
+  cursor: pointer;
+
+  -webkit-tap-highlight-color:
+    transparent;
+
+  transition:
+    transform 140ms ease,
+    background 140ms ease;
+}
+
+
+.in-app-adhkar-pill-item:active {
+  transform:
+    scale(.95);
+
+  background:
+    rgba(255,255,255,.08);
+}
+
+
+/* =========================================
+   ICON
+========================================= */
+
+.in-app-adhkar-pill-icon {
+  color:
+    var(--iap-accent);
+
+  font-size:
+    12px;
+
+  line-height:
+    1;
+}
+
+
+/* =========================================
+   NAME
+========================================= */
+
+.in-app-adhkar-pill-name {
+  color:
+    var(--iap-text);
+
+  font-size:
+    10.5px;
+
+  font-weight:
+    700;
+
+  white-space:
+    nowrap;
+}
+
+
+/* =========================================
+   PERCENT
+========================================= */
+
+.in-app-adhkar-pill-percent {
+  min-width:
+    30px;
+
+  padding:
+    2px 5px;
+
+  border-radius:
+    999px;
+
+  background:
+    rgba(255,255,255,.12);
+
+  color:
+    var(--iap-soft);
+
+  font-size:
+    9px;
+
+  font-weight:
+    900;
+
+  line-height:
+    1.2;
+
+  text-align:
+    center;
+}
+
+
+/* =========================================
+   DIVIDER
+========================================= */
+
+.in-app-adhkar-pill-divider {
+  width: 1px;
+
+  height: 17px;
+
+  background:
+    var(--iap-border);
+
+  opacity:
+    .65;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (
+  max-width: 600px
+) {
+  .in-app-adhkar-pill {
+    bottom:
+      calc(
+        env(
+          safe-area-inset-bottom,
+          0px
+        )
+        + 68px
+      );
+
+    min-height:
+      32px;
+
+    padding:
+      2px 4px;
+  }
+
+
+  .in-app-adhkar-pill-item {
+    height:
+      27px;
+
+    padding:
+      0 7px;
+  }
+
+
+  .in-app-adhkar-pill-name {
+    font-size:
+      10px;
+  }
+
+
+  .in-app-adhkar-pill-percent {
+    min-width:
+      28px;
+
+    font-size:
+      8.5px;
+  }
+}
